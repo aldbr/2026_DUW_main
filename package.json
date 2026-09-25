@@ -8,20 +8,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fstagni/2026_FermiLab_retreat.git"
+    "url": "git+https://github.com/fstagni/2026_DUW.git"
   },
   "keywords": [
     "diracx",
-    "FermiLab2026"
+    "DUW12"
   ],
   "author": "Federico Stagni",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/fstagni/2026_FermiLab_retreat/issues"
+    "url": "https://github.com/fstagni/2026_DUW/issues"
   },
-  "homepage": "https://github.com/fstagni/2026_FermiLab_retreat#readme",
+  "homepage": "https://github.com/fstagni/2026_DUW#readme",
   "description": "",
   "dependencies": {
     "slidev-theme-neversink": "^0.4.0"
+  },
+  "devDependencies": {
+    "@slidev/cli": "^52.9.1"
   }
 }

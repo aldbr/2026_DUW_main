@@ -1,0 +1,1020 @@
+---
+colorSchema: light
+favicon: /public/images/diracx-logo-square.png
+color: orange-light
+layout: cover
+routerMode: hash
+title: The DiracGrid project, DiracX and CMS
+theme: neversink
+neversink_string: "DIRAC+X"
+---
+
+# DiracGrid, DiracX, and CMS
+<br>
+
+**Federico Stagni** <Email v="federico.stagni@cern.ch" />
+
+DiracGrid technical coordinator. CERN employee since 2009. Also part of LHCb.
+
+<br>
+
+21 September 2026
+\_\_ <a href="https://indico.cern.ch/event/1612911/#6-dirac-x-plans-and-architectu" class="ns-c-iconlink"><mdi-open-in-new />CMS Autumn O&C Week
+</a>
+
+---
+layout: section
+color: cyan-light
+title: Intro
+---
+
+# Intro
+
+---
+layout: top-title
+color: gray-light
+align: c
+title: core-functionalities
+clicks: 5
+---
+
+:: title ::
+
+## Core functionalities and tools (enormous simplification)
+
+:: content ::
+
+<v-switch>
+<template #0>
+
+### **Core functionalities**
+
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart LR
+    WMS["`**WMS**
+    Workload Management System`"]
+    DMS["`**DMS**
+    Data Management`"]
+    MD["`**Metadata and provenance**`"]
+    PROD["`**Production Management**
+    Workflow Orchestration`"]
+    IS["`**Information System**
+    Resources & Status`"]
+
+    style WMS fill:#bbf,stroke:#88c
+    style DMS fill:#bfb,stroke:#8c8,stroke-width:2px
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+    style PROD fill:#eef,stroke:#8ec
+    style IS fill:#fff,stroke:#000
+
+    PROD -->|submits jobs to| WMS
+    PROD -->|gets data from| MD
+    PROD -->|gets info from| IS
+    WMS -->|gets info from| IS
+    DMS -->|gets info from| IS
+    PROD -->|gets data loc from| DMS
+    WMS -->|gets data loc from| DMS
+    DMS -->|gets data from| MD
+```
+<br>
+<br>
+
+### **Tools** (subset of the existing ones)
+
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart TD
+
+    DIRAC(["`**DIRAC / DiracX**`"])
+    RUCIO(["`**Rucio**`"])
+    GLIDE(["`**GlideInWMS+HTCondor**`"])
+    CRIC(["`**CRIC**`"])
+    WM(["`**WMAgent**`"])
+    BKK(["`**LHCb Bookkeeping**`"])
+    DBS(["`**DBS**`"])
+
+    style DIRAC fill:#f90,color:#000,stroke:#c60,stroke-width:3px
+    style RUCIO fill:#4a9,color:#fff,stroke:#276,stroke-width:3px
+    style GLIDE fill:#56b,color:#fff,stroke:#235,stroke-width:3px
+    style CRIC fill:#19b,color:#000,stroke:#239,stroke-width:3px
+    style WM fill:#ee1,color:#003,stroke:#eee,stroke-width:3px
+    style BKK fill:#aa1,color:#002,stroke:#eee,stroke-width:3px
+    style DBS fill:#0a1,color:#002,stroke:#eee,stroke-width:3px
+```
+
+</template>
+<template #1>
+
+# **JUNO**, **GridPP**
+Small-medium installations that want an all-in-one system
+
+<br>
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart TD
+    WMS["`**WMS**
+    Workload Management System`"]
+    DMS["`**DMS**
+    Data Management`"]
+    PROD["`**Production Management**
+    Workflow Orchestration`"]
+    IS["`**Information System**
+    Resources & Status`"]
+    MD["`**Metadata and provenance**`"]
+
+    style WMS fill:#bbf,stroke:#88c
+    style DMS fill:#bfb,stroke:#8c8,stroke-width:2px
+    style PROD fill:#eef,stroke:#8ec
+    style IS fill:#fff,stroke:#000
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+
+    DIRAC(["`**DIRAC / DiracX**`"])
+
+    style DIRAC fill:#f90,color:#000,stroke:#c60,stroke-width:3px
+
+    WMS -->|implemented by| DIRAC
+    DMS -->|implemented by| DIRAC
+    PROD -->|implemented by| DIRAC
+    IS -->|implemented by| DIRAC
+    MD -->|implemented by| DIRAC
+```
+
+
+<br>
+
+Old DIRAC was largely monolithic. DiracX emphasizes modularity and well-defined APIs.
+
+</template>
+<template #2>
+
+# **LHCb**
+Not a small installation, but oldest and carrying legacy.
+
+<br>
+<br>
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart TD
+    WMS["`**WMS**
+    Workload Management System`"]
+    DMS["`**DMS**
+    Data Management`"]
+    PROD["`**Production Management**
+    Workflow Orchestration`"]
+    IS["`**Information System**
+    Resources & Status`"]
+    MD["`**Metadata and provenance**`"]
+
+    style WMS fill:#bbf,stroke:#88c
+    style DMS fill:#bfb,stroke:#8c8,stroke-width:2px
+    style PROD fill:#eef,stroke:#8ec
+    style IS fill:#fff,stroke:#000
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+
+    DIRAC(["`**DIRAC / DiracX**`"])
+    BKK(["`**LHCb Bookkeeping**`"])
+
+    style DIRAC fill:#f90,color:#000,stroke:#c60,stroke-width:3px
+    style BKK fill:#aa1,color:#002,stroke:#eee,stroke-width:3px
+
+    WMS -->|implemented by| DIRAC
+    DMS -->|implemented by| DIRAC
+    PROD -->|implemented by| DIRAC
+    IS -->|implemented by| DIRAC
+    MD -->|implemented by| BKK
+```
+
+</template>
+<template #3>
+
+# **Belle2**, **CTAO**, and **FCC**
+The need for modularity comes also from existing DIRAC installations
+
+<br>
+<br>
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart TD
+    WMS["`**WMS**
+    Workload Management System`"]
+    DMS["`**DMS**
+    Data Management`"]
+    PROD["`**Production Management**
+    Workflow Orchestration`"]
+    MD["`**Metadata and provenance**`"]
+    IS["`**Information System**
+    Resources & Status`"]
+
+    style WMS fill:#bbf,stroke:#88c
+    style DMS fill:#bfb,stroke:#8c8,stroke-width:2px
+    style PROD fill:#eef,stroke:#8ec
+    style IS fill:#fff,stroke:#000
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+
+    DIRAC(["`**DIRAC / DiracX**`"])
+    RUCIO(["`**Rucio**`"])
+
+    style DIRAC fill:#f90,color:#000,stroke:#c60,stroke-width:3px
+    style RUCIO fill:#4a9,color:#fff,stroke:#276,stroke-width:3px
+
+    WMS -->|implemented by| DIRAC
+    DMS -->|implemented by| RUCIO
+    PROD -->|implemented by| DIRAC
+    IS -->|implemented by| DIRAC
+    MD -->|implemented by| RUCIO
+```
+
+</template>
+<template #4>
+
+# **CMS**
+For CMS, modularity is a must.
+
+<br>
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart TD
+    WMS["`**WMS**
+    Workload Management System`"]
+    DMS["`**DMS**
+    Data Management`"]
+    PROD["`**Production Management**
+    Workflow Orchestration`"]
+    IS["`**Information System**
+    Resources & Status`"]
+    MD["`**Metadata and provenance**`"]
+
+    style WMS fill:#bbf,stroke:#88c
+    style DMS fill:#bfb,stroke:#8c8,stroke-width:2px
+    style PROD fill:#eef,stroke:#8ec
+    style IS fill:#fff,stroke:#000
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+
+    RUCIO(["`**Rucio**`"])
+    GLIDE(["`**GlideInWMS+HTCondor**`"])
+    CRIC(["`**CRIC**`"])
+    WM(["`**WMAgent**`"])
+    DBS(["`**DBS**`"])
+
+    style RUCIO fill:#4a9,color:#fff,stroke:#276,stroke-width:3px
+    style GLIDE fill:#56b,color:#fff,stroke:#235,stroke-width:3px
+    style CRIC fill:#19b,color:#000,stroke:#239,stroke-width:3px
+    style WM fill:#ee1,color:#003,stroke:#eee,stroke-width:3px
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+    style DBS fill:#0a1,color:#002,stroke:#eee,stroke-width:3px
+
+    WMS -->|implemented by| GLIDE
+    DMS -->|implemented by| RUCIO
+    MD -->|implemented by| DBS 
+    PROD -->|implemented by| WM
+    IS -->|implemented by| CRIC
+```
+
+</template>
+<template #5>
+
+# **CMS**
+For CMS, modularity is a must.
+
+<br>
+<br>
+
+```mermaid
+%%{init: { 'theme': 'default' }}%%
+flowchart TD
+    WMS["`**WMS**
+    Workload Management System`"]
+    DMS["`**DMS**
+    Data Management`"]
+    PROD["`**Production Management**
+    Workflow Orchestration`"]
+    IS["`**Information System**
+    Resources & Status`"]
+    MD["`**Metadata and provenance**`"]
+
+    style WMS fill:#bbf,stroke:#88c
+    style DMS fill:#bfb,stroke:#8c8,stroke-width:2px
+    style PROD fill:#eef,stroke:#8ec
+    style IS fill:#fff,stroke:#000
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+
+    RUCIO(["`**Rucio**`"])
+    GLIDE(["`**GlideInWMS+HTCondor**`"])
+    CRIC(["`**CRIC**`"])
+    WM(["`**WMAgent**`"])
+    DBS(["`**DBS**`"])
+    DIRAC(["`**DiracX**`"])
+
+
+    style RUCIO fill:#4a9,color:#fff,stroke:#276,stroke-width:3px
+    style GLIDE fill:#56b,color:#fff,stroke:#235,stroke-width:3px
+    style CRIC fill:#19b,color:#000,stroke:#239,stroke-width:3px
+    style WM fill:#ee1,color:#003,stroke:#eee,stroke-width:3px
+    style MD fill:#aaa,stroke:#aaa,stroke-width:2px
+    style DBS fill:#0a1,color:#002,stroke:#eee,stroke-width:3px
+    style DIRAC fill:#f90,color:#000,stroke:#c60,stroke-width:3px
+
+    WMS -->|implemented by| GLIDE
+    DMS -->|implemented by| RUCIO
+    MD -->|implemented by| DBS
+    PROD -->|implemented by| WM -->|replaced by| DIRAC
+    IS -->|implemented by| CRIC
+```
+
+<SpeechBubble position="r" color='amber' shape="round"  v-drag="[200,390,400,110]">
+I am here because CMS reviewed DiracGrid and chose it as its Workflow Management of choice for Run4.
+</SpeechBubble>
+
+
+</template>
+</v-switch>
+
+
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: DiracGrid
+---
+
+:: title::
+
+# The DiracGrid project
+
+:: content ::
+
+Timeline:
+
+```mermaid
+%%{init: {'theme': 'base', 'timeline': {'disableMulticolor': true}}}%%
+timeline
+        section LHCb software
+          around 2000 : MC production system: bash scripts running at production sites
+          2002 : DIRAC2 <br> Rewritten in Python, using xml-rpc, interfacing to EDG
+          Data Challenge 04 : First successful grid usage ever.
+                            : First use of pilot jobs based WMS
+          2006-2007 : DIRAC3<br> Full rewriting, development of the DISET protocol -- still in use today!
+                    : the current DIRAC framework is still based on this work
+        section Open sourced, wider adoption
+          2008 : Large-ish reshuffling to become multi-VO
+               : LHCbDIRAC extension separated from core DIRAC code
+          2009 : CLIC community adopts DIRAC
+          2011 : France-Grilles is the first multi-VO DIRAC installation
+          2012 : Belle2, BES3, CTA adopt DIRAC
+          2023 : First DiracX prototype
+          2025 : LHCb puts DiracX in production
+```
+
+(full history in [this presentation](https://indico.cern.ch/event/1252369/contributions/5515343/attachments/))
+
+Nowadays, the DiracGrid project develops/maintains DIRAC, DiracX, Web, etc... (everything in https://github.com/DIRACGrid).
+
+[diracgrid.org](https://diracgrid.org) is hosting "everything" else you need.
+
+
+---
+layout: top-title-two-cols
+color: gray-light
+align: c-lm-lm
+title: disambiguation
+columns: is-4
+---
+
+:: title ::
+
+# DIRAC and DiracX
+
+:: left ::
+
+<img id="DIRAC" src="/public/images/DIRAC-logo-extended.png" class="mx-auto w-3/5"> </img>
+
+- An "interware" (a tool for doing distributed computing)
+- Today is used **in production** by few dozens communities
+- It can be used for managing jobs (via pilots), data, productions (workflows), dataset transfers, etc
+- "Legacy"
+
+:: right ::
+
+<img id="DIRAC" src="/public/images/diracx-logo-full-transparent-background.png" class="mx-auto w-2/5"> </img>
+
+- "The ne**X**t DIRAC incarnation", a complete rethink+rewrite, aiming at fully replacing DIRAC. A cloud native app, multi-VO from the get-go, standards-based. [CHEP24 presentation](https://indico.cern.ch/event/1338689/contributions/6010971/).
+  - Younger, faster, better, stronger.
+- Used **in production** by LHCb, with few others getting there.
+  - DiracX complements DIRAC: LHCb runs both, with DIRAC using DiracX functionalities as much as possible.
+- Right now it can do few things, with the bulk of the operations still done by DIRAC.
+
+<AdmonitionType type='important' >
+A DIRAC++, in terms of functionalities.
+</AdmonitionType>
+
+
+
+---
+layout: top-title-two-cols
+color: gray-light
+align: cm-lm-lm
+title: who
+---
+
+:: title ::
+
+# Users, and consortium
+
+:: left ::
+
+- Multi-VO installation:
+  - GridPP
+  - EGI
+  - IHEP (Juno)
+  - JINR
+  - France-Grilles
+  - CLIC (including FCC)
+
+- Single-VO installations:
+  - LHCb
+  - CTAO
+  - Belle2
+
+:: right ::
+
+## Legally
+
+The [**DiracGrid Consortium**](https://diracgrid.org/consortium.html) was created in February 2014 to support development and promotion of the DIRAC software.
+
+Current **coordinators** are Andrei Tsaregorodtsev (mostly non-technical) and Federico Stagni (technical). (re-)Elections happen every 2 years.
+
+<br>
+
+DiracGrid is an [HSF affiliated project](https://hepsoftwarefoundation.org/projects/projects.html).
+
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: CMSDiracX
+---
+
+:: title ::
+
+# CMS and <strike>DIRAC</strike> &rarr; DiracX 
+
+:: content ::
+
+CMS decided (and has also been advised to) skip DIRAC, and go straight to DiracX.
+
+<br>
+
+<AdmonitionType type='note' >
+As of today, DiracX is not handling workflows, productions, transformations: these functionalities will be built in DiracX in the months to come. 
+</AdmonitionType>
+
+<SpeechBubble position="t" color="red" shape="round" maxWidth="500px" v-drag="[225,261,500,102]">
+This is an opportunity! We are building the next-generation workflow and production system together
+</SpeechBubble>
+
+---
+layout: section
+color: cyan-light
+title: Developments
+---
+
+# Developments
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: devflow
+---
+
+:: title ::
+
+# Developers' view: features' development flow, using SCRUM
+
+:: content ::
+
+1. The **Product Owner(s)** send a mail to diracproject-admins@cern.ch about topic X (anyone in the ML is effectively a product owner).
+2. The technical coordinator collects/arranges the **user stories** which can be written down in an "epic" issue on GitHub.
+3. Core developers submit for reviews **Architecture Design Records (ADR)**.
+4. Once approved, the **SCRUM master** proposes a *development plan* (on github), with follow-up on GitHub and/or in meetings.
+5. **Tasks** are written. Coding starts. Anyone in the developers' pool can take up (or asked to take up) any of the tasks.
+6. Follow-ups in [this board](https://github.com/orgs/DIRACGrid/projects/30/views/1), 2-weeks-long sprints. Checkpoint meetings every Thursday.
+7. System tests can be done on the [DiracGrid certification setup](https://github.com/DIRACGrid/DIRAC/wiki/Certifications).
+
+
+
+---
+layout: section
+color: cyan-light
+title: Dirac(X) and CMS
+---
+
+# DiracX and CMS
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: CMS_process
+---
+
+:: title ::
+
+# The process of "getting together" (simplified)
+
+:: content ::
+
+1. CMS started reviewing WMAgent, DIRAC and Panda back in October 2024
+2. The review concluded (Q1/2026) that selected parts of DiracX would be used to replace WMAgent (with a plan B)
+3. The [Scientific Workflow Management Cross-Experiment Retreat at the LPC](https://indico.fnal.gov/event/73933/) (13-15 May 2026) cemented that decision, and technical discussions started among developers
+4. [DiracX July's hackathon](https://indico.cern.ch/event/1668629/) welcomed the participation of several CMS experts
+5. CMS developers regularly participate in DiracGrid developers' meetings and discussions
+
+
+---
+layout: section
+color: gray-light
+title: CMS_coding
+---
+
+
+![PRs](/public/images/stack_prs.png)
+
+![issues](/public/images/stack_issues.png)
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: CMScontribs
+---
+
+:: title ::
+
+# CMS contributions up to now
+
+:: content ::
+
+plots
+
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: DevsStatus
+---
+
+:: title ::
+
+# Today's developments status
+
+:: content ::
+
+While there are currently several commits to the repositories, the bulk of "interesting" developments (especially for CMS) are on-hold.
+=======
+# ADRs for the transformation system
+
+:: content ::
+
+- The design for the future production/workflow system took long time but it's finally ready for review.
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADRs
+---
+
+:: title ::
+
+# Concepts as per ADR
+
+:: content ::
+
+The **workflow/production/transformation system** has been (for the past months) and will keep being (for the months to come) the subject of the development process. Right now, we are waiting for Architecture Design Records describing it.
+
+<br>
+<br>
+
+<AdmonitionType type='note' >
+The good news: there are 6 upcoming ADRs, which we will submit for review this week
+</AdmonitionType>
+
+---
+layout: top-title-two-cols
+color: gray-light
+align: cm-lm-lm
+title: ADRs-2
+columns: is-7
+---
+
+:: title ::
+
+# Upcoming ADRs
+
+:: left ::
+
+<br>
+<br>
+
+
+  - DX-ADR-002: Transformation System overview
+  - DX-ADR-003: Compute backends
+  - DX-ADR-004: Transformation System database schema
+  - DX-ADR-005: Transformation System state machines
+  - DX-ADR-006: Transformation System extension points
+  - DX-ADR-007: CWL specification
+
+:: right ::
+
+<br>
+<br>
+
+All of them have been the result of many weeks of work. 
+
+**Main architects**: *Christopher Burr* and *Christophe Haen*.
+
+In the next slides I will go through few **notable points**
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR2
+---
+
+:: title ::
+
+# DX-ADR-002: Transformation System overview
+
+:: content ::
+
+Describes the overall **model** and fixes the **vocabulary** used by the five companion ADRs.
+
+
+<AdmonitionType type='important' >
+For this presentation I will mostly cover this one. The specifics live in the five companion ADRs.
+</AdmonitionType>
+
+<br>
+
+**This is what you should read first**, and *if you are not a developer, you can stop at this one*. 
+
+<br>
+
+The DiracX Transformation System covers the ground of two DIRAC systems (the Transformation System and the Production System) as well as "job" part of the workload management system. 
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR2-2
+---
+
+:: title ::
+
+# DX-ADR-002: Transformation System overview
+
+:: content ::
+
+The most important concepts are **workgraph** and **transformations**
+
+<AdmonitionType type='important' >
+A workgraph is a directed acyclic graph of transformations. It is what DIRAC called a production, and CMS a workflow.
+</AdmonitionType>
+
+Each transformation maintains a pool of **inputs**: a **feeder** tops up the pool from the experiment's metadata catalogue, a **packer** groups pooled inputs into **parcels**, and a **dispatcher** hands each parcel to a **compute** or **data backend**, which executes it as a **job** or a **request**. A workgraph is written as a CWL document (DX-ADR-007): its dataflow declares how transformations chain, and inputs arriving from outside the workgraph carry the metadata queries that tell the feeder what to fetch.
+
+
+```mermaid
+flowchart LR
+    subgraph WG [Workgraph]
+      direction LR
+      T1[Compute transformation<br/>simulate] --> T2[Compute transformation<br/>reconstruct]
+      T2 --> T3[Data transformation<br/>replicate]
+    end
+    Cat[(Metadata<br/>catalogue)] -. feeder .-> T1
+    T2 -. edge feeder .-> T3
+```
+
+
+
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR2-3-1
+---
+
+:: title ::
+
+# DX-ADR-002: TS overview: main concepts /1
+
+:: content ::
+
+| Concept                                         | Term                       | One-line definition                                                                                                                             |
+| ----------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stage of a campaign                             | **Transformation**         | Applies one operation to a pool of inputs, in units of parcels. **Compute Transformation** parcels become jobs                                                                                  |
+| Unit of processable input                       | **Input**                  | Usually a file (LFN), possibly a fraction of one, possibly not a file at all (a seed, a parameter set)                                          |
+| Dispatched unit of work                         | **Parcel**                 | An immutable, non-retryable unit of dispatched work: a user job, or a bundle of transformation inputs                                           |
+| Compute execution                               | **Job**                    | A CWL process run through the DiracX job wrapper                                                                                                |
+| Recipe for one job                              | **Process**                | A content-addressed CWL `Process`: a `CommandLineTool` or a `Workflow` (see DX-ADR-007)                                                         |
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR2-3-2
+---
+
+:: title ::
+
+# DX-ADR-002: TS overview: main concepts /2
+
+:: content ::
+
+| Concept                                         | Term                       | One-line definition                                                                                                                             |
+| ----------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Feeds the input pool                            | **Feeder**                 | Evaluates the input source (a metadata query, upstream outputs, a generator), injects new inputs                                                |
+| Groups inputs into parcels                      | **Packer**                 | Decides when and how to make parcels                                                                                                            |
+| Runs parcels                                    | **Compute backend** | Submits, monitors, retrieves (see DX-ADR-003)                                                                                                   |
+| Connects a parcel to its backend                | **Dispatcher**             | Routes an `Unassigned` parcel to its backend and drives submission, materialising its payload on the way (see DX-ADR-003)                       |
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR3
+---
+
+:: title ::
+
+# DX-ADR-003: Compute backends
+
+:: content ::
+
+Describes t
+
+DIRAC never considered to have different compute backends. The requirement came from CMS.
+Diracx is now using this concept for easing the transition from DIRAC, as the DIRAC WMS will be an implementation of compute backend like HTCondor.
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR4
+---
+
+:: title ::
+
+# DX-ADR-004: TS database schema
+# DX-ADR-005: TS state machines
+# DX-ADR-006: TS extension points
+
+:: content ::
+
+DX-ADR-004 describes the database schema that would be used to hold all Information for the Transformation System, which is optimized for MySQL/MariaDB.
+
+DX-ADR-005 describes the all-important State machines. 
+
+DX-ADR-006 ...
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR7
+---
+
+:: title ::
+
+# DX-ADR-007: CWL specification
+
+:: content ::
+
+Describes the CWL ... which is the central piece of description for both the workflows describing the workgraph and the jobs. 
+
+```mermaid
+flowchart LR
+    B(CWL Workflow describing the Workgraph)
+    B --> C{The magic TS box}
+    C -->|1| D[CWL workflow describing job 1]
+    C -->|2| E[CWL workflow describing job 2]
+    C -->|n| F[CWL workflow describing job n]
+```
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: ADR7-2
+---
+
+:: title ::
+
+# DX-ADR-007: CWL specification
+
+:: content ::
+
+<div class="flex justify-center gap-4">
+  <img src="/public/images/CWL1.png" class="w-1/2 object-contain" />
+  <img src="/public/images/CWL2.png" class="w-1/4 object-contain" />
+  <img src="/public/images/CWL3.png" class="w-1/4 object-contain" />
+</div>
+
+<SpeechBubble position="t" color='light-red' shape="round"  v-drag="[300,410,440,130]">
+  Main involvements up to now: LHCb, CTAO. CMS should get directly involved here ASAP (now, effectively).
+</SpeechBubble>
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: next
+---
+
+:: title ::
+
+# A playground
+
+:: content ::
+
+We put everything together in a playground (next "slide") in javascript
+
+Goals:
+- education (part of the documentation deployed at [diracx.diracgrid.org](https://diracx.diracgrid.org/en/latest/))
+- visualization
+- eventually, 
+
+---
+layout: iframe
+
+# playground
+url: https://cburr.web.cern.ch/diracx-adr/site/playground/
+---
+
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: next
+---
+
+:: title ::
+
+# What's next
+
+:: content ::
+
+- All the ADRs will be submitted for review tomorrow (as Pull Requests on the DiracX repo). Diracgrid admins have been already warned.
+- The review needs to conclude at the [Dirac(X) workshop](https://indico.cern.ch/e/duw12) (13-16 October).
+- From there on, the SCRUM process will proceed as usual.
+- The workshop will serve as an occasion to iron the last details, prepare a development plan, and maybe code a few of the tasks. 
+
+---
+layout: top-title
+color: gray-light
+align: cm
+title: notADR 
+---
+
+:: title ::
+
+# What is **not** in the upcoming ADRs
+
+:: content ::
+
+- The DiracX Data Management system, and/or relation with other data management system(s) (e.g. Rucio)
+- The DiracX pilot, and in general the DiracX WMS
+
+
+---
+layout: section
+color: cyan-light
+title: Developments
+---
+
+# Conclusions
+
+---
+layout: top-title-two-cols
+align: cm-cm-lm
+color: orange-light
+columns: is-3
+title: summary
+--- 
+:: title ::
+
+# Summary
+
+:: left :: 
+
+![DiracX](/public/images/diracx-logo-square.png)
+
+:: right ::
+
+- DiracGrid has a very active community of users and developers.
+- DiracX is "the ne**X**t DIRAC incarnation", ensuring the future of the widely used DIRAC.
+  - It will live together with DIRAC v9 for a while, until it will replace it completely
+  - It's developed by a superset of the current DIRAC developers
+- CMS is now integral part of of the process
+- the "ne**X**t Big Thing" is the **Transformation System**
+  - ADRs are up for review
+  - Let's build it together
+
+
+---
+layout: credits
+color: navy
+loop: true
+speed: 1.0
+title: credits/people
+---
+
+<div class="grid text-size-4 grid-cols-3 w-3/4 gap-y-10 auto-rows-min ml-auto mr-auto">
+    <div class="grid-item text-center mr-0- col-span-3">
+        <strong>People</strong><br>
+    </div>
+    <div class="grid-item text-right mr-4 col-span-1">
+        <strong>Current Developers, maintainers, supporters (non-exhaustive list)</strong>
+    </div>
+    <div class="grid-item col-span-2">
+        Chris Burr <i>CERN, LHCb</i><br/>
+        Christophe Haen <i>CERN, LHCb</i><br/>
+        Alexandre Boyer <i>CERN, LHCb</i><br/>
+        Natthan Piggoux <i>LUPM (FR), CTAO</i><br/>
+        Cedric Serfon <i>Brookhaven National Laboratory (US), Belle2</i><br/>
+        Ryunosuke O'Neil <i>CERN, LHCb</i><br/>
+        Daniela Bauer <i>Imperial collegOe (UK), GridPP</i><br/>
+        Simon Fayer <i>Imperial college (UK), GridPP</i><br/>
+        Janusz Martyniak <i>Imperial college (UK), GridPP</i><br/>
+        Xiaomei Zhang <i>Beijing, Inst. High Energy Phys. (CN), Juno</i><br/>
+        Luisa Arrabito <i>LUPM (FR), CTAO</i><br/>
+        André Sailer <i>CERN, ILC</i><br/>
+        Jorge Lisa Laborda <i>Univ. of Valencia and CSIC (ES), LHCb</i><br/>
+        Bertrand Rigaud <i>IN2P3 (FR), France-Grilles</i><br/>
+        Heloise Joffe <i>IN2P3 (FR), France-Grilles</i><br/>
+        Stella Maria Renucci <i>LUPM (FR), CTAO</i><br/>
+        Mazen Ezzeddine <i>CPPM (FR), EGI</i><br/>
+        Loris vankatwijk <i>LUPM (FR), CTAO</i><br/>
+        Alan Malta<i>Notre Dame university (US), CMS</i><br/>
+        Andrea Piccinelli<i>Notre Dame university (US), CMS</i><br/>
+        Valentin Kuznetsov<i>Cornell University (US), CMS</i><br/>
+        Marco Mascheroni<i>(US), University of California San Diego (US), CMS</i><br/>
+        Todor Ivanov<i>Notre Dame university (US), CMS</i><br/>
+        Francesco Brivio<i>(IT), Milano Bicocca University, CMS</i><br/>
+        Juraj Smiesko<i>(CERN), FCC</i><br/>
+        Benedikt Wach<i>(CERN), FCC</i><br/>
+    </div>
+    <div class="grid-item text-right mr-4 col-span-1">
+        <strong>Project lead</strong>
+    </div>
+    <div class="grid-item col-span-2">
+        Federico Stagni <i>CERN, LHCb</i><br/>
+        Andrei Tsaregorotsev <i>CPPM (FR), EGI, LHCb, Juno</i>
+    </div>
+</div>
+
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+<div class="grid-item col-span-3 text-center mt-180px mb-auto font-size-1.5rem">
+    <strong>Questions?</strong>
+</div>
+
+---
+layout: section
+color: cyan-light
+title: Backup
+---
+
+# Backup
