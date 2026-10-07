@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.slidev/
+*.log
+figures/data/
+figures/__pycache__/
+slides.private.md
+figures/affiliations_private.py
+figures/data/

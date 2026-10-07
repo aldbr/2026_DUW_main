@@ -1,0 +1,20 @@
+{
+  "name": "diracx-chep2026",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "slidev slides.md --open",
+    "build": "slidev build",
+    "export": "slidev export",
+    "present": "slidev slides.private.md --open",
+    "strip-notes": "python3 scripts/strip_notes.py"
+  },
+  "dependencies": {
+    "@slidev/cli": "latest",
+    "@slidev/theme-default": "latest",
+    "vue": "latest"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.60.0"
+  }
+}

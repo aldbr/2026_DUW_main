@@ -1,0 +1,850 @@
+/* ----------------------------------------------------------------------------
+   DiracX theme — light green / blue / gray palette
+   ------------------------------------------------------------------------- */
+
+:root {
+  --dx-green:        #6aa84f;
+  --dx-green-light:  #a8d08d;
+  --dx-green-soft:   #e6f1de;
+  --dx-blue:         #1f78c1;
+  --dx-blue-light:   #6db3e8;
+  --dx-blue-soft:    #e3f0fa;
+  --dx-gray:         #4a5a64;
+  --dx-gray-mid:     #768b96;
+  --dx-gray-light:   #eceff1;
+  --dx-ink:          #2b3a42;
+
+  --slidev-theme-primary: var(--dx-blue);
+
+  --dx-paper: #f4f2ec;
+
+  --dx-font-serif: 'Playfair Display', 'Georgia', serif;
+  --dx-font-sans:  'IBM Plex Sans', system-ui, sans-serif;
+  --dx-font-mono:  'IBM Plex Mono', 'Fira Code', monospace;
+}
+
+/* ---- base ------------------------------------------------------------------ */
+.slidev-layout {
+  color: var(--dx-ink);
+  background: var(--dx-paper);
+  font-family: var(--dx-font-sans);
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  font-family: var(--dx-font-serif);
+}
+
+.slidev-layout h1,
+.slidev-layout h2 {
+  color: #000000;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* card sub-headings stay in the sans for a clean, label-like look */
+.dx-card h3 {
+  font-family: var(--dx-font-sans);
+  font-weight: 600;
+}
+
+/* accent rule under non-cover headings */
+.slidev-layout:not(.cover):not(.section) h1 {
+  position: relative;
+  padding-bottom: 0.35em;
+  margin-bottom: 0.6em;
+}
+.slidev-layout:not(.cover):not(.section) h1::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 3.2em;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--dx-green), var(--dx-blue));
+}
+
+.slidev-layout a { color: var(--dx-blue); }
+
+.slidev-layout strong { color: var(--dx-gray); }
+
+.slidev-layout ul { list-style: none; padding-left: 1.1em; }
+.slidev-layout ul > li { position: relative; }
+.slidev-layout ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1.1em;
+  top: 0.62em;
+  width: 0.7em;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--dx-green);
+}
+
+.slidev-layout code {
+  background: var(--dx-gray-light);
+  color: var(--dx-blue);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.92em;
+}
+
+/* ---- cover ----------------------------------------------------------------- */
+.slidev-layout.cover,
+.slidev-layout.cover h1 {
+  color: #ffffff;
+}
+.slidev-layout.cover {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(109,179,232,0.45), transparent 60%),
+    linear-gradient(135deg, var(--dx-gray) 0%, var(--dx-blue) 55%, var(--dx-green) 130%);
+}
+.slidev-layout.cover h1 {
+  font-size: 3.2rem;
+  line-height: 1.05;
+}
+.slidev-layout.cover p { color: rgba(255,255,255,0.92); }
+.slidev-layout.cover .dx-author {
+  color: #000000;
+  font-weight: 700;
+}
+
+/* logo panel on the cover (logos are dark-on-light → sit them on white) */
+.dx-logobar {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.4rem;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem 1.6rem;
+}
+.dx-logobar img {
+  height: 3rem;
+  width: auto;
+  display: block;
+}
+
+/* ---- section dividers ------------------------------------------------------ */
+.slidev-layout.section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--dx-green-soft), var(--dx-blue-soft));
+  display: flex;
+  align-items: center;
+  padding: 0 3.5rem;
+}
+.slidev-layout.section .dx-section-body {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+}
+.slidev-layout.section h1 {
+  color: #000000;
+  border-left: 8px solid var(--dx-green);
+  padding-left: 0.5em;
+  font-size: 2.4rem;
+  line-height: 1.15;
+  text-align: left;
+  margin: 0;
+}
+
+/* oversized DiracX hexagon as a faint watermark, bleeding off the
+   bottom-right corner so it reads as part of the layout, not a sticker */
+.dx-section-logo {
+  position: absolute;
+  right: -3.5rem;
+  bottom: -4rem;
+  width: 24rem;
+  height: auto;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- helper components ----------------------------------------------------- */
+
+/* dashed image / data placeholder */
+.dx-placeholder {
+  border: 2px dashed var(--dx-blue-light);
+  background: var(--dx-blue-soft);
+  color: var(--dx-gray-mid);
+  border-radius: 10px;
+  padding: 0.9em 1.1em;
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-style: italic;
+}
+.dx-placeholder::before { content: '🖼'; font-style: normal; }
+
+/* colored cards / columns */
+.dx-card {
+  border-radius: 12px;
+  padding: 0.9em 1.1em;
+  height: 100%;
+}
+.dx-card h3 { margin-top: 0; }
+.dx-card-legacy { background: var(--dx-gray-light); border-top: 4px solid var(--dx-gray-mid); }
+.dx-card-new    { background: var(--dx-green-soft); border-top: 4px solid var(--dx-green); }
+.dx-card-blue   { background: var(--dx-blue-soft); border-top: 4px solid var(--dx-blue); }
+
+/* a pill / chip, e.g. for logo strips and tags */
+.dx-chips { display: flex; flex-wrap: wrap; gap: 0.5em; }
+.dx-chip {
+  background: #fff;
+  border: 1px solid var(--dx-blue-light);
+  color: var(--dx-blue);
+  border-radius: 999px;
+  padding: 0.25em 0.8em;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--dx-font-mono);
+}
+
+/* key takeaway / highlight box */
+.dx-key {
+  border-left: 5px solid var(--dx-green);
+  background: var(--dx-green-soft);
+  border-radius: 0 10px 10px 0;
+  padding: 0.7em 1em;
+  color: var(--dx-gray);
+}
+
+/* one-liner footnote style */
+.dx-oneline {
+  color: var(--dx-ink);
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* a small reference / link callout */
+.dx-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  background: var(--dx-gray-light);
+  border-radius: 8px;
+  padding: 0.4em 0.7em;
+  font-size: 0.82em;
+  color: var(--dx-gray);
+}
+
+/* big stat number — rendered as inline SVG <text> with a gradient fill.
+   CSS background-clip:text does not rasterize in the PDF export (you get the
+   gradient box with invisible text); an SVG gradient fill survives export.
+   Gradient stops must be literal hex — var() does not resolve in SVG fills. */
+/* big stat number — pre-rendered PNG with the gradient baked in.
+   CSS gradient text (background-clip:text) renders inconsistently across PDF
+   viewers in the Slidev export (solid box in some), so we ship a raster. */
+.dx-stat-img {
+  height: 3.6rem;
+  width: auto;
+  display: block;
+  flex: 0 0 auto;
+}
+
+/* horizontal milestone timeline (e.g. project origin story) */
+.dx-timeline {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.6em 0 0.2em;
+}
+.dx-tl-item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.dx-tl-year {
+  font-family: var(--dx-font-mono);
+  font-weight: 700;
+  font-size: 1.15em;
+  color: var(--dx-blue);
+}
+/* the rail row keeps the dot and connecting line on the same axis,
+   independent of the surrounding font sizes */
+.dx-tl-rail {
+  position: relative;
+  width: 100%;
+  height: 1.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.25em 0;
+}
+.dx-tl-rail::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, var(--dx-green), var(--dx-blue));
+  border-radius: 3px;
+}
+.dx-tl-item:first-child .dx-tl-rail::before { left: 50%; }
+.dx-tl-item:last-child  .dx-tl-rail::before { right: 50%; }
+.dx-tl-dot {
+  position: relative;
+  z-index: 1;
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--dx-blue);
+}
+.dx-tl-label {
+  font-size: 0.78em;
+  color: var(--dx-gray);
+  line-height: 1.25;
+  max-width: 11em;
+}
+
+/* tighter bullet spacing on dense slides */
+.dx-tight ul { line-height: 1.45; }
+.dx-tight li { margin: 0.15em 0; }
+
+/* monospace eyebrow label, e.g. "03 · THE PRESSURE" */
+.dx-eyebrow {
+  font-family: var(--dx-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72em;
+  color: var(--dx-gray-mid);
+}
+
+/* ---- animated "interware" flow diagram ------------------------------------- */
+/* many collaborations  →  one DIRAC  →  many distributed resources.
+   Built over clicks; the hourglass shape carries the "interware" idea. */
+
+/* slide-level: title pinned at top, the diagram centred in the rest */
+.dx-flow-slide { display: flex; flex-direction: column; }
+.dx-flow-stage { margin: auto 0; width: 100%; }
+
+.dx-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.3rem;
+}
+/* collapse not-yet-revealed slots so the visible set stays centred
+   (each click re-centres the row instead of left-anchoring it) */
+.dx-flow > .slidev-vclick-hidden { display: none; }
+
+/* a side of the hourglass: a stack of cluster cards + a caption */
+.dx-flow-col {
+  flex: 0 1 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.dx-flow-title {
+  font-family: var(--dx-font-sans);
+  font-weight: 600;
+  color: var(--dx-gray);
+  font-size: 0.92rem;
+  margin-bottom: 0.55rem;
+}
+.dx-flow-sub {
+  font-size: 0.76rem;
+  color: var(--dx-gray-mid);
+  font-style: italic;
+  text-align: center;
+}
+
+/* one cluster (a collaboration, or a resource group) */
+.dx-flow-card {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.8rem 0.95rem;
+  box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+  text-align: center;
+}
+/* "stack of many" effect — faint offset cards behind, implying N clusters */
+.dx-flow-card.dx-flow-stack::before,
+.dx-flow-card.dx-flow-stack::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(0,0,0,0.06);
+  z-index: -1;
+}
+.dx-flow-card.dx-flow-stack::before { transform: translate(5px, 5px); }
+.dx-flow-card.dx-flow-stack::after  { transform: translate(10px, 10px); opacity: 0.55; }
+
+.dx-flow-mini {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem 1rem;
+}
+.dx-flow-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  color: var(--dx-gray-mid);
+  width: 3.6rem;
+}
+.dx-flow-cell svg { font-size: 1.9rem; }
+.dx-flow-people .dx-flow-cell svg { color: var(--dx-blue); }
+.dx-flow-res    .dx-flow-cell svg { color: var(--dx-green); }
+
+/* center hub: the DIRAC mark */
+.dx-flow-hub {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.4rem;
+}
+.dx-flow-hub img {
+  width: 7.5rem;
+  height: auto;
+  border-radius: 18px;
+}
+.dx-flow-hub-label {
+  font-family: var(--dx-font-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--dx-gray);
+  font-size: 0.85rem;
+}
+
+/* connecting arrows */
+.dx-flow-arrow {
+  flex: 0 0 auto;
+  font-size: 2.4rem;
+  color: var(--dx-gray-mid);
+  display: flex;
+  align-items: center;
+}
+
+/* ---- multi-VO slide: two installations collapsing into one --------------- */
+/* compact variant of the flow row, used inside the swap states */
+.dx-flow-compact { gap: 0.9rem; }
+.dx-flow-compact .dx-flow-card { padding: 0.6rem 0.8rem; }
+.dx-flow-compact .dx-flow-cell { width: 3.1rem; font-size: 0.64rem; }
+.dx-flow-compact .dx-flow-cell svg { font-size: 1.55rem; }
+.dx-flow-compact .dx-flow-arrow { font-size: 1.9rem; }
+.dx-flow-compact .dx-flow-col { flex: 0 1 13rem; gap: 0.6rem; }
+.dx-flow-hub-sm img { width: 4.6rem; border-radius: 12px; }
+.dx-flow-hub-sm .dx-flow-hub-label { font-size: 0.72rem; }
+
+/* two stacked pipelines (VO A → inst 1, VO B → inst 2) */
+.dx-vo-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  width: 100%;
+}
+
+/* resource provider tiles (a grid site / HPC / cloud / tape archive) */
+.dx-res-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+.dx-res-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: #fff;
+  border-radius: 11px;
+  padding: 0.55rem 0.6rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+  width: 6.2rem;
+}
+.dx-res-tile svg { font-size: 1.85rem; color: var(--dx-green); }
+.dx-res-name {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--dx-gray);
+  text-align: center;
+  line-height: 1.15;
+}
+/* per-VO access badges: A / B / both */
+.dx-vo-badges { display: flex; gap: 0.25rem; margin-top: 0.1rem; }
+.dx-vo-badge {
+  font-family: var(--dx-font-mono);
+  font-weight: 700;
+  font-size: 0.56rem;
+  border-radius: 999px;
+  padding: 0.02rem 0.38rem;
+  line-height: 1.5;
+}
+.dx-vo-badge.a { background: var(--dx-blue-soft);  color: var(--dx-blue);  border: 1px solid var(--dx-blue-light); }
+.dx-vo-badge.b { background: var(--dx-green-soft); color: var(--dx-green); border: 1px solid var(--dx-green-light); }
+
+/* community-card colour accents, tying VO A→blue, VO B→green to the badges */
+.dx-vo-a { border-top: 3px solid var(--dx-blue); }
+.dx-vo-b { border-top: 3px solid var(--dx-green); }
+
+/* the "Distributed resources" panel is reused identically across 3b/3c/3d,
+   so tiles keep one fixed size regardless of the compact pipelines */
+
+/* two stacked VO → installation pipelines, both feeding the shared panel */
+.dx-vo-pipes { display: flex; flex-direction: column; gap: 1.1rem; }
+
+/* the shared "Distributed resources" panel: fixed width so the 4 tiles always
+   wrap to a 2×2 grid and the panel looks identical across 3b / 3c / 3d */
+.dx-res-panel { width: 15.5rem; flex: 0 0 auto; }
+
+/* the scenes share one footprint and cross-fade on click */
+/* fixed (canvas-relative) height — NOT vh: the slide is a scaled fixed-size
+   canvas, so vh resolves against the window and overflows the slide */
+.dx-vo-swap { position: relative; min-height: 17rem; }
+.dx-vo-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+.dx-vo-caption { position: relative; min-height: 3rem; margin-top: 1.1rem; }
+.dx-vo-caption > * {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition: opacity 0.4s ease;
+}
+/* explanations render in the normal body text colour, not the blue dx-oneline */
+.dx-vo-caption .dx-oneline { color: var(--dx-ink); }
+
+/* ---- global footer --------------------------------------------------------- */
+.dx-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.6rem 1.1rem;
+  font-family: var(--dx-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.62rem;
+  color: #aab1b5;
+  pointer-events: none;
+  z-index: 5;
+}
+.dx-footer .dx-footer-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.dx-footer .dx-footer-logo {
+  height: 1.3em;
+  width: auto;
+  display: block;
+}
+.dx-footer .dx-footer-page {
+  letter-spacing: 0.12em;
+  color: var(--dx-gray-mid);
+}
+
+/* ---- communities image (Users & Consortium slide) -------------------------- */
+.dx-communities-img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.6rem 0.8rem;
+}
+
+.dx-burndown-img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* CWL logo on the right column */
+.dx-cwl-logo {
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+}
+
+/* OTel dashboard screenshot, fills the right column */
+.dx-otel-shot {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* LHCb running-jobs plot (wide), centered under the stat */
+.dx-jobs-shot {
+  max-width: 100%;
+  max-height: 15.5rem;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* LHCb footprint dashboard (CPU/memory), right column */
+.dx-footprint-shot {
+  max-width: 100%;
+  max-height: 20rem;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* Legacy adaptor diagram (near-square, white bg), right column */
+.dx-adaptor-shot {
+  max-width: 100%;
+  max-height: 20rem;
+  width: auto;
+  height: auto;
+}
+
+/* Web app job-monitoring screenshot, fills the right column */
+.dx-webapp-shot {
+  max-width: 100%;
+  max-height: 22rem;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* side-by-side MCP chat screenshots (tall portraits), fill the right column */
+.dx-mcp-shots {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: flex-start;
+}
+.dx-mcp-shots img {
+  height: 26rem;
+  max-width: 100%;
+  width: auto;
+  border-radius: 8px;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* legend explaining how to read the cumulative issue chart */
+.dx-burnlegend {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--dx-gray);
+}
+.dx-burnlegend-read { color: var(--dx-ink); }
+.dx-burnlegend-read em { font-style: italic; color: var(--dx-gray); }
+.dx-burnlegend-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15em 1.2em;
+  margin: 0.45em 0;
+}
+.dx-bl { display: inline-flex; align-items: center; gap: 0.45em; }
+.dx-bl-sw {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 3px;
+  flex: none;
+}
+.dx-bl-open  { background: var(--dx-green); }
+.dx-bl-done  { background: #8e7cc3; }
+.dx-bl-nplan { background: #fff; border: 2px dotted var(--dx-gray); }
+.dx-bl-dup   { background: var(--dx-ink); }
+
+/* HSF affiliated badge (Users & Consortium slide) */
+.dx-hsf-badge { height: 1.5em; width: auto; display: inline-block; vertical-align: middle; }
+
+/* AuthN/Z mermaid: keep the sequence diagram bounded inside its column */
+.dx-authz-diagram { display: flex; align-items: center; justify-content: center; }
+.dx-authz-diagram .mermaid,
+.dx-authz-diagram .slidev-mermaid { max-width: 100%; }
+.dx-authz-diagram svg { max-width: 100%; height: auto; }
+
+/* Use Case (slide 3) — replace box-shadows with thin borders for PDF-viewer
+   compatibility. Soft shadows render unevenly in some PDF backends. */
+.dx-flow-slide .dx-flow-card,
+.dx-flow-slide .dx-flow-card.dx-flow-stack::before,
+.dx-flow-slide .dx-flow-card.dx-flow-stack::after,
+.dx-flow-slide .dx-res-tile {
+  box-shadow: none;
+  border: 1px solid var(--dx-gray-mid);
+}
+.dx-flow-slide .dx-flow-hub img {
+  box-shadow: none;
+  border: 1px solid var(--dx-gray-mid);
+}
+
+/* "Therefore" pill: a styled conclusion that flows out of bullets above */
+.dx-concludes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.25em 0.8em;
+  margin: 0.35em 0 0.35em 1.4em;
+  background: var(--dx-green-soft);
+  border-left: 3px solid var(--dx-green);
+  border-radius: 0 6px 6px 0;
+  color: var(--dx-gray);
+  font-style: italic;
+}
+.dx-concludes-arrow { color: var(--dx-green); font-size: 1.15em; }
+.dx-concludes strong { color: var(--dx-ink); font-style: normal; }
+
+/* Feature badge: a single soft callout per slide, holding the audience-keyed
+   takeaway (Users · Operators · Devs). Allowed to wrap to multiple lines. */
+.dx-feat-badge {
+  display: inline-block;
+  padding: 0.4em 0.85em;
+  background: linear-gradient(135deg, var(--dx-green-soft), var(--dx-blue-soft));
+  border: 1px solid var(--dx-green-light);
+  color: var(--dx-gray);
+  font-family: var(--dx-font-sans);
+  font-size: 0.78em;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: 10px;
+  margin-top: 0.6em;
+}
+.dx-feat-badge strong { color: var(--dx-blue); font-weight: 700; }
+
+/* User Interfaces (slide 15): three mini-cards inside the DiracX panel */
+.dx-ui-minis {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+/* 2-col variant (e.g. Legacy: Web framework · CLI) */
+.dx-ui-minis-2 { grid-template-columns: 1fr 1fr; }
+.dx-ui-minis-legacy .dx-ui-mini { border-top-color: var(--dx-gray-mid); }
+.dx-ui-mini {
+  background: #fff;
+  border-top: 3px solid var(--dx-green);
+  border-radius: 8px;
+  padding: 0.5rem 0.55rem;
+  text-align: center;
+}
+.dx-ui-mini-name {
+  font-family: var(--dx-font-sans);
+  font-weight: 700;
+  color: var(--dx-gray);
+  font-size: 0.82rem;
+}
+.dx-ui-mini-desc {
+  font-size: 0.68rem;
+  color: var(--dx-gray-mid);
+  margin-top: 0.2rem;
+  line-height: 1.25;
+}
+
+/* DAG legend (slide 22) — sits on the same row as the eyebrow */
+.dx-dag-headerrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.dx-dag-legend { display: flex; gap: 1.2rem; align-items: center; }
+.dx-dag-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--dx-gray);
+}
+.dx-dag-legend-arrow { width: 36px; height: 10px; flex: 0 0 36px; }
+
+/* ---- "what's left" dependency DAG ----------------------------------------- */
+/* feeders (RSS + PoCs) on the left, core systems on the right, an SVG layer
+   drawing the edges between them. The stage is a FIXED pixel box so the HTML
+   card coordinates and the SVG viewBox units line up 1:1 — same fixed-canvas
+   reasoning as .dx-vo-swap (NOT vh, which resolves against the window). */
+.dx-dag {
+  position: relative;
+  width: 840px;
+  height: 360px;
+  margin: 0.6rem auto 0;
+}
+.dx-dag-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.dx-dag-edge { fill: none; stroke-width: 2.5; }
+.dx-dag-edge-solid { stroke: var(--dx-green); }
+.dx-dag-edge-poc   { stroke: var(--dx-gray-mid); stroke-dasharray: 6 5; }
+
+/* a node card, positioned by its left edge + vertical centre (translateY) */
+.dx-dag-node {
+  position: absolute;
+  z-index: 1;
+  transform: translateY(-50%);
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+}
+.dx-dag-node .dx-dag-name {
+  font-family: var(--dx-font-sans);
+  font-weight: 600;
+  color: var(--dx-gray);
+  font-size: 0.92rem;
+  line-height: 1.15;
+}
+.dx-dag-node .dx-dag-sub {
+  font-size: 0.66rem;
+  color: var(--dx-gray-mid);
+  line-height: 1.2;
+  margin-top: 0.12rem;
+}
+.dx-dag-node .dx-dag-tag {
+  display: inline-block;
+  font-family: var(--dx-font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+  margin-top: 0.3rem;
+}
+
+/* RSS — the foundation */
+.dx-dag-rss { border-top: 4px solid var(--dx-green); background: var(--dx-green-soft); }
+.dx-dag-rss .dx-dag-tag { background: #fff; color: var(--dx-green); border: 1px solid var(--dx-green-light); }
+
+/* core systems */
+.dx-dag-sys { border-top: 4px solid var(--dx-blue); background: var(--dx-blue-soft); }
+
+/* proof-of-concept feeders */
+.dx-dag-poc { border: 1.5px dashed var(--dx-gray-mid); background: #fff; }
+.dx-dag-poc .dx-dag-tag { background: var(--dx-gray-light); color: var(--dx-gray); border: 1px solid var(--dx-gray-mid); }
+
+/* stand-alone "Observability & Analytics" band below the graph */
+.dx-dag-band {
+  border: 1.5px dashed var(--dx-blue-light);
+  background: var(--dx-blue-soft);
+}
+.dx-dag-band .dx-dag-sub { font-style: italic; }
