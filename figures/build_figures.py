@@ -566,18 +566,17 @@ def pipeline() -> str:
         return "".join(cube(it, x, y, 40, 40, 4, c, r=3)
                        for x, y, c in sorted(spots, key=lambda q: q[0] + q[1]))
 
-    top_x = [270, 645, 1020, 1395, 1770]
-    bot_x = [1770, 1270, 770, 270]
+    # DUW12 version: no separate architects (developers design the ADR when a change is
+    # large, after a proof of concept, and other developers approve it), seven steps.
+    top_x = [270, 720, 1170, 1620]
+    bot_x = [1620, 945, 270]
     specs = [
         (REPS, "representatives", "write requirements"),
-        ([LAVENDER], "product owner", ["writes or updates", "one GitHub issue"]),
-        (REPS, "representatives", "approve the issue"),
-        # an ADR is never edited: a changed decision is a new ADR superseding the old one
-        ([ARCH, ARCH], "main architects", ["design a new ADR,", "if required"]),
-        ([AMBER, LAVENDER, TEAL], "reviewers", "review and adopt"),
-        ([TEAL, TEAL, TEAL], "developers", "split into tasks"),
-        ([TEAL, TEAL], "developers", "deliver one package"),
-        (REPS, "representatives", ["review the package,", "their communities test it"]),
+        ([LAVENDER], "product owner", ["plans the backlog,", "sets priorities"]),
+        (REPS, "representatives", "approve"),
+        ([TEAL, TEAL, TEAL], "developers", ["split into tasks; large changes:", "proof of concept, then an ADR"]),
+        ([TEAL, TEAL], "developers", "deliver an increment"),
+        (REPS, "representatives", ["review the increment,", "their communities test it"]),
         ([SCRUM], "scrum master", "leads the retrospective"),
     ]
     places = [(x, TOP) for x in top_x] + [(x, BOT) for x in bot_x]
@@ -587,19 +586,16 @@ def pipeline() -> str:
         it, svg = station(cx, plat, people, label, caption, f"st{i}")
         stations.append(it)
         o.append(svg)
-        # the step number the text refers to, on the platform's left corner
         bx, by = cx - 150, plat - 34
         o.append(f'<circle cx="{bx:.1f}" cy="{by:.1f}" r="22" fill="#6b7280"/>')
         o.append(text(bx, by + 10, str(i + 1), 28, "bold", fill="#ffffff"))
     o.append(paper(stations[0], SHEET, "#374151", wavy=True))
     o.append(paper(stations[1], SHEET, "#6b7280"))
     o.append(paper(stations[2], SHEET, "#6b7280", checked=True, gid="doc-ok"))
-    o.append(paper(stations[3], ARCH, "#eaf0fb", stack=2))
-    o.append(paper(stations[4], ARCH, "#eaf0fb", stack=2, checked=True, gid="adr-ok"))
-    o.append(tasks(stations[5]))
-    o.append(parcel(stations[6]))
-    o.append(parcel(stations[7], checked=True, gid="pk-ok"))
-    o.append(notes(stations[8]))
+    o.append(tasks(stations[3]))
+    o.append(parcel(stations[4]))
+    o.append(parcel(stations[5], checked=True, gid="pk-ok"))
+    o.append(notes(stations[6]))
 
     # hand to hand, along each row: rightwards on top, leftwards underneath
     for row, plat, sign in ((top_x, TOP, 1), (bot_x, BOT, -1)):
@@ -621,7 +617,7 @@ def pipeline() -> str:
     o.append(turn(top_x[0], BOT + 40, TOP + 40, -280))
 
     # in the middle of the loop, clear of both rows' captions and labels
-    o.append(text(1020, TOP + 228, "one or more sprints", CAP, "bold", italic=True, fill=TEXT_2))
+    o.append(text(945, TOP + 222, "one or more sprints", CAP, "bold", italic=True, fill=TEXT_2))
 
     o.append("</svg>")
     return "".join(o)

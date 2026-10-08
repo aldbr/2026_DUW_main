@@ -22,7 +22,7 @@ const page = computed(() => String($page.value).padStart(2, '0'))
 <template>
   <footer v-if="showFooter" class="dx-footer">
     <span class="dx-footer-meta">
-      DiracX developments: directions · DUW 12 · alexandre.franck.boyer@cern.ch
+      DiracX developments: directions · DUW 12 · alexandre.boyer@cern.ch
       <img class="dx-footer-logo" src="/logos/diracx-square.svg" alt="DiracX" />
     </span>
     <span class="dx-footer-page">{{ page }}</span>

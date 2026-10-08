@@ -99,6 +99,40 @@ def unplanned():
     fig.savefig(OUT / "fig-unplanned.svg", transparent=True)
 
 
+def people():
+    d = pd.read_csv(D / "8_people_per_month.csv")
+    fig, ax = plt.subplots(figsize=(6.4, 3.2))
+    x = range(len(d))
+    ax.bar(x, d["core five"], color="#1f78c1", width=0.75, label="five core developers")
+    ax.bar(x, d["others"], bottom=d["core five"], color="#84cdc3", width=0.75, label="everyone else")
+    ax.set_xticks(list(x))
+    ax.set_xticklabels([pd.Timestamp(m + "-01").strftime("%b\n%y") if m[5:] in ("01", "07") else pd.Timestamp(m + "-01").strftime("%b") for m in d.m], color=MUTE, fontsize=9)
+    ax.tick_params(length=0); ax.tick_params(axis="y", colors=MUTE)
+    for s in ("left", "bottom"): ax.spines[s].set_color("#d8dee2")
+    ax.yaxis.grid(True, color="#e4e8eb"); ax.set_axisbelow(True)
+    ax.set_ylabel("people merging a change", color=MUTE)
+    ax.legend(frameon=False, ncol=2, loc="upper left", bbox_to_anchor=(0, 1.15), labelcolor=INK, fontsize=10)
+    fig.tight_layout()
+    fig.savefig(OUT / "fig-people.svg", transparent=True)
+
+
+def velocity():
+    """The team's own velocity record: story points per person, expected against delivered."""
+    v = pd.read_csv(D / "9_velocity_team_record.csv")
+    fig, ax = plt.subplots(figsize=(6.6, 3.2))
+    x = range(len(v))
+    ax.bar([i - 0.2 for i in x], v.expected, width=0.4, color="#c9dced", label="expected")
+    ax.bar([i + 0.2 for i in x], v.delivered, width=0.4, color="#1f78c1", label="delivered")
+    ax.set_xticks(list(x)); ax.set_xticklabels(v.sprint, color=MUTE, fontsize=8.5)
+    ax.set_xlabel("sprint", color=MUTE); ax.set_ylabel("story points per person", color=MUTE)
+    ax.tick_params(length=0); ax.tick_params(axis="y", colors=MUTE)
+    for s in ("left", "bottom"): ax.spines[s].set_color("#d8dee2")
+    ax.yaxis.grid(True, color="#e4e8eb"); ax.set_axisbelow(True)
+    ax.legend(frameon=False, ncol=2, loc="upper left", bbox_to_anchor=(0, 1.15), labelcolor=INK, fontsize=10)
+    fig.tight_layout()
+    fig.savefig(OUT / "fig-velocity.svg", transparent=True)
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    communities(); review(); size(); unplanned(); print("ok")
+    communities(); review(); size(); unplanned(); people(); velocity(); print("ok")
