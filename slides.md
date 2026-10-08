@@ -1,8 +1,8 @@
 ---
 theme: default
-title: "DiracX developments: directions"
+title: "Workload Management: DIRAC v9 and the way to DiracX"
 info: |
-  ## DiracX developments: directions — DIRAC(X) Users' Workshop 12
+  ## Workload Management: DIRAC v9 and the way to DiracX. DIRAC(X) Users' Workshop 12
   Alexandre F. Boyer (CERN).
   13–16 October 2026, FZU Prague. 20 minutes.
 colorSchema: light
@@ -17,620 +17,490 @@ fonts:
   italic: true
 ---
 
-# DiracX developments: directions
+# Workload Management: DIRAC v9 and the way to DiracX
 
 <span class="dx-author">Alexandre F. Boyer</span> · CERN
 
 12th DIRAC(X) Users' Workshop · FZU Prague · 13–16 October 2026
 
 <div class="dx-logobar mt-10">
-  <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC — The Interware" />
-  <img :src="'/logos/diracx.png'" alt="DiracX — The Interware" />
+  <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC, The Interware" />
+  <img :src="'/logos/diracx.png'" alt="DiracX, The Interware" />
 </div>
+
+---
+
+# One year after the last workshop
+
+<div class="duw-small mb-1">What the DUW11 WMS talk said would come next</div>
+
+<table class="duw-map">
+<thead><tr><th>Announced in 2025</th><th>Where it is</th><th></th></tr></thead>
+<tbody>
+<tr><td>SSH computing element on Fabric</td><td>done</td><td>DIRAC #7703, v9.0</td></tr>
+<tr><td>CPU and memory limits with cgroup2</td><td>done</td><td>#8110, plus memory-aware matching (#8366, #8414)</td></tr>
+<tr><td>Python 2 out of the pilot</td><td>done</td><td>Pilot #268, Nov 2025</td></tr>
+<tr><td>Multi-architecture images from CVMFS</td><td>pull request open</td><td>DIRAC #8456, to certify</td></tr>
+<tr><td>Pilots managed by DiracX</td><td>started, then paused</td><td>pilot database and router in DiracX (#570)</td></tr>
+<tr><td>CWL job submission in DiracX</td><td>redirected</td><td>now part of the transformation system ADRs</td></tr>
+<tr><td>Job monitoring and job manager in DiracX</td><td>stopped</td><td>no central JobDB in DiracX: section 4</td></tr>
+<tr><td>A decision on DB12</td><td>open</td><td>DB12 #15, #16</td></tr>
+</tbody>
+</table>
+
+<div class="dx-key mt-3">Most of what was planned for DIRAC landed. The DiracX part changed direction, for a reason explained in section 4.</div>
 
 ---
 layout: section
 ---
 
-# 1 · Where we are now
+# 1 · Resources and interfaces
 
-DIRAC and DiracX today
+What we run on, and how we reach it
 
 ---
 
-<div class="duw-sec">1 · Where we are now</div>
+<div class="duw-sec">1 · Resources and interfaces</div>
 
-# Maintaining DIRAC, progressing on DiracX
+# Resources keep diversifying
 
-<img :src="'/figures/fig-galaxies.svg'" alt="DIRAC and DiracX, each surrounded by its companion projects; components move from DIRAC to DiracX over the same databases" style="width:54%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-landscape.svg'" alt="Grid sites, HPC centres and clouds, with x86_64, aarch64 and GPUs, reached through DIRAC computing elements or, later, interCEde; the DIRAC WMS and DiracX on top" style="width:58%;margin:0 auto;display:block" />
 
-<div class="duw-two dx-tight" style="margin-top:.1rem">
-
+<div class="duw-two dx-tight" style="margin-top:.2rem">
 <div>
 
-**DIRAC** v9.1.21 · v9.0.27 · v8.0.85<br/>
-WebAppDIRAC 6.0.6 · DIRACOS2 2.63<br/>
-**Patched, not developed**: security fixes, and performance fixes when needed.
+- Grid, HPC and clouds, now with **aarch64** and GPUs beside x86_64.
+- HPC centres often have no outbound network and no CVMFS.
 
 </div>
-
 <div>
 
-**DiracX** v0.6.0: foundations, authentication, jobs (search, status), sandboxes, read-only resource status, and experimental observability (OpenTelemetry).<br/>
-The web app (diracx-web 0.1.0-a11) and the `dirac` CLI are still experimental.
+- DIRAC v9 dropped the CREAM, ARC, ARC6 and BOINC CEs; AREX is the ARC interface, with tokens.
+- One computing element interface per DIRAC installation today: no sharing with other WMSs.
 
 </div>
-
 </div>
 
-<div class="dx-key mt-1"><b>Adopt what already exists in DiracX.</b> DIRAC is only patched, so that DiracX can progress. LHCb runs one service and one task in production; two other installations are certifying DiracX.</div>
-
----
-layout: section
 ---
 
-# 2 · Evolving requirements, fruitful collaboration
+<div class="duw-sec">1 · Resources and interfaces</div>
 
-New communities, new use cases, and two systems running side by side
+# interCEde: one library for computing elements
 
----
-
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
-
-# What DIRAC is for, and what it values
-
-<div class="dx-key">Running large-scale workflows of embarrassingly parallel jobs on heterogeneous, distributed computing and storage resources: high-throughput computing.</div>
+<div class="dx-key">A typed, asynchronous library to submit to and manage computing elements, usable by DIRAC, DiracX and other workload managers. <span class="duw-small">github.com/DIRACGrid/intercede, proof of concept</span></div>
 
 <div class="duw-three3 mt-3">
 
 <div class="dx-card dx-card-blue">
 
-### Minimal dependencies
-A database and a search index, on a few hosts.
+### Design
+Three ADRs under review (intercede #4): computing elements, integration tests, credentials.
 
-**In DiracX:** standard protocols for what is external (S3, OpenTelemetry, OIDC), and options without Kubernetes.
-
-</div>
-
-<div class="dx-card dx-card-blue">
-
-### Multi-VO installations
-One installation serves several communities.
-
-**In DiracX:** multi-VO from the start.
+Open points: per-site submit options, whole-node and GPU requests, ARC delegation renewal, cleaning up cloud VMs.
 
 </div>
 
 <div class="dx-card dx-card-blue">
 
-### Extendable
-Communities add their own pieces.
+### Code
+Core contract proposed this week (#27).
 
-**In DiracX:** extensions, with a reference extension.
-
-</div>
-
-</div>
-
-<div class="duw-small mt-2">My own reading of what communities have asked for over the last few years.</div>
-
----
-
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
-
-# Requirements keep evolving
-
-<div class="duw-three3">
-
-<div class="dx-card dx-card-blue">
-
-### New communities
-**CMS and FCC**, who joined this summer, bring new requirements. CMS has no DIRAC installation and runs its own workload management.
+Integration-test scaffolding (#25), and test setups from the communities: HTCondor, ARC with Slurm, Slurm.
 
 </div>
 
 <div class="dx-card dx-card-new">
 
-### Advanced needs, in extensions
-**CTAO, LHCb, Belle II and JUNO** built extensions for advanced needs that are now close to each other. They belong in the common project: CTAO's use of **CWL** turned out useful for DiracX as a whole.
+### Next
+Merge the ADRs, then: core, registry, integration tests, backends.
 
-</div>
-
-<div class="dx-card dx-card-legacy">
-
-### Constant needs
-**GridPP** has few resources: DiracX must stay very simple to deploy, with minimal dependencies.
+Last, a synchronous facade and an adapter so DIRAC can use it (#24).
 
 </div>
 
 </div>
 
-<div class="dx-key mt-3">Share your needs early, at DOps, before building around the system: someone else may need the same thing.</div>
-
----
-
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
-
-# What stays stable, what is new
-
-<div class="duw-two dx-tight mt-2">
-
-<div class="dx-card dx-card-legacy">
-
-### Stable
-
-- **DIRAC keeps running**, with security and performance patches.
-- Components move **one at a time**, over the same databases.
-- **Extensions keep working** while components move.
-
-</div>
-
-<div class="dx-card dx-card-new">
-
-### New
-
-- **The transformation system**: a new data model, new logic, and a much richer scope than DIRAC's.
-- **Decoupled from DIRAC**, so DIRAC's databases need no large changes and stay stable.
-- **Standard protocols** (sandboxes in S3, observability in OpenTelemetry) and multi-VO from the start.
-
-</div>
-
-</div>
-
-<div class="dx-key mt-3">A stable path for what exists, and room for what is new.</div>
-
----
-
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
-
-# Many part-time hands
-
-<img :src="'/figures/fig-collab.svg'" alt="Groups of contributors linked by dashed two-way arrows around the question: how do we work best together?" style="width:66%;margin:0 auto;display:block" />
-
-<div class="dx-tight mt-1">
-
-- **36 people** contributed since the last workshop, most of them at **20 to 30 %** of their time: about **4 to 5 full-time equivalents**.
-- They maintain DIRAC and develop DiracX at the same time.
-
-</div>
-
-<div class="dx-key mt-2"><b>Finding the best way to work with each other is paramount.</b></div>
+<div class="duw-small mt-3">Contributions from several communities; the HTCondor grid universe through a local schedd is deferred, not adopted.</div>
 
 ---
 layout: section
 ---
 
-# 3 · Adapting quickly
+# 2 · The DIRAC WMS since v9
 
-Responding to changing requirements, in small steps
+Faster, more reliable, and the same two models
 
 ---
 
-<div class="duw-sec">3 · Adapting quickly</div>
+<div class="duw-sec">2 · The DIRAC WMS since v9</div>
 
-# The journey so far
+# Two models, unchanged
 
-<img :src="'/figures/fig-journey.svg'" alt="Timeline of DiracX milestones from July 2023 to July 2026, with proofs of concept running in parallel: web app, pilot security, matchmaking, interCEde, analytics and observability" style="width:84%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-pullpush.svg'" alt="Pull: the SiteDirector submits pilots through a CE; the pilot's JobAgent asks the Matcher for a job and runs it in the JobWrapper. Push: the PushJobAgent asks the Matcher and submits the JobWrapper to an HPC node without outbound network" style="width:66%;margin:0 auto;display:block" />
 
-<div class="dx-tight mt-1">
+<div class="duw-two dx-tight" style="margin-top:.2rem">
+<div>
 
-- **From 2023, three to four hackathons a year** onboarded new contributors, with no dashboard or regular meeting to follow progress. **Scrum** brought both in 2026.
-- **Proofs of concept run in parallel**, not mandatory: we try an idea before committing to it.
+- **Pull**: one SiteDirector per VO, CEs handled in parallel.
+- **Push**: for nodes that cannot reach DIRAC; pre- and post-processing stay with the agent.
 
+</div>
+<div>
+
+- The changes since v9 are inside the boxes: the task queues, the Matcher, the JobAgent and the JobWrapper.
+
+</div>
 </div>
 
 ---
 
-<div class="duw-sec">3 · Adapting quickly</div>
+<div class="duw-sec">2 · The DIRAC WMS since v9</div>
 
-# Almost the current process
-
-<img :src="'/figures/fig-pipeline.svg'" alt="One round from requirement to delivered package, nine steps" style="width:56%;margin:0 auto;display:block" />
-
-<div class="dx-tight mt-2">
-
-- **Scrum since 21 January 2026**: two-week sprints; planning and refinement in one weekly meeting; a monthly meeting with the representatives (DOps); hackathons.
-- **Large changes start with a proof of concept, then an ADR** that the other developers approve. ADRs and roadmap are public; the board is not.
-- **We are moving towards this process; it is not there yet.** Like the roadmap, it adapts as we learn.
-
-</div>
-
----
-
-<div class="duw-sec">3 · Adapting quickly</div>
-
-# Not a port: a reimplementation
-
-<div class="duw-three3">
-
-<div class="dx-card dx-card-blue">
-
-### A new data model
-**The spine**: workgraph, transformations, parcels. New requirements need new tables and new logic. The RMS is used as it is, as a backend.
-
-<img :src="'/figures/fig-mini-model.svg'" alt="The DiracX transformation system uses DIRAC's WMS, with new tables of its own" style="width:100%;margin-top:.4rem" />
-
-</div>
-
-<div class="dx-card dx-card-legacy">
-
-### Future clients
-**DMS**: a DIRAC client calls DiracX instead of DIRAC, over the same databases. **RSS**: the read side first, through an adapter.
-
-<img :src="'/figures/fig-mini-future.svg'" alt="A DIRAC client calls either the DIRAC service or the DiracX service; both use the same databases" style="width:100%;margin-top:.4rem" />
-
-</div>
-
-<div class="dx-card dx-card-new">
-
-### Standard protocols
-**Systems internal to DIRAC give way to standards**: monitoring to OpenTelemetry, accounting to analytics. Details later.
-
-<img :src="'/figures/fig-mini-protocols.svg'" alt="Monitoring becomes OpenTelemetry and accounting becomes analytics" style="width:100%;margin-top:.4rem" />
-
-</div>
-
-</div>
-
----
-layout: section
----
-
-# 4 · Results so far
-
-Numbers since the last workshop
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Activity since the last workshop
+# Faster
 
 <table class="duw-stat">
-<thead><tr><th>17 Sep 2025 – 4 Sep 2026</th><th>DIRAC stack</th><th>DiracX stack</th><th>Both</th></tr></thead>
+<thead><tr><th>Measured on production-sized databases</th><th>before</th><th>after</th><th>release</th></tr></thead>
 <tbody>
-<tr><td>Merged pull requests</td><td><b>367</b></td><td><b>261</b></td><td>634</td></tr>
-<tr><td>People who merged one</td><td>20</td><td>28</td><td>36</td></tr>
-<tr><td>People who gave a first review</td><td>12</td><td>11</td><td>17</td></tr>
-<tr><td>New contributors</td><td>9</td><td>14</td><td>17</td></tr>
-<tr><td>Issues opened</td><td>89</td><td>206</td><td>296</td></tr>
-<tr><td>Issues closed (completed / not planned)</td><td>117 (76 / 41)</td><td>224 (191 / 33)</td><td>343 (268 / 75)</td></tr>
-</tbody></table>
-
-<div class="duw-small mt-2">DIRAC stack: DIRAC, WebAppDIRAC, DIRACOS2, Pilot. DiracX stack: diracx, diracx-charts, diracx-web, signurlarity, dirac-cwl, interCEde. Bots excluded; copies of one change on several release branches counted once. Issues to 2 Sep.</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Since Scrum: the backlog is shrinking
-
-<div class="duw-stats3">
-<div><b>295 → 195</b>open issues, January 2026 to September</div>
-<div><b>10.6 → 36.6</b>closures a month; 26.6 completed, 10.0 not planned or duplicate</div>
-<div><b>16.3 → 27.3</b>issues opened a month</div>
-</div>
-
-<img :src="'/figures/fig-burnup.svg'" alt="Cumulative issues in the DIRACGrid repositories since January 2024: open issues rose from 156 to 295 before January 2026 and fell to 195 by September" style="width:66%;margin:0 auto;display:block" />
-
-<div class="duw-small" style="text-align:center">All issues in the DIRACGrid repositories, bots excluded. Part of the fall is triage.</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Velocity
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-7">
-
-<img :src="'/figures/fig-velocity.svg'" alt="Story points per person and sprint, expected against delivered, for sprints 1 to 23: expected is about twice what is delivered in almost every sprint" style="width:100%" />
-
-</div>
-
-<div class="col-span-5 dx-tight">
-
-- **We expect about twice what we deliver**: a median of 13 story points per person and sprint expected, 5.3 delivered.
-- Delivered velocity follows availability: workshops, conferences, holidays.
-- Only one sprint delivered what was expected.
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Where an issue goes
-
-<img :src="'/figures/fig-flow.svg'" alt="Issues on the board: 121 in Needs triage, 13 in Needs design, 34 in Backlog, 34 in In progress, 317 Done. Those who left a column stayed 3, 27, 7 and 3 days; those still there have waited 227, 190, 50 and 67 days" style="width:100%;margin:0 auto;display:block" />
-
-<div class="dx-tight mt-1">
-
-- **Issues that move on do so quickly. The ones still waiting have waited far longer.**
-- **121 issues sit in triage**, most since the January board sweep. 34 are "in progress" with a median of two months.
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Unplanned work lives in DIRAC
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-6">
-
-<img :src="'/figures/fig-unplanned.svg'" alt="Since January 2026, 56% of story points delivered on DIRAC were unplanned against 11% on DiracX, and 84% of merged pull requests on DIRAC have no linked issue against 49% on DiracX" style="width:100%" />
-
-</div>
-
-<div class="col-span-6 dx-tight">
-
-- Since January, **56% of the story points delivered on DIRAC were unplanned**, against 11% on DiracX.
-- **84% of DIRAC pull requests have no linked issue**, against 49% on DiracX.
-- Security and performance work arrives when it arrives. It is the cost of keeping DIRAC running, and why DIRAC only gets patches.
-
-<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For developers:</b> we overestimate what a sprint can hold because we do not count the unplanned DIRAC maintenance. Plan for it.</div>
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# More hands, from more communities
-
-<img :src="'/figures/fig-communities.svg'" alt="Merged pull requests a month from January 2025 to August 2026, stacked by community: LHCb core, other LHCb, CMS, CTAO, IN2P3, GridPP, EGI, FCC, IHEP, Belle II, not attributed" style="width:62%;margin:0 auto;display:block" />
-
-<div class="duw-three dx-tight" style="margin-top:.2rem">
-
-<div>
-
-**36 people** merged a change since the last workshop; **17 were new**, from ten communities. Almost all are part-time, so effort varies from month to month.
-
-</div>
-
-<div>
-
-Outside the five core developers: **36% of merged PRs, 28% of issues opened, 53% of story points.**
-
-</div>
-
-<div>
-
-Read with care: about half of the 2026 rise in PRs is **one GridPP developer** hardening DIRAC's SQL. CMS merged 14 changes since July.
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# The bottleneck is review
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-6">
-
-<img :src="'/figures/fig-review.svg'" alt="Share of first reviews given by the top reviewer and the top two reviewers each quarter, rising from 62% in 2025 Q1 to 75% in 2026 Q3" style="width:100%" />
-
-<div class="dx-ref mt-1">Share of first reviews, by quarter</div>
-
-</div>
-
-<div class="col-span-6 dx-tight">
-
-- **Two people give three quarters of first reviews.** The top reviewer alone went from a third to over half.
-- **None of the 14 contributors new since January has given a first review yet.**
-- **Design review is not in these numbers.** ADRs are reviewed by everyone, in meetings and on chat.
-
-<div class="dx-concludes"><carbon-arrow-right class="dx-concludes-arrow" /><span>writing code has spread; <strong>reading it has not</strong></span></div>
-
-<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>Question for developers:</b> kanban style, should you review before starting something new once your tasks are done?</div>
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Smaller pull requests get reviewed sooner
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-6">
-
-<img :src="'/figures/fig-review-size.svg'" alt="Median hours to first review rises from 2.6 hours for pull requests under 10 lines to 23 hours for 500 lines or more, on a log scale, with the middle half of the pull requests shown as a bar" style="width:100%" />
-
-<div class="dx-ref mt-1">Median wait for a first review, with the middle half of the pull requests</div>
-
-</div>
-
-<div class="col-span-6 dx-tight">
-
-- **Under 10 lines: 2.6 hours. 500 lines or more: 23 hours.** Time to merge goes from a few hours to five days.
-- **The spread is wide at every size**, so size helps but does not decide.
-- **Who writes it matters too.** For pull requests under 50 lines, the five core developers wait 2.5 hours; everyone else waits 11.
-
-<div class="dx-concludes"><carbon-arrow-right class="dx-concludes-arrow" /><span>split the work, and <strong>announce a big change early</strong></span></div>
-
-<div class="mt-2"><a href="https://diracx.diracgrid.org/en/latest/dev/explanations/splitting-prs/" target="_blank" class="dx-ref">How to split a large change into stacked pull requests: DiracX contributing guide</a></div>
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Where work waits
-
-<img :src="'/figures/fig-pipe.svg'" alt="Work flows through specification, development and review; development was widened by Scrum, specification and review remain the narrow parts" style="width:92%;margin:0 auto;display:block" />
+<tr><td>Task queue matching query</td><td>~30 ms</td><td><b>~3 ms</b></td><td>v9.1.0 · #8462</td></tr>
+<tr><td>Finding matching task queues (323 queues)</td><td>3.4 s</td><td><b>0.2 s</b></td><td>v9.1.20 · #8801</td></tr>
+<tr><td>Job insertion</td><td>~115 jobs/s</td><td><b>~190 jobs/s</b></td><td>v9.1.20 · #8801</td></tr>
+<tr><td>Duplicate task queues during a burst</td><td>64</td><td><b>1</b></td><td>v9.1.20 · #8801</td></tr>
+<tr><td>Delay between matches, per job type</td><td>1 s or more</td><td><b>sub-second</b></td><td>v9.1.16 · #8711</td></tr>
+</tbody>
+</table>
 
 <div class="dx-tight mt-2">
 
-- **Scrum widened development**: more contributors, a shrinking backlog.
-- **Specification and review are the narrow parts**, and they will matter more with every new component.
-
-<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For everyone in the room:</b> representatives, developers and users, where would you improve how we work?</div>
+- Also: missing indices on pilots and jobs (#8463, manual `ALTER TABLE`), hot paths found with py-spy (#8524), fewer calls in the pilot agents (#8569, #8624).
 
 </div>
+
+<div class="dx-key mt-2">Several fixes made the DIRAC WMS faster and more reliable, for installations at v9 and above. Most of the numbers above need v9.1.</div>
 
 ---
 
-<div class="duw-sec">4 · Results so far</div>
+<div class="duw-sec">2 · The DIRAC WMS since v9</div>
 
-# Cheaper code: easier to explore, same bottlenecks
+# More reliable, safer, simpler
 
-<div class="grid grid-cols-5 gap-6">
+<div class="duw-three3">
 
-<div class="col-span-2">
+<div class="dx-card dx-card-blue">
 
-<div class="duw-quote">"AI does not resolve ambiguity. It amplifies it."</div>
-<div class="duw-small mt-1">Nir Yechiel, <a href="https://nyechiel.com/blog/2026/07/02/the-bottleneck-moved/">The bottleneck moved</a>, July 2026</div>
+### Reliable
+- Task queues no longer lose their site, platform or tag restrictions under concurrency (#8801).
+- Memory-aware matching; cgroup2 limits in containers (#8366, #8414, #8110).
+- Banned CEs skipped; rescheduled jobs not failed; no NaN parameters (#8340, #8441, #8750).
 
-<div class="dx-tight mt-3">
+</div>
 
-- Writing code got cheap, so **spikes and proofs of concept** are easier to try: matchmaking, interCEde, analytics, observability.
-- **Deciding what to build and checking it** did not get cheaper.
-- It does **not change our process**. It shows its weak points sooner.
+<div class="dx-card dx-card-blue">
+
+### Safer
+- SQL parameterised in every WMS database (v9.1.13 to v9.1.15).
+- Five WMS advisories fixed: job state access, sandbox store, pilot logging, pilot manager, pilot download.
+- Patched in v9.1.20, v9.0.26, v8.0.85.
+
+</div>
+
+<div class="dx-card dx-card-legacy">
+
+### Simpler
+- Removed: CREAM, ARC, ARC6, BOINC CEs; pilot bundles; private pilots; Python 2 in the pilot.
+- Tokens: pilots submitted with tokens in multi-VO setups; proxy pilots also carry one.
 
 </div>
 
 </div>
 
-<div class="col-span-3 dx-tight">
+<div class="dx-concludes mt-3"><carbon-arrow-right class="dx-concludes-arrow" /><span>DIRAC is patched, not developed: <strong>upgrading is how you get these</strong></span></div>
 
-**Each one is something we just saw**
+---
 
-- **Vague specification** → verbose, AI-generated issues that go stale (an open action). A clear ADR with a scenario test is what an agent, or a newcomer, can implement.
-- **Review bottleneck** → more code means more to read, by the same two people.
-- **Unplanned work** → faster code does not shrink urgent maintenance.
-- **A new kind of user** → DiracX speaks HTTP and OAuth2, so an agent can use it through MCP.
+<div class="duw-sec">2 · The DIRAC WMS since v9</div>
 
-<div class="dx-concludes"><carbon-arrow-right class="dx-concludes-arrow" /><span>invest in <strong>specifications, tests and review</strong>, not in typing</span></div>
+# Time left in the slot
+
+<div class="duw-two dx-tight">
+<div>
+
+**The problem**
+- Jobs in containers could not ask the batch system for the time left.
+- The post-processing margin was known only to the Watchdog, which could only kill.
 
 </div>
+<div>
+
+**An example**: an MC job sized for 183 events produced 150, was killed, and its output was never uploaded.
+
+**Since v9.1.4** (#8479): the pilot reads the time left once; jobs read it from the pilot configuration.
 
 </div>
+</div>
+
+<img :src="'/figures/fig-slot.svg'" alt="A slot split into pilot, payload and StopMargin; the margin is reserved before matching, a stop signal ends the payload cleanly, and a killed job reports why" style="width:56%;margin:0 auto;display:block" />
+
+<div class="dx-key mt-1">The three fixes above are in <b>v9.1.21</b> only. Set the <code>StopSig*</code> options in the CS or per job; see "Allocated time management" in the Administrator Guide.</div>
+
+---
+
+<div class="duw-sec">2 · The DIRAC WMS since v9</div>
+
+# Multi-architecture: one image name, every architecture
+
+<div class="duw-two">
+<div>
+
+**DIRAC #8456** (pull request open)
+- The pilot detects the node's architecture and resolves the container image under the CVMFS `.multiarch` layout: `<base>/<arch>/<image>`.
+- Used by the Singularity CE and `dirac-apptainer-exec`; falls back to `ContainerRoot`.
+- Left to do: certify against `unpacked.cern.ch`, review, merge.
+
+</div>
+<div>
+
+**What a community needs**
+- Images published as multi-architecture (OCI index) images; otherwise the layout has dangling links.
+- Platform tags in the pilot's architecture script.
+
+**Not solved yet**: a job that can run on x86_64 *or* aarch64 has a single set of requirements in today's matcher. Section 3.
+
+</div>
+</div>
+
+<div class="dx-key mt-3">The same job description on any architecture, without per-architecture configuration.</div>
 
 ---
 layout: section
 ---
 
-# 5 · What’s next
+# 3 · Proofs of concept
 
-How we could improve, and the roadmap
+Matching, and the pilot
 
 ---
 
-<div class="duw-sec">5 · What’s next</div>
+<div class="duw-sec">3 · Proofs of concept</div>
 
-# Next: building the transformation system
+# A matcher for DiracX
 
-<div class="dx-key" style="font-size:1.1em"><b>Implementation starts at the hackathon this afternoon.</b> The technical details are in the next talk.</div>
-
-<div class="duw-two dx-tight mt-3">
-
+<div class="duw-two">
 <div>
 
-**Where it comes from**
+**Goal** (diracx #843): match pilots to jobs at **1 kHz** (200 Hz at least), with 10 million waiting jobs per VO. Redis holds an index that can be rebuilt from the database.
 
-- **Use cases from the communities**: CMS, CTAO, FCC, Belle II and LHCb.
-- **A design that comes from a proof of concept**, written down as ADRs.
+**Built**: matching with tag expressions, prioritisation, a benchmark harness, a Redis data model (release 0.4.0, Sep 2026).
+
+**Measured**: the pure Python baseline only, 210 ms per match at 50k candidate jobs, 5.7 s at 750k. No Redis numbers yet.
 
 </div>
-
 <div>
 
-**How it will be delivered**
+**What we learned**
+- Real requirements vary little: LHCb has 872k waiting jobs but 14 distinct (CPU time, group) pairs. Group jobs by profile, as task queues do; do not test them one by one.
+- A job eligible at ~49 sites must not be stored 49 times.
+- A job runnable on two architectures needs a *list* of requirements.
 
-- **Increments the representatives can test**, shown at DOps whenever a sprint delivers one.
-- **The more we are, and the better organised, the sooner.**
+</div>
+</div>
+
+<div class="dx-card dx-card-new mt-3" style="height:auto">
+
+**Next**: matching inside Redis (Lua) and its benchmark on realistic data (#873), then scale tests (#874). **Then an ADR**, written from those numbers, for the matcher of the `diracx-pilot` backend.
+
+</div>
+
+---
+
+<div class="duw-sec">3 · Proofs of concept</div>
+
+# Pilots: the re-thinking has not started
+
+<div class="duw-three3">
+
+<div class="dx-card dx-card-new">
+
+### Landed
+- A pilot database and router in DiracX (#570, Aug 2026).
+- Pilot: Python 2 removed; maintenance fixes.
+
+</div>
+
+<div class="dx-card dx-card-legacy">
+
+### Paused
+- Pilot registration and authentication with pilot tokens (#421).
+- Pilot logging through DiracX (#550).
+- Untouched since mid-2025.
+
+</div>
+
+<div class="dx-card dx-card-blue">
+
+### Questions for later
+- What does a pilot need to know about parcels?
+- What belongs to the pilot, what to the job wrapper?
+- One model for pull and push?
 
 </div>
 
 </div>
 
-<div class="dx-card dx-card-blue mt-3" style="height:auto;padding:.5em .9em"><b>This afternoon, two hackathons:</b> adapting your community's workflows to <b>CWL</b>, and building the <b>transformation system</b>.</div>
+<div class="dx-key mt-3">Pilots belong to the DiracX WMS backend, which comes after the transformation system. We continue to patch the DIRAC pilot.</div>
+
+---
+layout: section
+---
+
+# 4 · DiracX: the WMS follows the transformation system
+
+No JobDB at the centre, CWL everywhere
 
 ---
 
-<div class="duw-sec">5 · What’s next</div>
+<div class="duw-sec">4 · DiracX</div>
 
-# The roadmap moves with the communities
+# Work is a parcel, dispatched to a backend
 
-<img :src="'/figures/fig-roadmap2.svg'" alt="Long-running lines of work: Transformation System, Job Wrapper, Data Management System, Resource status; and exploratory spikes: WMS, analytics and observability, MCP server, clients" style="width:84%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-parcels.svg'" alt="User jobs and workgraphs, both CWL, become parcels; a dispatcher hands each parcel to a backend: legacy-dirac (the DIRAC WMS), diracx-pilot (to be designed), htcondor, diracx-remote" style="width:64%;margin:0 auto;display:block" />
 
-<div class="dx-oneline mt-2">Priorities, not commitments. New requirements can reorder this page, and the team writes the detailed plan.</div>
+<div class="duw-two dx-tight" style="margin-top:.1rem">
+<div>
 
----
+- DiracX has no "Systems". The transformation system ADRs cover productions, transformations **and the job part of the WMS**: user jobs are parcels too.
 
-<div class="duw-sec">5 · What’s next</div>
+</div>
+<div>
 
-# If you run an installation today
+- First, every parcel goes to DIRAC. A native WMS backend comes when the transformation system needs it: **there will be a WMS plan**, not yet.
 
-<div class="dx-card dx-card-new" style="height:auto">
-
-### What you can count on
-
-- **DIRAC keeps running**, with security patches and performance fixes when needed.
-- **You choose when to switch each component**, usually at a shutdown.
-- **No data migration** for anything but the transformation system, which has its own tables.
-- **Your extension keeps working** on DIRAC while you move.
-- **DIRAC and DiracX live in parallel**, and work can move gradually from one to the other.
-- **Increments to test**, shown at DOps whenever a sprint delivers one.
-
+</div>
 </div>
 
 ---
-layout: default
+
+<div class="duw-sec">4 · DiracX</div>
+
+# No JobDB at the centre
+
+<div class="duw-two">
+<div>
+
+**In DIRAC**, the JobDB was the first database, and every system reads or writes it.
+
+**In DiracX**, the record of work is the **parcel**. A jobs table, if any, would be private to the WMS backend (`diracx-pilot`), like any backend's own state.
+
+</div>
+<div>
+
+**The JobDB already in DiracX stays**, with a narrow use:
+- job status updates from DIRAC, through the future client;
+- load-testing a new installation, and checking it is deployed correctly.
+
+We do not port the rest of job management (monitoring, manager) to it.
+
+</div>
+</div>
+
+<div class="dx-key mt-3">The DiracX WMS will evolve slowly, in parallel, until the transformation system needs a native backend.</div>
+
+---
+
+<div class="duw-sec">4 · DiracX</div>
+
+# CWL describes all the work
+
+<div class="duw-two">
+<div>
+
+**One format** (DX-ADR-007, draft): a user job, a workgraph and each transformation are CWL v1.2 documents.
+
+- DiracX settings are **hints** under `dirac:`, never requirements: every document stays plain, runnable CWL.
+- The same document runs with `cwltool`, locally against grid data, and at scale.
+- Processes are resolved before dispatch: the node runs without fetching definitions.
+
+</div>
+<div>
+
+**What this means for the WMS**
+- Matching requirements come from the hints.
+- The job wrapper resolves inputs (`lfn:`, `sandbox:`), captures the output sandbox, and writes a status report per input.
+- Outputs are registered by DiracX after the parcel ends, not by the wrapper.
+
+**Today**: `dirac-cwl` 1.3.0; an experimental CWL job wrapper in DIRAC (#8425).
+
+</div>
+</div>
+
+---
+
+<div class="duw-sec">4 · DiracX</div>
+
+# The job wrapper: one for all of us, owners wanted
+
+<div class="duw-two">
+<div>
+
+**Today there are several**
+- DIRAC's JobWrapper: pre-processing, payload, post-processing; an offline variant for push.
+- The `dirac-cwl` wrapper, experimental in DIRAC.
+- Executor prototypes in DiracX.
+
+Each community also adds its own steps around the payload.
+
+</div>
+<div>
+
+**Requirements to gather**
+- Inputs: data, sandboxes, protocol access.
+- Time left, graceful stop, containers, architectures.
+- Nodes without outbound network.
+- Reporting: status, parameters, logs.
+- What happens when an upload fails.
+
+</div>
+</div>
+
+<div class="dx-card dx-card-blue mt-3" style="height:auto">
+
+**We are looking for owners**: people who collect the requirements from the communities, set priorities, and accept the result, in a product-owner role. Come and talk to us this week.
+
+</div>
+
 ---
 
 <div class="duw-sec">Take-aways</div>
 
 # Take-aways
 
-<div class="grid grid-cols-1 gap-4 mt-3 text-lg">
-
+<div class="duw-two dx-tight">
 <div>
+
 <div class="dx-eyebrow">For installations</div>
-<div class="dx-tight">
 
-- **Adopt what exists; DIRAC is only patched.** You move one component at a time, and the transformation system runs in parallel.
+- Upgrade to v9.1: faster matching and job insertion, time-left fixes (v9.1.21), security patches.
+- Multi-architecture images: #8456, soon.
+
+<div class="dx-eyebrow mt-3">Proofs of concept</div>
+
+- Matcher: Redis numbers next, then an ADR.
+- interCEde: ADRs close to merge, core in progress.
+- Pilots: re-thinking not started.
 
 </div>
-</div>
-
 <div>
-<div class="dx-eyebrow">For representatives and developers</div>
-<div class="dx-tight">
 
-- **Specification and review are the bottlenecks.** Increments you can test, shown at DOps, keep us close to your needs.
+<div class="dx-eyebrow">For DiracX</div>
 
-</div>
-</div>
+- The transformation system comes first; the WMS follows when it is needed.
+- No JobDB at the centre: work is a parcel.
+- CWL describes everything that runs.
 
-<div>
-<div class="dx-eyebrow">For this afternoon</div>
-<div class="dx-tight">
+<div class="dx-eyebrow mt-3">We need you</div>
 
-- **Join one of the two hackathons**: adapting your workflows to CWL, or building the transformation system.
+- Owners for the job wrapper: requirements, priorities, acceptance.
 
 </div>
-</div>
-
 </div>
 
 ---
@@ -646,6 +516,6 @@ layout: cover
 <div class="duw-contact">github.com/DIRACGrid · diracx.diracgrid.org</div>
 
 <div class="dx-logobar mt-8">
-  <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC — The Interware" />
-  <img :src="'/logos/diracx.png'" alt="DiracX — The Interware" />
+  <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC, The Interware" />
+  <img :src="'/logos/diracx.png'" alt="DiracX, The Interware" />
 </div>

@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+"""Figures for the DUW12 WMS talk, same modelling-clay language as the directions talk.
+
+    uv run --with cairosvg --with pillow python3 figures/wms_figures.py [name ...]
+
+Primitives come from claylib.py and build_figures.py (shared with the other DUW12
+deck and the CHEP26 paper). Writes SVGs straight into ../public/figures/.
+"""
+from __future__ import annotations
+
+import pathlib
+import sys
+
+import claylib as cl
+from claylib import Iso, contact_shadow, cube, shade, slab, text
+from build_figures import arrow, arrowhead, cylinder, head, pill
+
+OUT = pathlib.Path(__file__).parent.parent / "public" / "figures"
+TEXT_1, TEXT_2 = cl.TEXT_1, cl.TEXT_2
+BLUE, TEAL = cl.ACCENT["legacy"], cl.ACCENT["diracx"]
+GREEN = "#9fd3a8"
+AMBER = "#f0d9a6"
+SLABC = "#dfe5ee"
+TITLE, SUB, SMALL = 44, 34, 28
+INK_BLUE, INK_TEAL, INK_AMBER = "#25405f", "#1f4a44", "#5b4a1f"
+
+
+def panel(x, y, w, h, title, fill="#f3f6fa", stroke="#d8e0ea", size=TITLE - 6):
+    return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="26" fill="{fill}" stroke="{stroke}" stroke-width="3"/>'
+            + text(x + 30, y + 46, title, size, "bold", anchor="start", fill=TEXT_2))
+
+
+def spike(x, y, w, h, t1, t2=None):
+    """A proof of concept: dashed amber outline, as on the directions roadmap."""
+    o = [contact_shadow(x + w / 2, y + h + 6, w * 0.48, 12, f"sp{x}{y}", 0.14),
+         f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="24" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="12 9"/>']
+    if t2:
+        o += [text(x + w / 2, y + h / 2 - 4, t1, SMALL + 2, "bold", fill="#7a5410"),
+              text(x + w / 2, y + h / 2 + 30, t2, SMALL - 4, fill="#7a5410")]
+    else:
+        o.append(text(x + w / 2, y + h / 2 + 10, t1, SMALL + 2, "bold", fill="#7a5410"))
+    return "".join(o)
+
+
+def label_pill(x, y, w, h, base, gid, t1, ink, t2=None, size=SMALL):
+    o = [pill(x, y, w, h, base, gid, r=min(h / 2, 26))]
+    if t2:
+        o += [text(x + w / 2, y + h / 2 - 4, t1, size, "bold", fill=ink),
+              text(x + w / 2, y + h / 2 + 28, t2, size - 6, fill=ink)]
+    else:
+        o.append(text(x + w / 2, y + h / 2 + size * 0.36, t1, size, "bold", fill=ink))
+    return "".join(o)
+
+
+def site(px, py, n, base, gid, scale=0.55, chips=()):
+    """A resource: a slab with clay boxes on it (worker nodes)."""
+    it = Iso(px, py, scale)
+    o = [slab(it, -120, -48, 240, 96, 10, SLABC, gid)]
+    for i in range(n):
+        o.append(cube(it, -92 + i * 58, -22, 40, 40, 30, base, r=6))
+    return "".join(o)
+
+
+def chip(x, y, s, fill="#ffffff", ink=TEXT_2, w=None):
+    w = w or 18 * len(s) + 30
+    return (f'<rect x="{x - w / 2:.0f}" y="{y}" width="{w:.0f}" height="40" rx="20" fill="{fill}" stroke="#cfd6df" stroke-width="2.5"/>'
+            + text(x, y + 29, s, 24, fill=ink))
+
+
+# ----------------------------------------------------------------------------- figures
+
+def landscape() -> str:
+    """Resources at the bottom, the interfaces that reach them, and the WMS on top."""
+    W, H = 1600, 860
+    o = [head(W, H)]
+    # layer labels, left
+    for y, t in [(110, "WMS"), (370, "Interfaces"), (640, "Resources")]:
+        o.append(text(40, y, t, SUB, "bold", anchor="start", fill=TEXT_2))
+    # WMS
+    o.append(label_pill(300, 60, 560, 96, BLUE, "lw1", "DIRAC WMS", INK_BLUE, "pull (pilots) and push", size=SUB))
+    o.append(label_pill(960, 60, 600, 96, TEAL, "lw2", "DiracX", INK_TEAL, "transformation system first", size=SUB))
+    # interfaces
+    o.append(f'<rect x="300" y="290" width="1260" height="150" rx="26" fill="#f3f6fa" stroke="#d8e0ea" stroke-width="3"/>')
+    ces = [("HTCondorCE", 320, 210), ("AREX", 550, 160), ("SSH + batch", 730, 230), ("Cloud", 980, 170)]
+    for i, (n, x, w) in enumerate(ces):
+        o.append(label_pill(x, 312, w, 64, BLUE, f"lce{i}", n, INK_BLUE, size=SMALL - 2))
+    o.append(text(760, 420, "DIRAC computing elements", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append(spike(1250, 306, 290, 116, "interCEde", "shared CE library (POC)"))
+    o.append(arrow(580, 162, 580, 284, 0, sw=4))
+    o.append(arrow(1260, 162, 1395, 298, 0, sw=4))
+    # resources
+    res = [(560, "Grid sites", "CE, outbound network, CVMFS", ["x86_64", "aarch64"]),
+           (1000, "HPC centres", "often no outbound, no CVMFS", ["aarch64", "GPU"]),
+           (1400, "Clouds", "VMs on demand", ["x86_64"])]
+    for i, (cx, t, sub, chips) in enumerate(res):
+        o.append(site(cx, 600, 4 if i < 2 else 3, "#f3cf7e" if i == 0 else ("#d9b8e8" if i == 1 else "#bfe3f0"), f"lr{i}"))
+        o.append(text(cx, 720, t, SUB - 2, "bold", fill=TEXT_1))
+        o.append(text(cx, 756, sub, SMALL - 6, fill=TEXT_2))
+        for j, c in enumerate(chips):
+            o.append(chip(cx - (len(chips) - 1) * 75 + j * 150, 784, c))
+        o.append(arrow(cx, 446, cx, 540, 0, sw=3))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def pullpush() -> str:
+    """DIRAC's two models. Pull: pilots on the node ask the matcher. Push: an agent next to the
+    matcher asks on behalf of a resource that cannot reach DIRAC, and submits the wrapper."""
+    W, H = 1600, 820
+    o = [head(W, H)]
+    o.append(panel(30, 20, 1010, 780, "Pull: pilots fetch jobs", "#eef3fa", "#d3deec"))
+    o.append(panel(1080, 20, 490, 780, "Push: an agent submits", "#f6f3ec", "#e6dfcf"))
+    # central services, pull side
+    o.append(cylinder(150, 120, 60, 70, "#bfc7d3", "pq"))
+    o.append(text(150, 250, "task queues", SMALL - 2, fill=TEXT_2))
+    o.append(label_pill(260, 110, 230, 80, BLUE, "pm", "Matcher", INK_BLUE, size=SMALL + 2))
+    o.append(label_pill(600, 110, 280, 80, BLUE, "psd", "SiteDirector", INK_BLUE, size=SMALL + 2))
+    o.append(label_pill(640, 300, 200, 70, "#c7cfd9", "pce", "CE", TEXT_1))
+    o.append(arrow(740, 196, 740, 294, 0, sw=4))
+    o.append(text(760, 255, "1  submit pilots", SMALL - 4, anchor="start", fill=TEXT_2))
+    # worker node
+    o.append(f'<rect x="100" y="420" width="900" height="350" rx="24" fill="#fbf7ee" stroke="#e8dcc0" stroke-width="3"/>')
+    o.append(text(130, 462, "worker node", SMALL - 2, "bold", anchor="start", fill="#8a6d2c"))
+    o.append(label_pill(150, 500, 230, 72, AMBER, "ppi", "pilot", INK_AMBER, size=SMALL + 2))
+    o.append(label_pill(450, 500, 250, 72, AMBER, "pja", "JobAgent", INK_AMBER, size=SMALL + 2))
+    o.append(label_pill(450, 640, 250, 72, GREEN, "pjw", "JobWrapper", "#2d5a33", size=SMALL + 2))
+    o.append(label_pill(770, 640, 200, 72, "#e9eef4", "ppl", "payload", TEXT_1, size=SMALL))
+    o.append(arrow(740, 376, 300, 494, 30, sw=4))
+    o.append(text(790, 430, "2  pilot starts", SMALL - 4, anchor="start", fill=TEXT_2))
+    o.append(arrow(384, 536, 444, 536, 0, sw=4))
+    o.append(arrow(575, 494, 380, 196, -60, sw=4))
+    o.append(text(470, 330, "3  match a job", SMALL - 4, anchor="end", fill=TEXT_2))
+    o.append(arrow(575, 578, 575, 634, 0, sw=4))
+    o.append(arrow(704, 676, 764, 676, 0, sw=4))
+    # push side
+    o.append(label_pill(1110, 110, 230, 80, BLUE, "qm", "Matcher", INK_BLUE, size=SMALL + 2))
+    o.append(label_pill(1110, 250, 420, 80, AMBER, "qpa", "PushJobAgent", INK_AMBER, size=SMALL + 2))
+    o.append(arrow(1225, 244, 1225, 196, 0, sw=4))
+    o.append(label_pill(1210, 400, 200, 70, "#c7cfd9", "qce", "CE", TEXT_1))
+    o.append(arrow(1310, 336, 1310, 394, 0, sw=4))
+    o.append(f'<rect x="1110" y="520" width="430" height="250" rx="24" fill="#fbf7ee" stroke="#e8dcc0" stroke-width="3"/>')
+    o.append(text(1130, 562, "HPC, no outbound", SMALL - 4, "bold", anchor="start", fill="#8a6d2c"))
+    o.append(label_pill(1200, 590, 250, 72, GREEN, "qjw", "JobWrapper", "#2d5a33", size=SMALL + 2))
+    o.append(text(1325, 720, "pre/post-processing", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append(text(1325, 750, "stay with the agent", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append(arrow(1390, 476, 1400, 584, 0, sw=4))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def slot() -> str:
+    """The time budget of a slot, and where each v9.1 change acts on it."""
+    W, H = 1600, 520
+    o = [head(W, H)]
+    X0, X1, Y, BH = 60, 1540, 200, 90
+    segs = [(X0, 230, "#c7cfd9", "pilot", TEXT_1),
+            (230, 1180, "#9fd3a8", "payload: events, files", "#2d5a33"),
+            (1180, X1, AMBER, "StopMargin", INK_AMBER)]
+    for i, (a, b, col, t, ink) in enumerate(segs):
+        o.append(pill(a + 4, Y, b - a - 8, BH, col, f"sl{i}", r=20))
+        o.append(text((a + b) / 2, Y + 56, t, SMALL + 2, "bold", fill=ink))
+    # top scale: the slot
+    o.append(arrow(X0, 120, X1, 120, 0, sw=3))
+    o.append(arrowhead(X0, 120, -1, 0, length=20, half_width=9))
+    o.append(text((X0 + X1) / 2, 100, "CPU time left in the slot: read once, from the pilot configuration", SMALL - 2, fill=TEXT_2))
+    # markers below
+    marks = [(230, "#8746", "margin reserved", "before matching"),
+             (1180, "#8814", "stop signal:", "payload ends cleanly"),
+             (1400, "#8528", "if killed, the reason", "is reported")]
+    for x, pr, l1, l2 in marks:
+        o.append(f'<line x1="{x}" y1="{Y + BH + 8}" x2="{x}" y2="{Y + BH + 70}" stroke="#6b7280" stroke-width="3" stroke-dasharray="6 6"/>')
+        o.append(text(x, Y + BH + 108, pr, SMALL - 2, "bold", fill=TEXT_1))
+        o.append(text(x, Y + BH + 142, l1, SMALL - 6, fill=TEXT_2))
+        o.append(text(x, Y + BH + 172, l2, SMALL - 6, fill=TEXT_2))
+    o.append(text(1360, Y - 18, "outputs uploaded", SMALL - 6, italic=True, fill=INK_AMBER))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def parcels() -> str:
+    """DX-ADR-002/003: CWL documents become parcels; a dispatcher hands each parcel to a backend.
+    The parcel table is the record; a jobs table, if any, is private to one backend."""
+    W, H = 1600, 760
+    o = [head(W, H)]
+    # sources
+    o.append(label_pill(40, 70, 330, 96, GREEN, "pc1", "user job", "#2d5a33", "a CWL document"))
+    o.append(label_pill(40, 220, 330, 96, GREEN, "pc2", "workgraph", "#2d5a33", "CWL: steps = transformations"))
+    o.append(arrow(376, 118, 520, 190, 10, sw=4))
+    o.append(arrow(376, 268, 520, 220, -6, sw=4))
+    o.append(label_pill(530, 150, 300, 96, TEAL, "pc3", "parcels", INK_TEAL, "the record", size=SUB))
+    o.append(cylinder(590, 300, 60, 50, "#9fd3cb", "pcdb"))
+    o.append(text(590, 396, "no central JobDB", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append(arrow(836, 198, 960, 198, 0, sw=4))
+    o.append(label_pill(970, 150, 300, 96, TEAL, "pc4", "dispatcher", INK_TEAL, "picks a backend", size=SUB))
+    # backends
+    o.append(panel(40, 470, 1520, 270, "Backends", "#f6f7f9", "#dde2e9", size=SUB - 2))
+    bks = [(80, 350, BLUE, "legacy-dirac", INK_BLUE, "DIRAC WMS, as it is", False),
+           (470, 400, TEAL, "diracx-pilot", INK_TEAL, "matcher, pilots, jobs table", True),
+           (910, 300, "#c7cfd9", "htcondor", TEXT_1, "glideins", False),
+           (1250, 280, "#c7cfd9", "diracx-remote", TEXT_1, "push", True)]
+    for i, (x, w, col, t, ink, sub, future) in enumerate(bks):
+        if future:
+            o.append(f'<rect x="{x}" y="560" width="{w}" height="110" rx="26" fill="#ffffff" stroke="#8fb9b2" stroke-width="4" stroke-dasharray="12 9"/>')
+            o.append(text(x + w / 2, 606, t, SMALL + 2, "bold", fill=ink))
+            o.append(text(x + w / 2, 644, sub, SMALL - 6, fill=ink))
+        else:
+            o.append(label_pill(x, 560, w, 110, col, f"bk{i}", t, ink, sub, size=SMALL + 2))
+        o.append(arrow(1120, 252, x + w / 2 + (60 if i == 0 else 0), 552, 0, sw=3))
+    o.append(text(255, 712, "first: DIRAC runs every parcel", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append(text(670, 712, "the DiracX WMS: to be designed", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+FIGS = {"fig-landscape": landscape, "fig-pullpush": pullpush, "fig-slot": slot, "fig-parcels": parcels}
+
+
+def main() -> int:
+    OUT.mkdir(parents=True, exist_ok=True)
+    figs = {k: v for k, v in FIGS.items() if not sys.argv[1:] or k in sys.argv[1:]}
+    for name, fn in figs.items():
+        (OUT / f"{name}.svg").write_text(fn())
+    print("wrote " + ", ".join(figs))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
