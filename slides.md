@@ -4,7 +4,7 @@ title: "DiracX developments: directions"
 info: |
   ## DiracX developments: directions — DIRAC(X) Users' Workshop 12
   Alexandre F. Boyer (CERN).
-  13–16 October 2026, FZU Prague. 20 minutes.
+  13–16 October 2026, FZU Prague. 30 minutes (Tue 13 Oct, 10:00–10:30).
 colorSchema: light
 class: text-left
 transition: slide-left
@@ -88,7 +88,7 @@ New communities, new use cases, and two systems running side by side
 ### Minimal dependencies
 A database and a search index, on a few hosts.
 
-**In DiracX:** standard protocols for what is external (S3, OpenTelemetry, OIDC), and options without Kubernetes.
+**In DiracX:** standard protocols for what is external (S3, OpenTelemetry, OIDC). Without Kubernetes: [Thursday's talk](https://indico.cern.ch/event/1588323/contributions/7288348/).
 
 </div>
 
@@ -125,7 +125,7 @@ Communities add their own pieces.
 <div class="dx-card dx-card-blue">
 
 ### New communities
-**CMS and FCC**, who joined this summer, bring new requirements. CMS has no DIRAC installation and runs its own workload management.
+**CMS and FCC**, who joined this summer, bring new requirements. CMS has no DIRAC installation and runs its own workload management: [Wednesday's CMS talk](https://indico.cern.ch/event/1588323/contributions/7264642/).
 
 </div>
 
@@ -189,7 +189,7 @@ Communities add their own pieces.
 
 <div class="dx-tight mt-1">
 
-- **36 people** contributed since the last workshop, most of them at **20 to 30 %** of their time: about **4 to 5 full-time equivalents**.
+- **36 people** contributed since the last workshop, **10 to 18** in any given month, almost all part-time: about **5 to 6 full-time equivalents** in total, LHCb core developers included.
 - They maintain DIRAC and develop DiracX at the same time.
 
 </div>
@@ -214,7 +214,7 @@ Responding to changing requirements, in small steps
 
 <div class="dx-tight mt-1">
 
-- **From 2023, three to four hackathons a year** onboarded new contributors, with no dashboard or regular meeting to follow progress. **Scrum** brought both in 2026.
+- **From 2023, three hackathons a year** onboarded new contributors, with no dashboard or regular meeting to follow progress. **Scrum** brought both in 2026.
 - **Proofs of concept run in parallel**, not mandatory: we try an idea before committing to it.
 
 </div>
@@ -225,7 +225,7 @@ Responding to changing requirements, in small steps
 
 # Almost the current process
 
-<img :src="'/figures/fig-pipeline.svg'" alt="One round from requirement to delivered package, nine steps" style="width:56%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-pipeline.svg'" alt="One round from requirement to delivered increment, seven steps" style="width:51%;margin:0 auto;display:block" />
 
 <div class="dx-tight mt-2">
 
@@ -255,7 +255,7 @@ Responding to changing requirements, in small steps
 <div class="dx-card dx-card-legacy">
 
 ### Future clients
-**DMS**: a DIRAC client calls DiracX instead of DIRAC, over the same databases. **RSS**: the read side first, through an adapter.
+**DMS**: a DIRAC client calls DiracX instead of DIRAC, over the same databases. **RSS**: the read side is in DiracX; DIRAC's adapter is in review.
 
 <img :src="'/figures/fig-mini-future.svg'" alt="A DIRAC client calls either the DIRAC service or the DiracX service; both use the same databases" style="width:100%;margin-top:.4rem" />
 
@@ -264,13 +264,15 @@ Responding to changing requirements, in small steps
 <div class="dx-card dx-card-new">
 
 ### Standard protocols
-**Systems internal to DIRAC give way to standards**: monitoring to OpenTelemetry, accounting to analytics. Details later.
+**Systems internal to DIRAC give way to standards**: monitoring to OpenTelemetry, accounting to analytics.
 
 <img :src="'/figures/fig-mini-protocols.svg'" alt="Monitoring becomes OpenTelemetry and accounting becomes analytics" style="width:100%;margin-top:.4rem" />
 
 </div>
 
 </div>
+
+<div class="duw-small mt-2">This week: <a href="https://indico.cern.ch/event/1588323/contributions/7286647/" target="_blank">Data Management for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264662/" target="_blank">Analytics for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264658/" target="_blank">RSS in DIRAC and DiracX</a> (all Wednesday)</div>
 
 ---
 layout: section
@@ -313,7 +315,7 @@ Numbers since the last workshop
 
 <img :src="'/figures/fig-burnup.svg'" alt="Cumulative issues in the DIRACGrid repositories since January 2024: open issues rose from 156 to 295 before January 2026 and fell to 195 by September" style="width:66%;margin:0 auto;display:block" />
 
-<div class="duw-small" style="text-align:center">All issues in the DIRACGrid repositories, bots excluded. Part of the fall is triage.</div>
+<div class="duw-small" style="text-align:center">All issues in the DIRACGrid repositories, bots excluded. Part of the fall is triage, and about 120 of the 195 still open are not triaged yet.</div>
 
 ---
 
@@ -325,15 +327,15 @@ Numbers since the last workshop
 
 <div class="col-span-7">
 
-<img :src="'/figures/fig-velocity.svg'" alt="Story points per person and sprint, expected against delivered, for sprints 1 to 23: expected is about twice what is delivered in almost every sprint" style="width:100%" />
+<img :src="'/figures/fig-velocity.svg'" alt="Story points per person and sprint, expected against delivered, for sprints 1 to 23, sprints 1 to 5 shaded as the pilot with CTAO: expected is about twice what is delivered in every sprint since January" style="width:100%" />
 
 </div>
 
 <div class="col-span-5 dx-tight">
 
-- **We expect about twice what we deliver**: a median of 13 story points per person and sprint expected, 5.3 delivered.
+- **We expect about twice what we deliver**: since January, a median of 14 story points per person and sprint expected, 6.6 delivered.
 - Delivered velocity follows availability: workshops, conferences, holidays.
-- Only one sprint delivered what was expected.
+- No sprint since January delivered what was expected; the best reached about three quarters.
 
 </div>
 
@@ -374,7 +376,7 @@ Numbers since the last workshop
 - **84% of DIRAC pull requests have no linked issue**, against 49% on DiracX.
 - Security and performance work arrives when it arrives. It is the cost of keeping DIRAC running, and why DIRAC only gets patches.
 
-<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For developers:</b> we overestimate what a sprint can hold because we do not count the unplanned DIRAC maintenance. Plan for it.</div>
+<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For developers:</b> we overestimate what a sprint can hold, partly because we do not count the unplanned DIRAC maintenance. Plan for it.</div>
 
 </div>
 
@@ -392,7 +394,7 @@ Numbers since the last workshop
 
 <div>
 
-**36 people** merged a change since the last workshop; **17 were new**, from ten communities. Almost all are part-time, so effort varies from month to month.
+**36 people** from nine communities merged a change since the last workshop; **17 were new**. Almost all are part-time, so effort varies from month to month.
 
 </div>
 
@@ -497,8 +499,8 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 
 <div class="col-span-2">
 
-<div class="duw-quote">"AI does not resolve ambiguity. It amplifies it."</div>
-<div class="duw-small mt-1">Nir Yechiel, <a href="https://nyechiel.com/blog/2026/07/02/the-bottleneck-moved/">The bottleneck moved</a>, July 2026</div>
+<div class="duw-quote">"AI's primary role in software development is that of an amplifier."</div>
+<div class="duw-small mt-1"><a href="https://research.google/pubs/dora-2025-state-of-ai-assisted-software-development-report/">DORA 2025 State of AI-assisted Software Development</a></div>
 
 <div class="dx-tight mt-3">
 

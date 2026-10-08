@@ -121,6 +121,10 @@ def velocity():
     v = pd.read_csv(D / "9_velocity_team_record.csv")
     fig, ax = plt.subplots(figsize=(6.6, 3.2))
     x = range(len(v))
+    pilot = int((v.sprint <= 5).sum())  # sprints 1-5: pilot phase with CTAO on dirac-cwl, before the board
+    ax.axvspan(-0.5, pilot - 0.5, color="#eef1f3", zorder=0)
+    ax.text((pilot - 1) / 2, v.expected.max() * 0.97, "pilot\n(CTAO, dirac-cwl)", ha="center", va="top",
+            color=MUTE, fontsize=8.5)
     ax.bar([i - 0.2 for i in x], v.expected, width=0.4, color="#c9dced", label="expected")
     ax.bar([i + 0.2 for i in x], v.delivered, width=0.4, color="#1f78c1", label="delivered")
     ax.set_xticks(list(x)); ax.set_xticklabels(v.sprint, color=MUTE, fontsize=8.5)

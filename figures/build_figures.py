@@ -486,7 +486,7 @@ def pipeline() -> str:
     left to right up to the adopted ADR; the bottom row runs back, right to left, through
     the sprint's package, the representatives' review of it and the retrospective the
     scrum master leads, into the next round of requirements."""
-    W, H = 2080, 960
+    W, H = 1890, 960               # the return arcs reach x ~25 and ~1865: keep it centred
     o = [head(W, H)]
     TOP, BOT = 280, 740            # screen y of each row's platforms
     K = 0.74                       # isometric scale of every station
@@ -574,7 +574,7 @@ def pipeline() -> str:
         (REPS, "representatives", "write requirements"),
         ([LAVENDER], "product owner", ["plans the backlog,", "sets priorities"]),
         (REPS, "representatives", "approve"),
-        ([TEAL, TEAL, TEAL], "developers", ["split into tasks; large changes:", "proof of concept, then an ADR"]),
+        ([TEAL, TEAL, TEAL], "developers", ["split into tasks;", "large changes: a proof", "of concept, then an ADR"]),
         ([TEAL, TEAL], "developers", "deliver an increment"),
         (REPS, "representatives", ["review the increment,", "their communities test it"]),
         ([SCRUM], "scrum master", "leads the retrospective"),
