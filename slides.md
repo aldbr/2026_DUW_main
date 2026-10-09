@@ -1,6 +1,6 @@
 ---
 theme: default
-title: "Workload Management: DIRAC and DiracX as compute backends"
+title: "Workload Management"
 info: |
   ## Workload Management: DIRAC and DiracX as compute backends. DIRAC(X) Users' Workshop 12
   Alexandre F. Boyer (CERN).
@@ -17,7 +17,9 @@ fonts:
   italic: true
 ---
 
-# Workload Management: DIRAC and DiracX as compute backends
+# Workload Management
+
+<div class="duw-subtitle">DIRAC and DiracX as compute backends</div>
 
 <span class="dx-author">Alexandre F. Boyer</span> · CERN
 
@@ -30,9 +32,9 @@ fonts:
 
 ---
 
-# ARM and GPUs: HPC and clouds see them first
+# ARM and GPUs are spreading
 
-<div style="display:grid;grid-template-columns:1.75fr 1fr;gap:1rem;align-items:center">
+<div style="display:grid;grid-template-columns:2.3fr 1fr;gap:1rem;align-items:center;margin-top:.6rem">
 
 <img :src="'/figures/fig-worldmap.svg'" alt="World map of ARM and GPU systems: TOP500 systems in the US, Europe, Asia, Australia, Brazil and Saudi Arabia, and the WLCG ARM sites at Glasgow and GridKa" style="width:100%" />
 
@@ -44,40 +46,41 @@ fonts:
 
 </div>
 
-<div class="duw-timeline mt-2">
-<div><span class="y">2010</span><br/>first GPU system at the top of the TOP500</div>
-<div><span class="y">2018</span><br/>ARM in a large cloud (AWS)</div>
-<div><span class="y">2020</span><br/>first ARM system at the top of the TOP500</div>
-<div><span class="y">2025</span><br/>first ARM pledges in WLCG, ATLAS only</div>
-<div class="bad"><span class="y">2026</span><br/>GPUs still cannot be pledged in WLCG</div>
-</div>
+---
+
+# HPC and clouds see them first
+
+<img :src="'/figures/fig-history.svg'" alt="Timeline: HPC, clouds and industry above the line (2005 multicore CPUs, 2010 first GPU system at the top of the TOP500, 2018 ARM in AWS, 2020 first ARM system at the top of the TOP500); the grid below (2023 ARM in production at Glasgow, 2025 first ARM pledges in WLCG, GPUs cannot be pledged yet)" style="width:94%;margin:.6rem auto 0;display:block" />
+
+<div class="dx-key mt-3">The grid follows, years later: sites buy from the same market, once the experiments can use the hardware.</div>
 
 ---
 
-# From HPC to the grid, and to the WMS
+# The end of two decades of homogeneity
 
-<div class="duw-quote" style="font-size:.78rem">Grid sites buy from the same market: "Hardware technology evolution now is dominated by the needs of AI" (A. Sciabà, CERN IT, July 2026).</div>
+<div class="duw-quote" style="font-size:.8rem">Sites buy from the same market as everyone else: "Hardware technology evolution now is dominated by the needs of AI" (<a href="https://indico.cern.ch/event/1678348/contributions/7172397/" target="_blank">A. Sciabà, CERN IT, July 2026</a>).</div>
 
-<div class="duw-chain mt-2">
-<div class="h">Driver, and why</div><div class="h">HPC and clouds first</div><div class="h">Grid sites now</div><div class="h">What the WMS must do</div>
+<div class="duw-chain3 mt-3">
+<div class="h">Why it changes</div><div class="h">What sites now offer</div><div class="h">What the WMS must do</div>
 
-<div class="d gpu"><b>AI demand</b>Expected gains of $2.6–4.4T a year (McKinsey); NVIDIA data-centre revenue $194B in FY2026</div>
-<div>GPUs in 276 of the TOP500</div>
-<div>ATLAS: ~280 GPUs at 8 grid sites, little used; no GPU pledge before 2028</div>
-<div class="w">Schedule CPU and GPU work together; match on capabilities</div>
+<div class="d gpu"><b>AI</b>expected productivity gains drive the market</div>
+<div>GPUs, before they can be pledged or accounted</div>
+<div class="w">Match on capabilities; run CPU and GPU work side by side</div>
 
-<div class="d arm"><b>Energy and hardware cost</b>2022 energy shock (CERN ran 20% less in 2023), climate targets, memory prices ×6 with AI</div>
-<div>ARM in 35 of the TOP500; most new AWS CPU capacity is ARM</div>
-<div>ATLAS: ARM up to half of a pledge, 11k slots at 5 sites; Glasgow ~20% ARM</div>
-<div class="w">One site, two architectures: images and matching per architecture</div>
+<div class="d arm"><b>Energy and hardware cost</b>2022 energy shock, climate targets, AI-driven prices</div>
+<div>ARM next to x86: first WLCG ARM pledges in 2025</div>
+<div class="w">One image and one match per architecture</div>
 
-<div class="d core"><b>More cores per node</b>Clock speed stalled around 2005 (power wall): extra transistors became cores. 32 per socket in 2017, 192 in 2024</div>
-<div>HPCs hand out whole nodes: 112 cores on MareNostrum 5</div>
-<div>Multicore pilots: 8 cores for 48 h (CMS)</div>
-<div class="w">Fill nodes, not slots: multicore payloads, bundling, memory-aware matching</div>
+<div class="d core"><b>More cores per node</b>clock speed stopped rising around 2005</div>
+<div>Whole nodes (HPC), multicore slots (grid)</div>
+<div class="w">Fill nodes, not single slots</div>
+
+<div class="d tok"><b>Identity</b>X.509 gives way to the tokens industry uses</div>
+<div>CEs that accept tokens, or only tokens</div>
+<div class="w">Pilots submitted with tokens (DIRAC v8.0); DiracX built on tokens</div>
 </div>
 
-<div class="dx-key mt-2"><b>In DIRAC</b>: temporary solutions, to keep it stable. <b>In DiracX</b>: the long-term solutions, designed for this.</div>
+<div class="dx-key mt-3"><b>In DIRAC</b>: temporary solutions, to keep it stable. <b>In DiracX</b>: the long-term solutions, designed for this.</div>
 
 ---
 layout: section
@@ -180,18 +183,19 @@ What keeps it running while we migrate
 
 # Heterogeneous nodes
 
-<img :src="'/figures/fig-hetero.svg'" alt="CVMFS holds one directory per architecture under .multiarch; an x86_64 node and an aarch64 node each pull their own image into a container limited by cgroup2; an HPC centre is reached through the SSH CE" style="width:60%;margin:-1rem auto 0;display:block" />
+<img :src="'/figures/fig-hetero.svg'" alt="CVMFS holds one directory per architecture under .multiarch; an x86_64 node and an aarch64 node each pull their own image into a container limited by cgroup2; an HPC centre is reached through the SSH CE" style="width:44%;margin:-1.2rem auto 0;display:block" />
 
-<div class="duw-two dx-tight">
+<div class="duw-two dx-tight" style="font-size:.8rem">
 <div>
 
-- **aarch64 images** <span class="duw-was">DUW11</span>: <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify. Needs CVMFS 2.14 (DUCC 2.14.1) where images are published; any client reads it.
+- **One image for x86_64 and aarch64** (<a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open) <span class="duw-was">DUW11</span>. A job names one container image; the pilot reads the node's architecture and takes the matching copy under CVMFS `/.multiarch`. Publishing needs CVMFS 2.14 (DUCC 2.14.1); any client reads it.
+- **CPU and memory limits** (v9.0) <span class="duw-was">DUW11</span>. Memory requests count when matching and when sharing a multi-core slot; cgroup2 keeps each job within its share.
 
 </div>
 <div>
 
-- **Limits** <span class="duw-was">DUW11</span> and **HPC** <span class="duw-was">DUW11</span>: in v9.0.
-- **Not solved in DIRAC**: a job for x86_64 *or* aarch64.
+- **HPC through SSH** (v9.0) <span class="duw-was">DUW11</span>. The SSH computing element, rewritten on Fabric, submits through an HPC login node to its batch system.
+- **Still missing in DIRAC: alternatives.** A job states one platform and one set of requirements. It cannot say "x86_64, or aarch64, or a GPU of type A". The DiracX matcher is designed for this (section 3).
 
 </div>
 </div>
