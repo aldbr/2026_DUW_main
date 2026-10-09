@@ -15,6 +15,10 @@ import claylib as cl
 from claylib import Iso, contact_shadow, cube, shade, slab, text
 from build_figures import arrow, arrowhead, cylinder, head, pill
 
+
+def dbs(cx, ytop, gid, base="#bfc7d3", n=3):
+    return "".join(cylinder(cx + (i - (n - 1) / 2) * 96, ytop, 38, 54, base, f"{gid}{i}") for i in range(n))
+
 OUT = pathlib.Path(__file__).parent.parent / "public" / "figures"
 TEXT_1, TEXT_2 = cl.TEXT_1, cl.TEXT_2
 BLUE, TEAL = cl.ACCENT["legacy"], cl.ACCENT["diracx"]
@@ -212,7 +216,76 @@ def parcels() -> str:
     return "".join(o)
 
 
-FIGS = {"fig-landscape": landscape, "fig-pullpush": pullpush, "fig-slot": slot, "fig-parcels": parcels}
+def backends() -> str:
+    """Before: port DIRAC services one by one onto the same databases.
+    Now: the DiracX transformation system dispatches to compute backends, each with its own data."""
+    W, H = 1600, 760
+    o = [head(W, H)]
+    o.append(panel(30, 20, 680, 720, "Before: port piece by piece", "#f6f7f9", "#dde2e9", size=SUB))
+    o.append(panel(750, 20, 820, 720, "Now: separate compute backends", "#eef7f5", "#cfe6e1", size=SUB))
+    # before
+    rows = ["JobStateUpdate", "JobMonitoring", "JobManager", "Matcher"]
+    for i, n in enumerate(rows):
+        y = 150 + i * 88
+        o.append(label_pill(70, y, 250, 66, BLUE, f"bp{i}", n, INK_BLUE, size=SMALL - 4))
+        o.append(arrow(328, y + 33, 404, y + 33, 0, sw=3.4))
+        if i == 0:
+            o.append(label_pill(412, y, 250, 66, TEAL, f"bq{i}", n, INK_TEAL, size=SMALL - 4))
+        else:
+            o.append(f'<rect x="412" y="{y}" width="250" height="66" rx="26" fill="#ffffff" stroke="#8fb9b2" stroke-width="3" stroke-dasharray="10 8"/>')
+            o.append(text(537, y + 43, n, SMALL - 4, fill="#5f8781"))
+    o.append(text(195, 132, "DIRAC", SMALL - 2, "bold", fill=TEXT_2))
+    o.append(text(537, 132, "DiracX", SMALL - 2, "bold", fill=TEXT_2))
+    o.append(dbs(366, 540, "bdb", n=3))
+    o.append(text(366, 646, "the same databases,", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append(text(366, 680, "the same data model", SMALL - 4, italic=True, fill=TEXT_2))
+    # now
+    o.append(label_pill(940, 90, 440, 100, TEAL, "nts", "Transformation System", INK_TEAL, "parcels, in DiracX", size=SUB - 2))
+    bk = [(790, BLUE, "DIRAC WMS", INK_BLUE, "stable, fixes only", False),
+          (1060, TEAL, "DiracX WMS", INK_TEAL, "later, when needed", True),
+          (1330, "#c7cfd9", "HTCondor", TEXT_1, "glideins", False)]
+    for i, (x, col, t, ink, sub, fut) in enumerate(bk):
+        if fut:
+            o.append(f'<rect x="{x}" y="330" width="220" height="104" rx="26" fill="#ffffff" stroke="#8fb9b2" stroke-width="4" stroke-dasharray="12 9"/>')
+            o.append(text(x + 110, 374, t, SMALL, "bold", fill=ink))
+            o.append(text(x + 110, 410, sub, SMALL - 8, fill=ink))
+        else:
+            o.append(label_pill(x, 330, 220, 104, col, f"nb{i}", t, ink, sub, size=SMALL))
+        o.append(arrow(1160, 196, x + 110, 322, 0, sw=3.4))
+    o.append(dbs(900, 520, "ndb1", base="#bfc7d3", n=2))
+    o.append(dbs(1170, 520, "ndb2", base="#9fd3cb", n=2))
+    o.append(text(1035, 646, "each backend keeps its own data", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append(text(1035, 680, "and its own data model", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def parcels_only() -> str:
+    """No jobs in DiracX: user jobs and workgraphs become parcels. The JobDB already in DiracX is legacy."""
+    W, H = 1600, 520
+    o = [head(W, H)]
+    o.append(label_pill(40, 60, 340, 100, GREEN, "po1", "user job", "#2d5a33", "a CWL document"))
+    o.append(label_pill(40, 220, 340, 100, GREEN, "po2", "workgraph", "#2d5a33", "CWL: steps = transformations"))
+    o.append(arrow(386, 110, 540, 176, 10, sw=4))
+    o.append(arrow(386, 270, 540, 206, -6, sw=4))
+    o.append(label_pill(550, 140, 320, 100, TEAL, "po3", "parcel", INK_TEAL, "the record of work", size=SUB))
+    o.append(arrow(876, 190, 1000, 190, 0, sw=4))
+    o.append(label_pill(1010, 140, 320, 100, TEAL, "po4", "dispatcher", INK_TEAL, "to a backend", size=SUB))
+    o.append(arrow(1336, 190, 1440, 190, 0, sw=4))
+    o.append(text(1460, 200, "...", SUB, "bold", anchor="start", fill=TEXT_2))
+    o.append(cylinder(710, 330, 60, 50, "#9fd3cb", "podb"))
+    o.append(text(710, 440, "parcel tables", SMALL - 4, italic=True, fill=TEXT_2))
+    # legacy JobDB, greyed and dashed
+    o.append(f'<rect x="1000" y="330" width="560" height="160" rx="26" fill="#f6f7f9" stroke="#c3c9d2" stroke-width="3" stroke-dasharray="12 9"/>')
+    o.append(cylinder(1090, 370, 50, 44, "#d5d9df", "pojdb"))
+    o.append(text(1180, 392, "JobDB in DiracX: legacy", SMALL - 2, "bold", anchor="start", fill=TEXT_2))
+    o.append(text(1180, 430, "tests a deployment only;", SMALL - 6, anchor="start", fill=TEXT_2))
+    o.append(text(1180, 462, "deleted once all are on DiracX", SMALL - 6, anchor="start", fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+FIGS = {"fig-landscape": landscape, "fig-pullpush": pullpush, "fig-slot": slot, "fig-parcels": parcels, "fig-backends": backends, "fig-parcels-only": parcels_only}
 
 
 def main() -> int:
