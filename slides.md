@@ -159,11 +159,24 @@ What keeps it running while we migrate
 
 # More reliable
 
-<img :src="'/figures/fig-path-reliable.svg'" alt="The same path: TaskQueueDB, SiteDirector, JobAgent and JobWrapper highlighted in blue with their fixes" style="width:64%;margin:-1rem auto 0;display:block" />
+<div class="duw-figside">
 
-<div class="duw-prs"><a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a></div>
+<img :src="'/figures/fig-path-reliable.svg'" alt="The DIRAC WMS path with TaskQueueDB, SiteDirector, Pilot, JobAgent and JobWrapper highlighted in blue" />
 
-<div class="dx-key mt-1">None of these change how DIRAC works. They remove ways it could fail.</div>
+<div class="duw-details">
+
+**Task queues keep their restrictions** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20<br/>A race could leave a task queue briefly without its site rows: a pilot at any site could then match jobs meant for other sites.
+
+**Banned CEs skipped** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a>, v9.0.2<br/>The SiteDirector kept trying to submit pilots to banned CEs.
+
+**Rescheduled jobs left alone** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17<br/>A job rescheduled after an early failure could already run elsewhere when the JobAgent, minutes later, marked it Failed.
+
+**No NaN parameters** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a>, v9.1.16<br/>Jobs shorter than the first Watchdog cycle reported NaN: invalid JSON, so DiracX rejected the whole update.
+
+**Python 3 only pilot** · <a href="https://github.com/DIRACGrid/Pilot/pull/268" target="_blank">Pilot #268</a> <span class="duw-was">DUW11</span>
+
+</div>
+</div>
 
 ---
 
@@ -171,31 +184,23 @@ What keeps it running while we migrate
 
 # Safer
 
-<img :src="'/figures/fig-path-safer.svg'" alt="The same path: SandboxStore, JobStateUpdate, pilot logging, PilotManager, pilot files and the databases highlighted with the advisory each fix addresses" style="width:64%;margin:-1rem auto 0;display:block" />
+<div class="duw-figside">
 
-<div class="duw-prs"><a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a> <span>fixed in v9.1.20 · v9.0.26 · v8.0.85</span> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9" target="_blank">GHSA-vg99</a> <span>fixed in v9.1.10 · v9.0.22</span></div>
+<img :src="'/figures/fig-path-safer.svg'" alt="The DIRAC WMS path with SandboxStore, JobStateUpdate, pilot logging, PilotManager, the pilot and the databases highlighted" />
 
-<div class="dx-concludes mt-1"><carbon-arrow-right class="dx-concludes-arrow" /><span>DIRAC is patched, not developed: <strong>upgrading is how you get these</strong></span></div>
+<div class="duw-details">
 
----
+**Job state updates** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a>, high<br/>Any authenticated user could change any job's owner, group or VO, or force its status.
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+**Sandbox store** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a>, critical<br/>A file name ending in `../` could write anywhere the service user can.
 
-# Heterogeneous nodes
+**Pilot logging** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a>, critical<br/>A crafted file name could read any file on the server.
 
-<img :src="'/figures/fig-hetero.svg'" alt="CVMFS holds one directory per architecture under .multiarch; an x86_64 node and an aarch64 node each pull their own image into a container limited by cgroup2; an HPC centre is reached through the SSH CE" style="width:44%;margin:-1.2rem auto 0;display:block" />
+**Pilot manager** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a>, high<br/>Parameters reached SQL unescaped, without access control.
 
-<div class="duw-two dx-tight" style="font-size:.8rem">
-<div>
+**Pilot download** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9" target="_blank">GHSA-vg99</a>, high<br/>The pilot code was fetched over HTTPS without checking the certificate, then run.
 
-- **One image for x86_64 and aarch64** (<a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open) <span class="duw-was">DUW11</span>. A job names one container image; the pilot reads the node's architecture and takes the matching copy under CVMFS `/.multiarch`. Publishing needs CVMFS 2.14 (DUCC 2.14.1); any client reads it.
-- **CPU and memory limits** (v9.0) <span class="duw-was">DUW11</span>. Memory requests count when matching and when sharing a multi-core slot; cgroup2 keeps each job within its share.
-
-</div>
-<div>
-
-- **HPC through SSH** (v9.0) <span class="duw-was">DUW11</span>. The SSH computing element, rewritten on Fabric, submits through an HPC login node to its batch system.
-- **Still missing in DIRAC: alternatives.** A job states one platform and one set of requirements. It cannot say "x86_64, or aarch64, or a GPU of type A". The DiracX matcher is designed for this (section 3).
+<span class="duw-small">First three fixed in v9.1.20, v9.0.26, v8.0.85; last two in v9.1.10, v9.0.22. All WMS SQL parameterised in v9.1.13 to v9.1.15.</span>
 
 </div>
 </div>
@@ -204,28 +209,97 @@ What keeps it running while we migrate
 
 <div class="duw-sec">2 · DIRAC: fixes and performance</div>
 
-# Time left in the slot
+# One image for every architecture
 
-<div class="duw-two dx-tight">
+<img :src="'/figures/fig-multiarch.svg'" alt="CVMFS holds one directory per architecture under .multiarch; on an x86_64 node and on an aarch64 node the pilot reads uname -m and runs the matching copy of the same image" style="width:62%;margin:-1rem auto 0;display:block" />
+
+<div class="duw-two dx-tight" style="font-size:.86rem">
 <div>
 
-**The problem**
-- Jobs in containers could not ask the batch system for the time left.
-- The post-processing margin was known only to the Watchdog, which could only kill.
+- Sites now offer x86_64 and aarch64 nodes. A job names one container image; the pilot reads the node's architecture and runs the matching copy. <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify <span class="duw-was">DUW11</span>.
+- Publishing needs CVMFS 2.14 (DUCC 2.14.1); any CVMFS client reads the result.
 
 </div>
+<div>
+
+- **Still missing in DIRAC: alternatives.** A job states one platform and one set of requirements. It cannot say "x86_64, or aarch64, or a GPU of type A". The DiracX matcher is designed for this.
+
+</div>
+</div>
+
+---
+
+<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+
+# Sharing a node, reaching an HPC
+
+<img :src="'/figures/fig-limits-hpc.svg'" alt="Left: one multi-core slot shared by three jobs, each inside its own cgroup2 limit; right: the SSH CE reaching an HPC login node whose batch system runs the pilots" style="width:66%;margin:-.6rem auto 0;display:block" />
+
+<div class="duw-two dx-tight" style="font-size:.86rem">
+<div>
+
+- **CPU and memory limits** (v9.0) <span class="duw-was">DUW11</span>. Memory requests count when matching and when sharing a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup2 keeps each job within its share (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>).
+
+</div>
+<div>
+
+- **HPC through SSH** (v9.0) <span class="duw-was">DUW11</span>. The SSH computing element, rewritten on Fabric, submits through an HPC login node to its batch system (<a href="https://github.com/DIRACGrid/DIRAC/pull/7703" target="_blank">#7703</a>).
+
+</div>
+</div>
+
+---
+
+<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+
+# Time left in the slot: before and after
+
+<img :src="'/figures/fig-slot2.svg'" alt="Before: the payload is sized for the whole slot and is killed at the end, outputs lost. After: a margin is reserved before matching, a stop signal lets the payload wind down, and the uploads fit; a killed job reports why" style="width:84%;margin:.2rem auto 0;display:block" />
+
+<div class="duw-two dx-tight mt-2" style="font-size:.88rem">
 <div>
 
 **An example**: an MC job sized for 183 events produced 150, was killed, and its output was never uploaded.
 
-**Since v9.1.4** (#8479): the pilot reads the time left once; jobs read it from the pilot configuration.
+</div>
+<div>
+
+**One source of truth** since v9.1.4 (<a href="https://github.com/DIRACGrid/DIRAC/pull/8479" target="_blank">#8479</a>): the pilot reads the time left once, jobs read it from the pilot configuration, even inside containers.
 
 </div>
 </div>
 
-<img :src="'/figures/fig-slot.svg'" alt="A slot split into pilot, payload and StopMargin; the margin is reserved before matching, a stop signal ends the payload cleanly, and a killed job reports why" style="width:52%;margin:0 auto;display:block" />
+---
 
-<div class="dx-key mt-1">The three fixes above are in <b>v9.1.21</b> only; see "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.</div>
+<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+
+# Time left in the slot: configuration
+
+<div class="duw-two">
+<div>
+
+`/Systems/WorkloadManagement/JobWrapper`, or per job in the JDL:
+
+```ini
+StopMargin = 300            # seconds kept for the uploads
+# graceful stop, off unless set; example for Gauss
+StopSigRegex = ^\S*python\S*\s+\S*/gaudirun\.py\s.*/options/Gauss/
+StopSigNumber = 10          # SIGUSR1
+StopSigFinishWork = 16740   # CPU work to wind down
+StopSigStartWork = 8370     # minimum work before stopping
+```
+
+</div>
+<div class="dx-tight">
+
+- **StopMargin** is wall clock: uploading takes the same time on any node. It is subtracted once, before matching.
+- **StopSig\*** thresholds are in CPU work, divided by the node's power: one value fits slow and fast nodes.
+- The application must handle the signal (Gauss: `StopOnSignal`). The Watchdog still stops it when the budget is spent.
+
+</div>
+</div>
+
+<div class="dx-key mt-2">In <b>v9.1.21</b> only. Details: "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.</div>
 
 ---
 layout: section
@@ -236,8 +310,10 @@ layout: section
 And the proofs of concept around the future WMS
 
 ---
+class: duw-poc
+---
 
-<div class="duw-sec">3 · DiracX: parcels, not jobs</div>
+<div class="duw-sec">3 · DiracX · exploratory</div>
 
 # No jobs in DiracX
 
@@ -260,31 +336,42 @@ And the proofs of concept around the future WMS
 </div>
 
 ---
+class: duw-poc
+---
 
-<div class="duw-sec">3 · DiracX: parcels, not jobs</div>
+<div class="duw-sec">3 · DiracX · exploratory</div>
 
 # CWL describes all the work
 
 <img :src="'/logos/cwl.svg'" alt="Common Workflow Language logo" style="position:absolute;top:2.5rem;right:2.6rem;height:2.4rem" />
 
-<div class="duw-two">
+<div class="duw-two" style="grid-template-columns:1fr 1.05fr">
 <div>
 
-**One format** (DX-ADR-007, draft): a user payload, a workgraph and each transformation are CWL v1.2 documents.
+```yaml
+cwlVersion: v1.2
+class: CommandLineTool
+$namespaces: {dirac: https://diracgrid.org/cwl#}
+hints:
+  dirac:Job: {}       # a user payload
+baseCommand: [python, fit.py]
+inputs:
+  data:               # "lfn:/vo/..." on the grid,
+    type: File        # a local file on a laptop
+    inputBinding: {position: 1}
+outputs:
+  plots: {type: File, outputBinding: {glob: "*.png"}}
+```
 
-- DiracX settings are `dirac:` **hints**: every document stays plain, runnable CWL.
-- The same document runs with `cwltool`, locally, and at scale.
-- Processes are resolved before dispatch: the node fetches no definitions.
+<div class="duw-small">Draft syntax (DX-ADR-007). Runs as is with <code>cwltool</code>.</div>
 
 </div>
-<div>
+<div class="dx-tight">
 
-**For a WMS backend**
-- Matching requirements come from the hints.
-- The job wrapper resolves inputs (`lfn:`, `sandbox:`) and reports a status per input.
-- DiracX registers the outputs after the parcel ends.
-
-**Yesterday**: hands-on sessions to convert DIRAC workflows to CWL.
+- **One format** for a user payload, a workgraph and each transformation: CWL v1.2.
+- DiracX settings are `dirac:` **hints**: the document stays plain CWL.
+- **For a WMS backend**: requirements come from the hints; the job wrapper resolves `lfn:` and `sandbox:` inputs and reports a status per input; DiracX registers the outputs.
+- **Yesterday**: hands-on sessions to convert DIRAC workflows to CWL.
 
 </div>
 </div>
@@ -296,8 +383,10 @@ And the proofs of concept around the future WMS
 </div>
 
 ---
+class: duw-poc
+---
 
-<div class="duw-sec">3 · DiracX: parcels, not jobs</div>
+<div class="duw-sec">3 · DiracX · exploratory</div>
 
 # interCEde: computing elements, explored from use cases
 
@@ -323,8 +412,10 @@ And the proofs of concept around the future WMS
 </div>
 
 ---
+class: duw-poc
+---
 
-<div class="duw-sec">3 · DiracX: parcels, not jobs</div>
+<div class="duw-sec">3 · DiracX · exploratory</div>
 
 # A matcher for the DiracX WMS
 
@@ -345,46 +436,75 @@ And the proofs of concept around the future WMS
 </div>
 </div>
 
-<img :src="'/figures/fig-matcher.svg'" alt="The POC matcher for one pilot request: all waiting jobs, then match against the node, filter by job-type limits and priority, rank by fair share, and hand one job to the pilot" style="width:64%;margin:0 auto;display:block" />
-
-<div class="dx-key mt-1">Next: matching in Redis, measured against this baseline. Then an ADR, then the implementation in DiracX.</div>
+<div class="dx-key mt-3">Next: matching in Redis, measured against this baseline. Then an ADR, then the implementation in DiracX.</div>
 
 ---
+class: duw-poc
+---
 
-<div class="duw-sec">3 · DiracX: parcels, not jobs</div>
+<div class="duw-sec">3 · DiracX · exploratory</div>
+
+# What the matcher POC does today
+
+<img :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters by job-type limits and priority, ranks by fair share, and hands one job to the pilot" style="width:76%;margin:-.4rem auto 0;display:block" />
+
+<div class="duw-two" style="font-size:.7rem">
+<div>
+
+```yaml
+# a job's requirements (excerpt)
+matching_specs:      # a list: alternatives
+  - cpu:
+      num-cores: {min: 1, max: 4}
+      architecture: {name: x86_64}
+    gpu:
+      count: {min: 1, max: 1}
+      vendor: nvidia
+      compute-capability: {min: 8.0}
+    tags: cvmfs:lhcb & (os:el9 | os:alma9)
+```
+
+</div>
+<div>
+
+```yaml
+# the node a pilot describes (excerpt)
+site: LCG.CERN.cern
+cpu:
+  num-cores: 8
+  ram-mb: 32768
+  architecture: {name: x86_64}
+gpu: {count: 1, vendor: nvidia,
+      compute-capability: 8.0}
+tags: [cvmfs:lhcb, os:el9, gpu:nvidia]
+```
+
+</div>
+</div>
+
+---
+class: duw-poc
+---
+
+<div class="duw-sec">3 · DiracX · exploratory</div>
 
 # Pilot management: port paused
 
-<div class="duw-three3">
+<img :src="'/figures/fig-pilots.svg'" alt="DIRAC pilot management ported as is to a DiracX pilot database and router, then paused; what comes next is a question mark, to be re-thought with the DiracX WMS" style="width:84%;margin:.4rem auto 0;display:block" />
 
-<div class="dx-card dx-card-new">
-
-### We started
-Porting pilot management from DIRAC to DiracX as it is: a pilot database and router landed (<a href="https://github.com/DIRACGrid/diracx/pull/570" target="_blank">diracx#570</a>) <span class="duw-was">DUW11</span>.
-
-</div>
-
-<div class="dx-card dx-card-blue">
-
-### We learned
-The data model could be much better. Changing it would mean large changes in DIRAC, which we keep stable.
-
-</div>
-
-<div class="dx-card dx-card-legacy">
-
-### So we paused
-Registration, pilot tokens and logging wait for the DiracX WMS backend. The re-thinking has not started.
-
-</div>
-
+<div class="duw-three3 mt-2" style="font-size:.86rem">
+<div>We started porting pilot management as it is: a pilot database and router landed (<a href="https://github.com/DIRACGrid/diracx/pull/570" target="_blank">diracx#570</a>) <span class="duw-was">DUW11</span>.</div>
+<div>We learned the data model could be much better; changing it would mean large changes in DIRAC, which we keep stable.</div>
+<div>So the port is paused: registration, pilot tokens and logging wait for the DiracX WMS backend.</div>
 </div>
 
 <div class="dx-key mt-3">Pilots belong to the DiracX WMS backend, which comes after the transformation system. The DIRAC pilot keeps being patched.</div>
 
 ---
+class: duw-poc
+---
 
-<div class="duw-sec">3 · DiracX: parcels, not jobs</div>
+<div class="duw-sec">3 · DiracX · exploratory</div>
 
 # The job wrapper: one for all of us
 

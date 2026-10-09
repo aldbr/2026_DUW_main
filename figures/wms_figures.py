@@ -569,11 +569,13 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     centre["user"] = (ux + 22, uy - 30)
     for a_, b_, lab, off in WMS_FLOW:
         (x1, y1), (x2, y2) = centre[a_], centre[b_]
-        o.append(f'<path d="M{x1:.1f},{y1:.1f} L{x2:.1f},{y2:.1f}" stroke="#7d8896" stroke-width="3.4" '
-                 f'stroke-linecap="round" fill="none" opacity="0.8"/>')
         dx, dy = x2 - x1, y2 - y1
         L = (dx * dx + dy * dy) ** 0.5
-        o.append(arrowhead(x2 - dx / L * 26, y2 - dy / L * 26, dx / L, dy / L, length=18, half_width=9, color="#7d8896"))
+        ux, uy = dx / L, dy / L
+        tipx, tipy = x2 - ux * 26, y2 - uy * 26
+        o.append(f'<path d="M{x1 + ux * 14:.1f},{y1 + uy * 14:.1f} L{tipx - ux * 16:.1f},{tipy - uy * 16:.1f}" stroke="#7d8896" '
+                 f'stroke-width="3.4" stroke-linecap="round" fill="none"/>')
+        o.append(arrowhead(tipx, tipy, ux, uy, length=18, half_width=9, color="#7d8896"))
         labels.append(_halo_text((x1 + x2) / 2 - 10 + off, (y1 + y2) / 2 - 8, lab, SMALL - 6, "normal", "#5b6573"))
     o += labels
     lx, ly = P(1000, 0, 0)
@@ -718,6 +720,8 @@ def matcher_poc() -> str:
     o.append(arrow(1390, 200, 1440, 200, 0, sw=4))
     o.append(label_pill(1448, 166, 145, 68, AMBER, "mp-p", "one job", INK_AMBER, size=SMALL - 2))
     o.append(text(1520, 270, "to the pilot", SMALL - 8, fill=TEXT_2))
+    o.append(label_pill(20, 20, 330, 64, AMBER, "mp-n", "pilot: node description", INK_AMBER, size=SMALL - 6))
+    o.append(arrow(330, 90, 470, 150, 20, sw=3.6))
     o.append(text(800, 500, "one request at a time, in Python: every waiting job is checked", SMALL - 4, italic=True, fill=TEXT_2))
     o.append("</svg>")
     return "".join(o)
@@ -757,11 +761,12 @@ def intercede_flow() -> str:
     for i in range(3):
         o.append(cl.person(470 + i * 60, 70, 15, ["#adc3e3", "#9fd3a8", "#f0d9a6"][i], f"ic-u{i}"))
     o.append(text(530, 160, "communities", SMALL - 4, "bold", fill=TEXT_1))
-    o.append(arrow(450, 120, 300, 230, -20, sw=3.6))
+    o.append(arrow(450, 100, 250, 220, -40, sw=3.6))
     o.append(text(300, 120, "requirements:", SMALL - 7, "bold", anchor="end", fill=TEXT_1))
     o.append(text(300, 148, "issues, DOps", SMALL - 7, anchor="end", fill=TEXT_2))
-    o.append(arrow(700, 230, 610, 130, -20, sw=3.6))
-    o.append(text(720, 110, "increments to test", SMALL - 7, "bold", anchor="start", fill=TEXT_1))
+    o.append(arrow(330, 250, 470, 140, 30, sw=3.6))
+    o.append(text(430, 240, "increments", SMALL - 7, "bold", anchor="start", fill=TEXT_1))
+    o.append(text(430, 268, "to test", SMALL - 7, anchor="start", fill=TEXT_2))
     o.append("</svg>")
     return "".join(o)
 
@@ -797,7 +802,130 @@ def history() -> str:
     return "".join(o)
 
 
-FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history}
+def slot_before_after() -> str:
+    """The end of a slot, before and after the v9.1 fixes."""
+    W, H = 1600, 560
+    o = [head(W, H)]
+    X0, X1 = 260, 1540
+    def bar(y, segs):
+        for i, (a, b, col, t, ink) in enumerate(segs):
+            o.append(pill(a + 4, y, b - a - 8, 80, col, f"sb{y}{i}", r=20))
+            o.append(text((a + b) / 2, y + 52, t, SMALL, "bold", fill=ink))
+    o.append(text(40, 132, "before", SUB - 2, "bold", anchor="start", fill="#9b4d3a"))
+    bar(90, [(X0, 420, "#c7cfd9", "pilot", TEXT_1),
+             (420, 1540, "#9fd3a8", "payload, sized for the whole slot", "#2d5a33")])
+    o.append(f'<line x1="1500" y1="66" x2="1500" y2="196" stroke="#c0392b" stroke-width="5"/>')
+    o.append(text(1490, 222, "killed: outputs lost", SMALL - 4, "bold", anchor="end", fill="#c0392b"))
+    o.append(text(X0, 222, "only the Watchdog knew the margin; it could only kill", SMALL - 6, anchor="start", fill=TEXT_2))
+    o.append(text(40, 372, "after", SUB - 2, "bold", anchor="start", fill="#2d5a33"))
+    bar(330, [(X0, 420, "#c7cfd9", "pilot", TEXT_1),
+              (420, 1060, "#9fd3a8", "payload", "#2d5a33"),
+              (1060, 1260, "#fff1c9", "wind down", INK_AMBER),
+              (1260, 1540, AMBER, "uploads", INK_AMBER)])
+    for x, l1, l2, anc in [(420, "margin reserved", "before matching (#8746)", "middle"),
+                           (1060, "stop signal sent", "StopSig*, #8814", "end"),
+                           (1260, "payload exits; if killed,", "the reason is shown (#8528)", "start")]:
+        o.append(f'<line x1="{x}" y1="418" x2="{x}" y2="456" stroke="#6b7280" stroke-width="3" stroke-dasharray="6 6"/>')
+        dx = {"middle": 0, "end": 10, "start": -10}[anc]
+        o.append(text(x + dx, 486, l1, SMALL - 6, "bold", anchor=anc, fill=TEXT_1))
+        o.append(text(x + dx, 516, l2, SMALL - 8, anchor=anc, fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def multiarch() -> str:
+    """One image name for every architecture: CVMFS .multiarch, resolved by the pilot."""
+    W, H = 1600, 860
+    o = [head(W, H)]
+    it = Iso(760, 250, 0.8)
+    P = it.p
+    X86, ARM = "#adc3e3", "#e8a33c"
+    o.append(slab(it, 0, -40, 560, 200, 14, "#eef1f5", "ma-cv"))
+    stacks = {}
+    for k, (x, col) in enumerate([(70, X86), (330, ARM)]):
+        o.append(cube(it, x, 10, 110, 110, 30, shade(col, 0.2), r=8))
+        o.append(cube(it, x, 10, 110, 110, 24, col, z0=30, r=8))
+        stacks[k] = P(x + 55, 65, 54)
+    tx = P(280, 60, 0)[0]
+    ty = P(280, -40, 0)[1]
+    o.append(text(tx, ty - 205, "CVMFS: /.multiarch/&lt;arch&gt;/&lt;image&gt;", SMALL - 2, "bold", fill=TEXT_1))
+    o.append(text(tx, ty - 171, "layout built by DUCC 2.14.1 where images are published", SMALL - 7, fill=TEXT_2))
+    o.append(text(stacks[0][0], stacks[0][1] - 40, "amd64", SMALL - 4, "bold", fill=INK_BLUE))
+    o.append(text(stacks[1][0], stacks[1][1] - 40, "arm64", SMALL - 4, "bold", fill="#7a5410"))
+    for (x0, y0, col, name, k) in [(-60, 330, X86, "x86_64 node", 0), (340, 300, ARM, "aarch64 node", 1)]:
+        o.append(slab(it, x0, y0, 260, 260, 14, "#f6efe0", f"ma-n{k}"))
+        o.append(cube(it, x0 + 30, y0 + 40, 70, 70, 44, "#c7cfd9", r=6))
+        o.append(cube(it, x0 + 140, y0 + 140, 80, 80, 50, col, r=7))
+        pl = P(x0 + 65, y0 + 75, 44)
+        o.append(text(pl[0], pl[1] - 18, "pilot: uname -m", SMALL - 7, "bold", fill=TEXT_1))
+        c = P(x0 + 180, y0 + 180, 50)
+        sx, sy = stacks[k]
+        o.append(arrow(sx, sy + 40, c[0], c[1] - 8, -30 if k == 0 else 30, sw=4))
+        lx, ly = P(x0 + 260, y0 + 260, 0)
+        o.append(text(lx - 90, ly + 56, name, SUB - 4, "bold", fill=TEXT_1))
+    o.append(text(1250, 420, "the job names one image;", SMALL - 4, anchor="start", fill=TEXT_1))
+    o.append(text(1250, 454, "each node runs", SMALL - 4, anchor="start", fill=TEXT_1))
+    o.append(text(1250, 488, "its own copy", SMALL - 4, anchor="start", fill=TEXT_1))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def limits_hpc() -> str:
+    """Left: one multi-core node shared by jobs, each held to its CPU and memory share by
+    cgroup2. Right: the SSH CE reaching an HPC login node and its batch system."""
+    W, H = 1600, 640
+    o = [head(W, H)]
+    it = Iso(420, 190, 0.8)
+    P = it.p
+    o.append(slab(it, 0, 0, 420, 420, 14, "#f6efe0", "lh-n"))
+    jobs = [(30, 30, 160, 160, "#9fd3a8", "4 cores, 8 GB"), (230, 30, 160, 160, "#adc3e3", "2 cores, 4 GB"),
+            (30, 230, 160, 160, "#f0d9a6", "1 core, 6 GB"), (230, 230, 160, 160, "#e9e1f5", "free")]
+    for k, (x, y, w, d, col, lab) in enumerate(jobs):
+        bx = [P(x, y, 0), P(x + w, y, 0), P(x + w, y + d, 0), P(x, y + d, 0)]
+        dd = " ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in bx)
+        o.append(f'<polygon points="{dd}" fill="#ffffff" fill-opacity="0.55" stroke="#8a6d2c" stroke-width="3" stroke-dasharray="10 8"/>')
+        if lab != "free":
+            o.append(cube(it, x + 40, y + 40, 80, 80, 50, col, r=7))
+            t = P(x + 80, y + 80, 50)
+            o.append(text(t[0], t[1] - 18, lab, SMALL - 8, "bold", fill=TEXT_1))
+        else:
+            t = P(x + 80, y + 80, 0)
+            o.append(text(t[0], t[1] + 8, "free", SMALL - 6, italic=True, fill=TEXT_2))
+    lx, ly = P(420, 420, 0)
+    o.append(text(lx - 120, ly + 56, "one multi-core slot", SUB - 4, "bold", fill=TEXT_1))
+    o.append(text(lx - 120, ly + 90, "dashed: a cgroup2 limit per job", SMALL - 7, fill="#8a6d2c"))
+    it2 = Iso(1250, 300, 0.8)
+    o.append(slab(it2, 0, 0, 220, 220, 14, "#e9e1f5", "lh-h"))
+    o.append(cube(it2, 60, 60, 100, 100, 60, "#c3b1e1", slots=True, r=7))
+    t = it2.p(110, 110, 60)
+    o.append(text(t[0], t[1] - 20, "HPC login node", SMALL - 6, "bold", fill=TEXT_1))
+    o.append(text(1250, 560, "its batch system runs the pilots", SMALL - 7, fill=TEXT_2))
+    o.append(label_pill(1120, 60, 300, 76, "#c3b1e1", "lh-ssh", "SSH CE (Fabric)", "#3d2a63", size=SMALL - 2))
+    o.append(arrow(1270, 142, 1255, 300, 10, sw=4))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def pilots_paused() -> str:
+    """Pilot management: ported as is, paused, then re-thought: nobody knows yet what."""
+    W, H = 1600, 420
+    o = [head(W, H)]
+    o.append(label_pill(40, 150, 330, 110, BLUE, "pp1", "DIRAC", INK_BLUE, "pilot management", size=SUB))
+    o.append(arrow(380, 205, 520, 205, 0, sw=4))
+    o.append(text(450, 186, "as is", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append(label_pill(530, 150, 330, 110, TEAL, "pp2", "DiracX", INK_TEAL, "pilot database, router", size=SUB))
+    # pause sign
+    o.append(f'<rect x="935" y="165" width="22" height="80" rx="6" fill="#9aa3ae"/><rect x="975" y="165" width="22" height="80" rx="6" fill="#9aa3ae"/>')
+    o.append(text(966, 300, "paused", SMALL - 4, "bold", fill=TEXT_2))
+    o.append(arrow(1030, 205, 1150, 205, 0, sw=4))
+    o.append(f'<rect x="1160" y="90" width="400" height="230" rx="30" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="14 10"/>')
+    o.append(text(1360, 230, "?", 140, "bold", fill="#e0a030"))
+    o.append(text(1360, 300, "re-thought with the DiracX WMS", SMALL - 6, fill="#7a5410"))
+    o.append("</svg>")
+    return "".join(o)
+
+
+FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused}
 
 
 def main() -> int:

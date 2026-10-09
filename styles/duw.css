@@ -135,3 +135,16 @@
 .duw-chain3 > div.w { background: var(--dx-green-soft); color: var(--dx-ink); font-weight: 500; }
 .duw-chain3 > div:not(.h):not(.d)::before { content: '➜'; position: absolute; left: -1.3rem; top: 50%; transform: translateY(-50%); color: #5b6573; font-size: 1.05rem; }
 .slidev-layout.cover .duw-subtitle { font-family: var(--dx-font-serif); font-size: 1.45rem; color: rgba(255,255,255,0.92); margin: -.4rem 0 1.1rem; }
+
+/* cover: author in white on the blue gradient */
+.slidev-layout.cover .dx-author { color: #ffffff; }
+/* figure + details column */
+.duw-figside { display: grid; grid-template-columns: 1.45fr 1fr; gap: 1rem; align-items: center; margin-top: -.6rem; }
+.duw-figside img { width: 100%; }
+.duw-details { font-size: .74rem; line-height: 1.3; color: var(--dx-gray); }
+.duw-details p { margin: 0 0 .5rem 0; }
+.duw-details strong { color: var(--dx-ink); }
+/* exploratory (proof of concept) slides: warm paper and a dashed amber edge */
+.slidev-layout.duw-poc { background: #fbf5e6 !important; box-shadow: inset 6px 0 0 #e0a030; }
+.slidev-layout.duw-poc .duw-sec { color: #a3741c; }
+.slidev-layout.duw-poc .dx-card { box-shadow: none; }
