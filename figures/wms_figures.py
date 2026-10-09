@@ -285,7 +285,203 @@ def parcels_only() -> str:
     return "".join(o)
 
 
-FIGS = {"fig-landscape": landscape, "fig-pullpush": pullpush, "fig-slot": slot, "fig-parcels": parcels, "fig-backends": backends, "fig-parcels-only": parcels_only}
+def backends3d() -> str:
+    """The transformation system (DiracX) on its platform, dispatching parcels to three
+    compute backends, each its own platform with its own data. Isometric clay."""
+    W, H = 1600, 860
+    o = [head(W, H)]
+    it = Iso(800, 150, 0.95)
+    P = it.p
+    # transformation system, at the back
+    o.append(slab(it, 20, 0, 240, 180, 14, TEAL, "t3-ts"))
+    cubes = []
+    for i in range(3):
+        for j in range(2):
+            x, y = 50 + i * 66, 40 + j * 70
+            cubes.append((x + y, cube(it, x, y, 40, 40, 26, "#5fb3a8", r=6)))
+    o += [c for _, c in sorted(cubes)]
+    tx, ty = P(20, 0, 0)
+    o.append(text(tx - 30, ty - 40, "Transformation System", SUB, "bold", anchor="end", fill=INK_TEAL))
+    o.append(text(tx - 30, ty - 4, "in DiracX: work is a parcel", SMALL - 2, anchor="end", fill=TEXT_2))
+    # backends, in a row in front
+    S = 760
+    arrows = []
+    specs = [(-600, "#adc3e3", "DIRAC WMS", "stable: fixes only", INK_BLUE, "solid"),
+             (0, TEAL, "DiracX WMS", "later, when needed", INK_TEAL, "ghost"),
+             (600, "#c7cfd9", "HTCondor", "glideins", TEXT_1, "solid")]
+    for k, (D, col, name, sub, ink, kind) in enumerate(specs):
+        cx, cy = (S + D) / 2, (S - D) / 2
+        x0, y0 = cx - 110, cy - 110
+        start = {-600: P(20, 180, 0), 0: P(260, 180, 0), 600: P(260, 0, 0)}[D]
+        end = P(x0 + 12, y0 + 12, 0)
+        arrows.append(arrow(start[0], start[1] + 8, end[0], end[1] - 4, 0, sw=4.4))
+        if kind == "ghost":
+            top = [P(x0, y0, 0), P(x0 + 220, y0, 0), P(x0 + 220, y0 + 220, 0), P(x0, y0 + 220, 0)]
+            d = " ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in top)
+            o.append(f'<polygon points="{d}" fill="#eef7f5" stroke="#8fb9b2" stroke-width="4" stroke-dasharray="14 10" stroke-linejoin="round"/>')
+            for (x, y) in [(x0 + 50, y0 + 60), (x0 + 120, y0 + 60), (x0 + 85, y0 + 130)]:
+                o.append(f'<g opacity="0.35">{cube(it, x, y, 46, 46, 34, TEAL, r=6)}</g>')
+        else:
+            o.append(slab(it, x0, y0, 220, 220, 14, col, f"t3-b{k}"))
+            cs = []
+            for (x, y) in [(x0 + 40, y0 + 40), (x0 + 110, y0 + 40), (x0 + 40, y0 + 110), (x0 + 110, y0 + 110)]:
+                cs.append((x + y, cube(it, x, y, 46, 46, 34, shade(col, -0.05), slots=True, r=6)))
+            o += [c for _, c in sorted(cs)]
+        # its own data: two cylinders beside the platform
+        dx, dy = P(x0 + 220, y0 + 220, 0)
+        base = "#9fd3cb" if kind == "ghost" else "#bfc7d3"
+        for m in range(2):
+            o.append(cylinder(dx - 150 + m * 70, dy + 10, 28, 40, base, f"t3-db{k}{m}"))
+        lx, ly = P(x0 + 220, y0 + 220, 0)
+        o.append(text(lx - 70, ly + 112, name, SUB, "bold", fill=ink))
+        o.append(text(lx - 70, ly + 148, sub, SMALL - 2, fill=TEXT_2))
+    o += arrows
+    o.append(text(800, H - 24, "each backend keeps its own data and its own data model", SMALL - 2, italic=True, fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+# ----------------------------------------------------------------------------- world map
+LAND = pathlib.Path(__file__).parent / "land-110m.json"   # Natural Earth via world-atlas 2.0.2, public domain
+
+
+def _equal_earth(lon, lat):
+    """Equal Earth projection (Savric, Patterson, Jenny 2018), unit radius."""
+    import math
+    A1, A2, A3, A4 = 1.340264, -0.081106, 0.000893, 0.003796
+    M = math.sqrt(3) / 2
+    p = math.asin(M * math.sin(math.radians(lat)))
+    p2 = p * p
+    p6 = p2 * p2 * p2
+    x = math.radians(lon) * math.cos(p) / (M * (A1 + 3 * A2 * p2 + p6 * (7 * A3 + 9 * A4 * p2)))
+    y = p * (A1 + A2 * p2 + p6 * (A3 + A4 * p2))
+    return x, y
+
+
+def _land_rings():
+    import json
+    topo = json.loads(LAND.read_text())
+    sx, sy = topo["transform"]["scale"]
+    tx, ty = topo["transform"]["translate"]
+    arcs = []
+    for arc in topo["arcs"]:
+        x = y = 0
+        pts = []
+        for dx, dy in arc:
+            x += dx
+            y += dy
+            pts.append((x * sx + tx, y * sy + ty))
+        arcs.append(pts)
+    def ring(idx):
+        out = []
+        for i in idx:
+            a = arcs[i] if i >= 0 else arcs[~i][::-1]
+            out.extend(a if not out else a[1:])
+        return out
+    rings = []
+    for geom in topo["objects"]["land"]["geometries"]:
+        polys = geom["arcs"] if geom["type"] == "MultiPolygon" else [geom["arcs"]]
+        for poly_ in polys:
+            for r in poly_:
+                rings.append(ring(r))
+    return rings
+
+
+class WorldMap:
+    def __init__(self, x0, y0, width, lat_min=-58, lat_max=84):
+        self.x0, self.y0 = x0, y0
+        xmax, _ = _equal_earth(180, 0)
+        self.k = width / (2 * xmax)
+        self.ytop = _equal_earth(0, lat_max)[1]
+
+    def p(self, lon, lat):
+        x, y = _equal_earth(lon, lat)
+        return self.x0 + (x + _equal_earth(180, 0)[0]) * self.k, self.y0 + (self.ytop - y) * self.k
+
+    def land(self, fill="#e3e7ec", stroke="#cfd5dc"):
+        d = []
+        for r in _land_rings():
+            if all(lat < -58 for _, lat in r):
+                continue   # Antarctica: off the map
+            # split where a ring crosses the 180th meridian; each piece is closed along it
+            pieces, cur = [], [r[0]]
+            for a, b in zip(r, r[1:]):
+                if abs(a[0] - b[0]) > 180:
+                    pieces.append(cur)
+                    cur = []
+                cur.append(b)
+            pieces.append(cur)
+            if len(pieces) > 1 and abs(pieces[-1][-1][0] - pieces[0][0][0]) < 180:
+                pieces[0] = pieces.pop() + pieces[0]
+            for pc in pieces:
+                if len(pc) < 3:
+                    continue
+                pts = [self.p(lon, max(lat, -58)) for lon, lat in pc]
+                d.append("M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts) + " Z")
+        return (f'<path d="{" ".join(d)}" fill="{fill}" stroke="{stroke}" stroke-width="1.5" stroke-linejoin="round" '
+                f'transform="translate(0,6)" opacity="0.55"/>'
+                f'<path d="{" ".join(d)}" fill="{fill}" stroke="{stroke}" stroke-width="1.5" stroke-linejoin="round"/>')
+
+
+def pin(x, y, kind, gid):
+    """A clay dot: ARM (amber), GPU (violet), both (split)."""
+    ARM_C, GPU_C = "#e8a33c", "#8e6cc9"
+    o = [contact_shadow(x, y + 13, 16, 5, f"{gid}-s", 0.25)]
+    if kind == "both":
+        o.append(f'<circle cx="{x}" cy="{y}" r="13" fill="{GPU_C}" stroke="#ffffff" stroke-width="3"/>')
+        o.append(f'<path d="M{x},{y - 13} A13,13 0 0 0 {x},{y + 13} Z" fill="{ARM_C}"/>')
+        o.append(f'<circle cx="{x}" cy="{y}" r="13" fill="none" stroke="#ffffff" stroke-width="3"/>')
+    else:
+        o.append(f'<circle cx="{x}" cy="{y}" r="13" fill="{ARM_C if kind == "arm" else GPU_C}" stroke="#ffffff" stroke-width="3"/>')
+    o.append(f'<circle cx="{x - 4}" cy="{y - 4}" r="4" fill="#ffffff" opacity="0.55"/>')
+    return "".join(o)
+
+
+# (label, lon, lat, kind, dx, dy, anchor). TOP500 June 2026 ranks; WLCG ARM sites from
+# Glasgow (WLCG sustainability workshop, Dec 2024) and GridKa (KIT publication). See the notes.
+PINS = [
+    ("LineShine #1", 114.1, 22.5, "arm", 40, 60, "start"),
+    ("El Capitan", -121.7, 37.7, "gpu", -36, 50, "end"),
+    ("Frontier", -84.3, 35.9, "gpu", 30, 52, "start"),
+    (None, -88.0, 41.7, "gpu", 0, 0, "start"),            # Aurora
+    ("JUPITER", 6.4, 50.9, "both", 110, 2, "start"),
+    ("Fugaku", 135.2, 34.7, "arm", 46, 40, "start"),
+    ("Alps", 9.0, 46.0, "both", 80, 50, "start"),
+    ("LUMI", 27.7, 64.2, "gpu", 44, -6, "start"),
+    (None, 11.3, 44.5, "gpu", 0, 0, "start"),             # Leonardo
+    (None, -2.6, 51.5, "both", 0, 0, "start"),            # Isambard-AI
+    (None, 2.1, 41.4, "gpu", 0, 0, "start"),              # MareNostrum 5
+    ("Shaheen III", 39.1, 22.3, "both", -30, 56, "end"),
+    (None, 139.9, 35.9, "both", 0, 0, "start"),           # Miyabi-G
+    ("Setonix", 115.9, -32.0, "gpu", -40, 30, "end"),
+    ("Santos Dumont", -43.2, -22.5, "both", 40, 34, "start"),
+    ("AIRAWAT", 73.9, 18.5, "gpu", -20, 64, "end"),
+    ("Glasgow (WLCG)", -4.3, 55.9, "arm", -46, -40, "end"),
+    ("GridKa (WLCG)", 8.4, 49.1, "arm", -150, 70, "end"),
+]
+
+
+def landscape_map() -> str:
+    W, H = 1600, 760
+    o = [head(W, H)]
+    m = WorldMap(30, 20, 1540)
+    o.append(m.land())
+    for i, (label, lon, lat, kind, dx, dy, anchor) in enumerate(PINS):
+        x, y = m.p(lon, lat)
+        o.append(pin(x, y, kind, f"pin{i}"))
+        if label:
+            o.append(f'<line x1="{x:.1f}" y1="{y:.1f}" x2="{x + dx * 0.8:.1f}" y2="{y + dy * 0.8:.1f}" stroke="#9aa3ae" stroke-width="2"/>')
+            o.append(text(x + dx, y + dy + 8, label, SMALL - 6, "bold", anchor=anchor, fill=TEXT_1))
+    # legend
+    lx, ly = 60, H - 60
+    for j, (kind, lab) in enumerate([("arm", "ARM"), ("gpu", "GPU"), ("both", "ARM and GPU")]):
+        o.append(pin(lx + j * 200, ly, kind, f"lg{j}"))
+        o.append(text(lx + j * 200 + 26, ly + 9, lab, SMALL - 4, anchor="start", fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+FIGS = {"fig-landscape": landscape, "fig-pullpush": pullpush, "fig-slot": slot, "fig-parcels": parcels, "fig-backends": backends, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map}
 
 
 def main() -> int:

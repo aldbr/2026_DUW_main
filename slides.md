@@ -29,6 +29,35 @@ fonts:
 </div>
 
 ---
+
+# ARM and GPUs are gaining ground
+
+<div style="display:grid;grid-template-columns:1.75fr 1fr;gap:1rem;align-items:center">
+
+<img :src="'/figures/fig-worldmap.svg'" alt="World map of ARM and GPU systems: TOP500 systems in the US, Europe, Asia, Australia, Brazil and Saudi Arabia, and the WLCG ARM sites at Glasgow and GridKa" style="width:100%" />
+
+<div class="duw-stats1">
+<div><b>276 / 500</b>TOP500 systems with GPUs, June 2026 (110 in 2018)</div>
+<div><b>35</b>ARM systems in the TOP500 (5 in 2020)</div>
+<div><b>11k ARM slots</b>in ATLAS production at 5 grid sites; up to half of a pledge can be ARM</div>
+</div>
+
+</div>
+
+<div class="duw-two mt-2">
+<div class="dx-card dx-card-blue" style="height:auto">
+
+**In DIRAC: temporary solutions**, to keep running on these resources without changing DIRAC, and keep it stable.
+
+</div>
+<div class="dx-card dx-card-new" style="height:auto">
+
+**In DiracX: the long-term solutions**, designed for heterogeneous resources from the start.
+
+</div>
+</div>
+
+---
 layout: section
 ---
 
@@ -40,22 +69,11 @@ What it changes for workload management
 
 <div class="duw-sec">1 · Starting from the transformation system</div>
 
-# From porting services to compute backends
+# The transformation system sees compute backends
 
-<img :src="'/figures/fig-backends.svg'" alt="Before: DIRAC WMS services ported one by one to DiracX over the same databases; only JobStateUpdate was ported. Now: the DiracX transformation system dispatches parcels to separate backends, the DIRAC WMS, a later DiracX WMS, and HTCondor, each with its own data" style="width:74%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-backends3d.svg'" alt="The DiracX transformation system dispatches parcels to three compute backends: the DIRAC WMS, a DiracX WMS to come, and HTCondor; each keeps its own data" style="width:72%;margin:-.8rem auto 0;display:block" />
 
-<div class="duw-two dx-tight" style="margin-top:.2rem">
-<div>
-
-- **Before**: move each DIRAC service and agent to DiracX, over the same databases and the same data model.
-
-</div>
-<div>
-
-- **Now**: the transformation system (Tuesday's talks) sends parcels to **compute backends**. The DIRAC WMS is one of them.
-
-</div>
-</div>
+<div class="dx-key mt-1">The transformation system (Tuesday's talks) sends parcels to compute backends. <b>The DIRAC WMS is one of them</b>, with its own data, as it is.</div>
 
 ---
 
@@ -91,59 +109,12 @@ Most communities can rely on their existing WMS for now: DIRAC, or their own (se
 <div class="dx-key mt-3">The DiracX WMS is not a priority. It will move slowly, in parallel, and get a plan when the transformation system needs a native backend.</div>
 
 ---
-
-<div class="duw-sec">1 · Starting from the transformation system</div>
-
-# One year after the last workshop
-
-<div class="duw-small mb-1">What the DUW11 WMS talk said would come next</div>
-
-<table class="duw-map">
-<thead><tr><th>Announced in 2025</th><th>Where it is</th><th></th></tr></thead>
-<tbody>
-<tr><td>SSH computing element on Fabric</td><td>done</td><td>DIRAC #7703, v9.0</td></tr>
-<tr><td>CPU and memory limits with cgroup2</td><td>done</td><td>#8110, plus memory-aware matching (#8366, #8414)</td></tr>
-<tr><td>Python 2 out of the pilot</td><td>done</td><td>Pilot #268, Nov 2025</td></tr>
-<tr><td>Multi-architecture images from CVMFS</td><td>pull request open</td><td>DIRAC #8456, to certify</td></tr>
-<tr><td>Pilots managed by DiracX</td><td>started, then paused</td><td>pilot database and router in DiracX (#570)</td></tr>
-<tr><td>CWL job submission in DiracX</td><td>redirected</td><td>part of the transformation system</td></tr>
-<tr><td>Job monitoring and job manager in DiracX</td><td>dropped</td><td>no jobs in DiracX: section 3</td></tr>
-<tr><td>A decision on DB12</td><td>open</td><td><a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a></td></tr>
-</tbody>
-</table>
-
-<div class="dx-key mt-3">The DIRAC items landed, as fixes. The DiracX items changed with the backend model.</div>
-
----
 layout: section
 ---
 
 # 2 · DIRAC: fixes and performance
 
 What keeps it running while we migrate
-
----
-
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
-
-# Resources keep diversifying
-
-<img :src="'/figures/fig-landscape.svg'" alt="Grid sites, HPC centres and clouds, with x86_64, aarch64 and GPUs, reached through DIRAC computing elements or, later, interCEde; the DIRAC WMS and DiracX on top" style="width:58%;margin:0 auto;display:block" />
-
-<div class="duw-two dx-tight" style="margin-top:.2rem">
-<div>
-
-- Grid, HPC and clouds, now with **aarch64** and GPUs beside x86_64.
-- HPC centres often have no outbound network and no CVMFS.
-
-</div>
-<div>
-
-- DIRAC has to keep up, without new features: what follows are **fixes and performance improvements**.
-- v9 dropped the CREAM, ARC, ARC6 and BOINC CEs; AREX is the ARC interface, with tokens.
-
-</div>
-</div>
 
 ---
 
@@ -174,67 +145,69 @@ What keeps it running while we migrate
 
 <div class="duw-sec">2 · DIRAC: fixes and performance</div>
 
-# More reliable, safer, simpler
+# More reliable
 
-<div class="duw-three3">
+<table class="duw-map duw-rows">
+<thead><tr><th>What went wrong</th><th>What happens now</th><th>Release</th></tr></thead>
+<tbody>
+<tr><td>During bursts of submissions, a task queue could lose its site, platform or tag restrictions.</td><td>The restrictions stay; one task queue instead of dozens of duplicates.</td><td>v9.1.20 · #8801</td></tr>
+<tr><td>The SiteDirector kept sending pilots to banned CEs.</td><td>Banned CEs are skipped.</td><td>v9.0.2 · #8340</td></tr>
+<tr><td>The JobAgent failed jobs that had already been rescheduled.</td><td>Those jobs are left alone.</td><td>v9.0.17 · #8441</td></tr>
+<tr><td>The Watchdog could record NaN or infinite values as job parameters.</td><td>Such values are rejected.</td><td>v9.1.16 · #8750</td></tr>
+</tbody>
+</table>
 
-<div class="dx-card dx-card-blue">
-
-### Reliable
-- Task queues no longer lose their site, platform or tag restrictions under concurrency (#8801).
-- Banned CEs skipped; rescheduled jobs not failed; no NaN parameters (#8340, #8441, #8750).
-
-</div>
-
-<div class="dx-card dx-card-blue">
-
-### Safer
-- SQL parameterised in every WMS database (v9.1.13 to v9.1.15).
-- Five WMS advisories fixed: job state access, sandbox store, pilot logging, pilot manager, pilot download.
-- Patched in v9.1.20, v9.0.26, v8.0.85.
-
-</div>
-
-<div class="dx-card dx-card-legacy">
-
-### Simpler
-- Removed: CREAM, ARC, ARC6, BOINC CEs; pilot bundles; private pilots; Python 2 in the pilot.
-- Tokens: pilots submitted with tokens in multi-VO setups; proxy pilots also carry one.
-
-</div>
-
-</div>
-
-<div class="dx-concludes mt-3"><carbon-arrow-right class="dx-concludes-arrow" /><span>DIRAC is patched, not developed: <strong>upgrading is how you get these</strong></span></div>
+<div class="dx-key mt-3">None of these change how DIRAC works. They remove ways it could fail.</div>
 
 ---
 
 <div class="duw-sec">2 · DIRAC: fixes and performance</div>
 
-# Heterogeneous nodes: architectures and limits
+# Safer
+
+<table class="duw-map duw-rows">
+<thead><tr><th>Component</th><th>Problem, now fixed</th><th>Fixed in</th></tr></thead>
+<tbody>
+<tr><td>Job state updates</td><td>A user could change the state of someone else's job.</td><td>v9.1.20 · v9.0.26 · v8.0.85</td></tr>
+<tr><td>Sandbox store</td><td>A crafted upload could write files outside the sandbox area.</td><td>v9.1.20 · v9.0.26 · v8.0.85</td></tr>
+<tr><td>Pilot logging</td><td>A crafted request could read files on the server.</td><td>v9.1.20 · v9.0.26 · v8.0.85</td></tr>
+<tr><td>Pilot manager</td><td>SQL injection and missing access checks.</td><td>v9.1.10 · v9.0.22</td></tr>
+<tr><td>Pilot download</td><td>Pilot code fetched over HTTPS without verifying the server.</td><td>v9.1.10 · v9.0.22</td></tr>
+<tr><td>All WMS databases</td><td>Queries built from strings; now parameterised.</td><td>v9.1.13 to v9.1.15</td></tr>
+</tbody>
+</table>
+
+<div class="dx-concludes mt-2"><carbon-arrow-right class="dx-concludes-arrow" /><span>DIRAC is patched, not developed: <strong>upgrading is how you get these</strong></span></div>
+
+---
+
+<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+
+# Heterogeneous nodes: architectures, limits, HPC
 
 <div class="duw-two">
 <div>
 
-**aarch64 beside x86_64** (DIRAC #8456, pull request open)
+**aarch64 beside x86_64** (DIRAC #8456, pull request open) <span class="duw-was">DUW11</span>
 - The pilot detects the node's architecture and resolves the container image under the CVMFS `.multiarch` layout: `<base>/<arch>/<image>`.
-- Used by the Singularity CE and `dirac-apptainer-exec`; falls back to `ContainerRoot`.
-- Communities publish multi-architecture (OCI index) images.
-- Left to do: certify against `unpacked.cern.ch`, review, merge.
+- Used by the Singularity CE and `dirac-apptainer-exec`.
+- Relies on **CVMFS 2.14** (DUCC 2.14.1) on the publishing side to build the layout from multi-architecture images; `unpacked.cern.ch` has it. Any client reads it.
+- Left to do: certify, review, merge.
 
 </div>
 <div>
 
-**CPU and memory limits**
+**CPU and memory limits** <span class="duw-was">DUW11</span>
 - cgroup2 limits for jobs in containers (#8110).
 - Memory taken into account when matching and when filling a multi-core slot (#8366, #8414).
+
+**HPC access** <span class="duw-was">DUW11</span>
+- The SSH computing element now uses Fabric (#7703, v9.0).
 
 **Not solved in DIRAC**: a job that can run on x86_64 *or* aarch64 has a single set of requirements.
 
 </div>
 </div>
-
-<div class="dx-key mt-3">Fixes to run on the nodes sites now provide, not a new model: the same job description, on any architecture.</div>
 
 ---
 
@@ -259,9 +232,9 @@ What keeps it running while we migrate
 </div>
 </div>
 
-<img :src="'/figures/fig-slot.svg'" alt="A slot split into pilot, payload and StopMargin; the margin is reserved before matching, a stop signal ends the payload cleanly, and a killed job reports why" style="width:56%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-slot.svg'" alt="A slot split into pilot, payload and StopMargin; the margin is reserved before matching, a stop signal ends the payload cleanly, and a killed job reports why" style="width:52%;margin:0 auto;display:block" />
 
-<div class="dx-key mt-1">The three fixes above are in <b>v9.1.21</b> only. Set the <code>StopSig*</code> options in the CS or per job; see "Allocated time management" in the Administrator Guide.</div>
+<div class="dx-key mt-1">The three fixes above are in <b>v9.1.21</b> only; see "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.</div>
 
 ---
 layout: section
@@ -289,7 +262,7 @@ And the proofs of concept around the future WMS
 <div>
 
 - The JobDB in DiracX today only receives job status updates from DIRAC, to **test that a DiracX deployment works**.
-- We do not port job monitoring or the job manager. **Once everyone is on DiracX, it is deleted.**
+- We do not port job monitoring or the job manager <span class="duw-was">DUW11</span>. **Once everyone is on DiracX, it is deleted.**
 
 </div>
 </div>
@@ -317,7 +290,7 @@ And the proofs of concept around the future WMS
 - The job wrapper resolves inputs (`lfn:`, `sandbox:`), captures the output sandbox, and writes a status report per input.
 - Outputs are registered by DiracX after the parcel ends, not by the wrapper.
 
-**Today**: `dirac-cwl` 1.3.0; an experimental CWL job wrapper in DIRAC (#8425).
+**Today**: `dirac-cwl` 1.3.0; an experimental CWL job wrapper in DIRAC (#8425). The CWL job submission prototype for DiracX <span class="duw-was">DUW11</span> became part of the transformation system.
 
 </div>
 </div>
@@ -406,8 +379,8 @@ Last, a synchronous facade and an adapter so DIRAC can use it (#24).
 <div class="dx-card dx-card-new">
 
 ### Landed
-- A pilot database and router in DiracX (#570, Aug 2026).
-- Pilot: Python 2 removed; maintenance fixes.
+- A pilot database and router in DiracX (#570, Aug 2026) <span class="duw-was">DUW11</span>.
+- Pilot: Python 2 removed <span class="duw-was">DUW11</span>; maintenance fixes.
 
 </div>
 

@@ -93,3 +93,18 @@
 .duw-three3 .dx-card { height: auto; }
 .duw-contact { color: #fff; font-size: 1.15rem; margin: .5rem 0; }
 .duw-contact b { color: #fff; }
+
+/* WMS talk: "announced at DUW11" tag, and readable row tables */
+.duw-was { font-family: var(--dx-font-mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase;
+  background: #fff6e4; border: 1px dashed #e0a030; color: #7a5410; padding: .02rem .35rem; border-radius: 6px;
+  vertical-align: .12em; white-space: nowrap; font-weight: 500; font-style: normal; }
+.duw-rows { font-size: 1rem; }
+.duw-rows td { padding: .42rem .6rem; vertical-align: top; line-height: 1.35; }
+.duw-rows td:first-child { color: var(--dx-ink); width: 42%; }
+.duw-rows td:nth-child(2) { color: var(--dx-gray); font-weight: 400; }
+.duw-rows td:last-child { font-family: var(--dx-font-mono); font-size: .72rem; color: var(--dx-gray-mid); white-space: nowrap; }
+.duw-stats1 { display: grid; gap: .55rem; }
+.duw-stats1 > div { background: #fff; border-radius: 10px; border-left: 4px solid #8e6cc9; padding: .4rem .7rem; font-size: .8rem; line-height: 1.25; color: var(--dx-gray); }
+.duw-stats1 > div:nth-child(2) { border-left-color: #e8a33c; }
+.duw-stats1 > div:nth-child(3) { border-left-color: #e8a33c; }
+.duw-stats1 b { display: block; font-size: 1.3rem; color: var(--dx-ink); }
