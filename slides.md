@@ -30,7 +30,7 @@ fonts:
 
 ---
 
-# ARM and GPUs: HPC sees them first
+# ARM and GPUs: HPC and clouds see them first
 
 <div style="display:grid;grid-template-columns:1.75fr 1fr;gap:1rem;align-items:center">
 
@@ -39,48 +39,45 @@ fonts:
 <div class="duw-stats1">
 <div><b>276 / 500</b>TOP500 systems with GPUs, June 2026 (110 in 2018)</div>
 <div><b>35</b>ARM systems in the TOP500 (5 in 2020)</div>
-<div class="grid"><b>Our communities</b>run mostly on grid sites. Some use a few HPCs opportunistically: LHCb on MareNostrum 5, up to 732 jobs at once.</div>
+<div class="grid"><b>Our communities</b>run mostly on grid sites, and use a few HPCs opportunistically.</div>
 </div>
 
 </div>
 
-<div class="dx-key mt-2">What appears in HPC and clouds first reaches the grid next. The question is what it asks of the WMS.</div>
+<div class="duw-timeline mt-2">
+<div><span class="y">2010</span><br/>first GPU system at the top of the TOP500</div>
+<div><span class="y">2018</span><br/>ARM in a large cloud (AWS)</div>
+<div><span class="y">2020</span><br/>first ARM system at the top of the TOP500</div>
+<div><span class="y">2025</span><br/>first ARM pledges in WLCG, ATLAS only</div>
+<div class="bad"><span class="y">2026</span><br/>GPUs still cannot be pledged in WLCG</div>
+</div>
 
 ---
 
 # From HPC to the grid, and to the WMS
 
-<div class="duw-chain">
-<div class="h">Driver</div><div class="h">HPC and clouds first</div><div class="h">Grid sites now</div><div class="h">What the WMS must do</div>
+<div class="duw-quote" style="font-size:.78rem">Grid sites buy from the same market: "Hardware technology evolution now is dominated by the needs of AI" (A. Sciabà, CERN IT, July 2026).</div>
 
-<div class="d gpu"><b>AI demand</b>NVIDIA data-centre revenue: $194B in FY2026, 90% of its total</div>
+<div class="duw-chain mt-2">
+<div class="h">Driver, and why</div><div class="h">HPC and clouds first</div><div class="h">Grid sites now</div><div class="h">What the WMS must do</div>
+
+<div class="d gpu"><b>AI demand</b>Expected gains of $2.6–4.4T a year (McKinsey); NVIDIA data-centre revenue $194B in FY2026</div>
 <div>GPUs in 276 of the TOP500</div>
-<div>ATLAS: ~280 GPUs at 8 grid sites, little used; no GPU pledge unit before 2028</div>
+<div>ATLAS: ~280 GPUs at 8 grid sites, little used; no GPU pledge before 2028</div>
 <div class="w">Schedule CPU and GPU work together; match on capabilities</div>
 
-<div class="d arm"><b>Energy and hardware cost</b>"badly hit by AI factories" (WLCG, 2026)</div>
+<div class="d arm"><b>Energy and hardware cost</b>2022 energy shock (CERN ran 20% less in 2023), climate targets, memory prices ×6 with AI</div>
 <div>ARM in 35 of the TOP500; most new AWS CPU capacity is ARM</div>
 <div>ATLAS: ARM up to half of a pledge, 11k slots at 5 sites; Glasgow ~20% ARM</div>
 <div class="w">One site, two architectures: images and matching per architecture</div>
 
-<div class="d core"><b>More cores per node</b>32 per socket in 2017, 192 in 2024; memory getting scarcer</div>
+<div class="d core"><b>More cores per node</b>Clock speed stalled around 2005 (power wall): extra transistors became cores. 32 per socket in 2017, 192 in 2024</div>
 <div>HPCs hand out whole nodes: 112 cores on MareNostrum 5</div>
 <div>Multicore pilots: 8 cores for 48 h (CMS)</div>
 <div class="w">Fill nodes, not slots: multicore payloads, bundling, memory-aware matching</div>
 </div>
 
-<div class="duw-two mt-3">
-<div class="dx-card dx-card-blue" style="height:auto">
-
-**In DIRAC: temporary solutions**, to keep running on these resources without changing DIRAC, and keep it stable.
-
-</div>
-<div class="dx-card dx-card-new" style="height:auto">
-
-**In DiracX: the long-term solutions**, designed for heterogeneous resources from the start.
-
-</div>
-</div>
+<div class="dx-key mt-2"><b>In DIRAC</b>: temporary solutions, to keep it stable. <b>In DiracX</b>: the long-term solutions, designed for this.</div>
 
 ---
 layout: section
@@ -245,7 +242,7 @@ And the proofs of concept around the future WMS
 <div class="duw-two dx-tight" style="margin-top:.2rem">
 <div>
 
-- A user job is a parcel, like a bundle of transformation inputs. A failed parcel is final: resubmitting creates a new one.
+- A user payload is a parcel, like a bundle of transformation inputs. A failed parcel is final: resubmitting creates a new one.
 - We do not port job monitoring or the job manager <span class="duw-was">DUW11</span>.
 
 </div>
@@ -264,68 +261,62 @@ And the proofs of concept around the future WMS
 
 # CWL describes all the work
 
+<img :src="'/logos/cwl.svg'" alt="Common Workflow Language logo" style="position:absolute;top:2.5rem;right:2.6rem;height:2.4rem" />
+
 <div class="duw-two">
 <div>
 
-**One format** (DX-ADR-007, draft): a user job, a workgraph and each transformation are CWL v1.2 documents.
+**One format** (DX-ADR-007, draft): a user payload, a workgraph and each transformation are CWL v1.2 documents.
 
-- DiracX settings are **hints** under `dirac:`, never requirements: every document stays plain, runnable CWL.
-- The same document runs with `cwltool`, locally against grid data, and at scale.
-- Processes are resolved before dispatch: the node runs without fetching definitions.
+- DiracX settings are `dirac:` **hints**: every document stays plain, runnable CWL.
+- The same document runs with `cwltool`, locally, and at scale.
+- Processes are resolved before dispatch: the node fetches no definitions.
 
 </div>
 <div>
 
-**What this means for a WMS backend**
+**For a WMS backend**
 - Matching requirements come from the hints.
-- The job wrapper resolves inputs (`lfn:`, `sandbox:`), captures the output sandbox, and writes a status report per input.
-- Outputs are registered by DiracX after the parcel ends, not by the wrapper.
+- The job wrapper resolves inputs (`lfn:`, `sandbox:`) and reports a status per input.
+- DiracX registers the outputs after the parcel ends.
 
-**Today**: `dirac-cwl` 1.3.0; an experimental CWL job wrapper in DIRAC (#8425). The CWL job submission prototype for DiracX <span class="duw-was">DUW11</span> became part of the transformation system.
+**Yesterday**: hands-on sessions to convert DIRAC workflows to CWL.
 
 </div>
+</div>
+
+<div class="dx-card dx-card-new mt-2" style="height:auto;padding:.45em .8em">
+
+**With the CWL community**: <a href="https://github.com/common-workflow-language/cwltool/pull/2302" target="_blank">cwltool#2302</a> path mapper, <a href="https://github.com/common-workflow-language/cwltool/pull/2166" target="_blank">cwltool#2166</a> Apptainer sandboxes, <a href="https://github.com/common-workflow-language/schema_salad/pull/1064" target="_blank">schema_salad#1064</a>: merged. <a href="https://github.com/common-workflow-language/cwl-utils/pull/446" target="_blank">cwl-utils#446</a> QuickJS engine: in review.
+
 </div>
 
 ---
 
 <div class="duw-sec">3 · DiracX: parcels, not jobs</div>
 
-# interCEde: one library for computing elements
+# interCEde: computing elements, explored from use cases
 
-<div class="dx-key">A typed, asynchronous library to submit to and manage computing elements, usable by DIRAC, DiracX and other workload managers. <span class="duw-small">github.com/DIRACGrid/intercede, proof of concept</span></div>
+<div class="duw-two" style="grid-template-columns:1fr 1.5fr;align-items:center">
+<div class="dx-tight">
 
-<div class="duw-three3 mt-3">
-
-<div class="dx-card dx-card-blue">
-
-### Design
-Three ADRs under review (intercede #4): computing elements, integration tests, credentials.
-
-Open points: per-site submit options, whole-node and GPU requests, ARC delegation renewal, cleaning up cloud VMs.
+- **An exploratory project**, from the use cases DIRAC covers, and those it does not but should.
+- **Its own repository**: integration tests against real CEs, so that a change cannot break a production instance.
+- **Ends with ADRs and a first implementation**; the ADRs are merged once that implementation works.
 
 </div>
+<div>
 
-<div class="dx-card dx-card-blue">
-
-### Code
-Core contract proposed this week (#27).
-
-Integration-test scaffolding (#25), and test setups from the communities: HTCondor, ARC with Slurm, Slurm.
+<img :src="'/figures/fig-intercede.svg'" alt="Communities send requirements to interCEde and test its increments; interCEde is tested against real HTCondor, ARC and Slurm CEs, then released to DiracX, where a WMS backend uses it" style="width:100%" />
 
 </div>
-
-<div class="dx-card dx-card-new">
-
-### Next
-Merge the ADRs, then: core, registry, integration tests, backends.
-
-Last, a synchronous facade and an adapter so DIRAC can use it (#24).
-
 </div>
 
-</div>
+<div class="dx-card dx-card-blue mt-2" style="height:auto">
 
-<div class="duw-small mt-3">In the backend model, a WMS backend owns the policy (matching, pilots); interCEde owns the mechanics of talking to a CE.</div>
+**Open call**: if you work with DIRAC computing elements, test the increments of <a href="https://github.com/DIRACGrid/intercede" target="_blank">interCEde</a> and tell us what does not fit your needs, or what DIRAC does not cover: in an issue, or at a DOps.
+
+</div>
 
 ---
 
@@ -333,75 +324,65 @@ Last, a synchronous facade and an adapter so DIRAC can use it (#24).
 
 # A matcher for the DiracX WMS
 
-<div class="duw-two">
+<div class="duw-two dx-tight">
 <div>
 
-**Goal** (diracx #843): match pilots to work at **1 kHz** (200 Hz at least), with 10 million waiting items per VO. Redis holds an index that can be rebuilt from the database.
-
-**Built**: matching with tag expressions, prioritisation, a benchmark harness, a Redis data model (release 0.4.0, Sep 2026).
-
-**Measured**: the pure Python baseline only, 210 ms per match at 50k candidates, 5.7 s at 750k. No Redis numbers yet.
+**Why**
+- DIRAC's matcher will not be fast enough for what is coming for some communities, such as LHCb.
+- It cannot describe heterogeneous needs: a payload that runs on GPU A, *or* GPU B, *or* CPU C.
 
 </div>
 <div>
 
-**What we learned**
-- Real requirements vary little: LHCb has 872k waiting jobs but 14 distinct (CPU time, group) pairs. Group work by profile, as task queues do; do not test items one by one.
-- An item eligible at ~49 sites must not be stored 49 times.
-- Work runnable on two architectures needs a *list* of requirements.
+**The proof of concept** (<a href="https://github.com/devlink42/poc-dirac-job-matchmaking" target="_blank">poc-dirac-job-matchmaking</a>)
+- A deliberately simple Python matcher, and load tests on LHCb-shaped data to compare solutions.
+- The solution must be easy to deploy and to rebuild: chaos tests with Redis switched off.
 
 </div>
 </div>
 
-<div class="dx-card dx-card-new mt-3" style="height:auto">
+<img :src="'/figures/fig-matcher.svg'" alt="The POC matcher for one pilot request: all waiting jobs, then match against the node, filter by job-type limits and priority, rank by fair share, and hand one job to the pilot" style="width:64%;margin:0 auto;display:block" />
 
-**Next**: matching inside Redis (Lua) and its benchmark on realistic data (#873), then scale tests (#874). **Then an ADR**, written from those numbers, for the matcher of the DiracX WMS backend.
-
-</div>
+<div class="dx-key mt-1">Next: matching in Redis, measured against this baseline. Then an ADR, then the implementation in DiracX.</div>
 
 ---
 
 <div class="duw-sec">3 · DiracX: parcels, not jobs</div>
 
-# Pilots: the re-thinking has not started
+# Pilot management: port paused
 
 <div class="duw-three3">
 
 <div class="dx-card dx-card-new">
 
-### Landed
-- A pilot database and router in DiracX (#570, Aug 2026) <span class="duw-was">DUW11</span>.
-- Pilot: Python 2 removed <span class="duw-was">DUW11</span>; maintenance fixes.
-
-</div>
-
-<div class="dx-card dx-card-legacy">
-
-### Paused
-- Pilot registration and authentication with pilot tokens (#421).
-- Pilot logging through DiracX (#550).
-- Untouched since mid-2025.
+### We started
+Porting pilot management from DIRAC to DiracX as it is: a pilot database and router landed (<a href="https://github.com/DIRACGrid/diracx/pull/570" target="_blank">diracx#570</a>) <span class="duw-was">DUW11</span>.
 
 </div>
 
 <div class="dx-card dx-card-blue">
 
-### Questions for later
-- What does a pilot need to know about parcels?
-- What belongs to the pilot, what to the job wrapper?
-- One model for pull and push?
+### We learned
+The data model could be much better. Changing it would mean large changes in DIRAC, which we keep stable.
+
+</div>
+
+<div class="dx-card dx-card-legacy">
+
+### So we paused
+Registration, pilot tokens and logging wait for the DiracX WMS backend. The re-thinking has not started.
 
 </div>
 
 </div>
 
-<div class="dx-key mt-3">Pilots belong to the DiracX WMS backend, which comes after the transformation system. We continue to patch the DIRAC pilot.</div>
+<div class="dx-key mt-3">Pilots belong to the DiracX WMS backend, which comes after the transformation system. The DIRAC pilot keeps being patched.</div>
 
 ---
 
 <div class="duw-sec">3 · DiracX: parcels, not jobs</div>
 
-# The job wrapper: one for all of us, owners wanted
+# The job wrapper: one for all of us
 
 <div class="duw-two">
 <div>
@@ -428,7 +409,7 @@ Each community also adds its own steps around the payload.
 
 <div class="dx-card dx-card-blue mt-3" style="height:auto">
 
-**We are looking for owners**: people who collect the requirements from the communities, set priorities, and accept the result, in a product-owner role. Come and talk to us this week.
+**We are looking for someone** to gather the requirements and the feedback, build a proof of concept, then design the ADR, working alongside someone who has been through the process once. Come and talk to us this week.
 
 </div>
 
@@ -459,11 +440,11 @@ Each community also adds its own steps around the payload.
 - No jobs: parcels. The JobDB in DiracX only tests deployments, then goes.
 - The DiracX WMS is not a priority; it will get a plan when needed.
 - CWL describes everything that runs.
-- Matcher: Redis numbers, then an ADR. interCEde: ADRs close to merge. Pilots: not started.
+- interCEde and the matcher: exploratory, with tests; ADRs after a first implementation. Pilot management: paused.
 
 <div class="dx-eyebrow mt-3">We need you</div>
 
-- Owners for the job wrapper.
+- Someone to lead the job wrapper requirements and proof of concept; your requirements for interCEde and the matcher.
 
 </div>
 </div>

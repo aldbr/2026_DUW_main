@@ -264,7 +264,7 @@ def parcels_only() -> str:
     """No jobs in DiracX: user jobs and workgraphs become parcels. The JobDB already in DiracX is legacy."""
     W, H = 1600, 520
     o = [head(W, H)]
-    o.append(label_pill(40, 60, 340, 100, GREEN, "po1", "user job", "#2d5a33", "a CWL document"))
+    o.append(label_pill(40, 60, 340, 100, GREEN, "po1", "user payload", "#2d5a33", "a CWL document"))
     o.append(label_pill(40, 220, 340, 100, GREEN, "po2", "workgraph", "#2d5a33", "CWL: steps = transformations"))
     o.append(arrow(386, 110, 540, 176, 10, sw=4))
     o.append(arrow(386, 270, 540, 206, -6, sw=4))
@@ -485,26 +485,29 @@ def landscape_map() -> str:
 # Components of the submission and matching path. kind: svc (cube) or db (cylinder).
 # Iso coordinates: the central services platform runs along x, the site platform along y.
 WMS_PARTS = {
-    "JobManager":     ("svc", 40, 40),
-    "Optimizers":     ("svc", 210, 40),
-    "JobDB":          ("db", 380, 40),
-    "TaskQueueDB":    ("db", 550, 40),
-    "Matcher":        ("svc", 720, 40),
-    "SiteDirector":   ("svc", 890, 40),
-    "SandboxStore":   ("svc", 40, 200),
-    "JobStateUpdate": ("svc", 210, 200),
-    "Pilot logging":  ("svc", 380, 200),
-    "PilotManager":   ("svc", 550, 200),
-    "PilotAgentsDB":  ("db", 720, 200),
-    "Pilot files":    ("svc", 890, 200),
-    "CE":             ("svc", 40, 520),
-    "Pilot":          ("svc", 40, 680),
-    "JobAgent":       ("svc", 40, 840),
-    "JobWrapper":     ("svc", 40, 1000),
+    # central installation: databases at the back, agents and pilot management in the middle,
+    # the services users and pilots talk to in front
+    "JobDB":          ("db", 140, 30),
+    "TaskQueueDB":    ("db", 460, 30),
+    "PilotAgentsDB":  ("db", 780, 30),
+    "Optimizers":     ("agent", 60, 190),
+    "SiteDirector":   ("agent", 320, 190),
+    "Pilot agents":   ("agent", 580, 190),
+    "PilotManager":   ("agent", 840, 190),
+    "JobManager":     ("svc", 20, 380),
+    "SandboxStore":   ("svc", 240, 380),
+    "JobStateUpdate": ("svc", 460, 380),
+    "Matcher":        ("svc", 680, 380),
+    "Pilot logging":  ("svc", 900, 380),
+    # site: the CE, then the worker node
+    "CE":             ("svc", 70, 700),
+    "Pilot":          ("svc", 70, 900),
+    "JobAgent":       ("svc", 70, 1070),
+    "JobWrapper":     ("svc", 70, 1240),
 }
-WMS_FLOW = [("user", "JobManager"), ("JobManager", "Optimizers"), ("Optimizers", "TaskQueueDB"),
-            ("SiteDirector", "CE"), ("CE", "Pilot"), ("Pilot", "JobAgent"), ("JobAgent", "Matcher"),
-            ("JobAgent", "JobWrapper"), ("JobWrapper", "JobStateUpdate")]
+WMS_FLOW = [("user", "JobManager"), ("SiteDirector", "CE"), ("CE", "Pilot"), ("Pilot", "JobAgent"),
+            ("JobAgent", "Matcher"), ("JobAgent", "JobWrapper"), ("JobWrapper", "JobStateUpdate"),
+            ("Pilot", "Pilot logging")]
 
 
 def _halo_text(x, y, s_, size, weight, fill):
@@ -515,43 +518,53 @@ def _halo_text(x, y, s_, size, weight, fill):
             f'<text {base} fill="{fill}">{s_}</text>')
 
 
-def wms_path(highlight: dict, colour: str) -> str:
-    """The DIRAC WMS submission and matching path as a clay scene. Components in `highlight`
-    are coloured; those with a callout (box centre, lines) get one. The rest are grey."""
-    W, H = 1600, 860
-    # cropped to the drawing: the scene leaves the left 220 units empty
-    o = [head(W, H).replace('viewBox="0 0 1600 860" width="1600" height="860"', 'viewBox="220 20 1380 830" width="1380" height="830"')]
-    it = Iso(860, 200, 0.62)
+def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
+    """The DIRAC WMS submission and matching path as a clay scene: the site on the left (CE,
+    then a worker node with the pilot, JobAgent and JobWrapper), the central installation on
+    the right (services in front, agents behind, databases at the back). Components in
+    `highlight` are coloured; those with a callout (box centre, lines) get one."""
+    W, H = 1600, 900
+    # cropped to the drawing
+    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="120 30 1480 810" width="1480" height="810"')]
+    it = Iso(900, 150, 0.6)
     P = it.p
-    GREY, GREY_DB = "#e3e6ea", "#dde1e6"
-    o.append(slab(it, 0, 0, 1060, 330, 14, "#eef1f5", "wp-c"))
-    o.append(slab(it, 0, 480, 180, 680, 14, "#f6efe0", "wp-s"))
+    GREY, GREY_DB, GREY_AG = "#e3e6ea", "#dde1e6", "#d9dde3"
+    o.append(slab(it, 0, 0, 1060, 500, 14, "#eef1f5", "wp-c"))
+    o.append(slab(it, 0, 660, 240, 720, 14, "#f6efe0", "wp-s"))
+    wn = [P(20, 860, 0), P(225, 860, 0), P(225, 1365, 0), P(20, 1365, 0)]
+    o.append(f'<polygon points="{" ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in wn)}" fill="#efe3c6" stroke="#d9c597" stroke-width="3" stroke-dasharray="10 8"/>')
     centre, labels = {}, []
     for name, (kind, x, y) in sorted(WMS_PARTS.items(), key=lambda kv: kv[1][1] + kv[1][2]):
         on = name in highlight
-        if kind == "svc":
-            o.append(cube(it, x, y, 90, 90, 56, colour if on else GREY, r=8))
-            top = P(x + 45, y + 45, 56)
-        else:
+        if kind == "db":
             px, py = P(x + 45, y + 45, 0)
             o.append(cylinder(px, py - 50, 36, 44, shade(colour, -0.1) if on else GREY_DB, f"wp-{name.replace(' ', '')}"))
             top = (px, py - 50)
+        else:
+            h = 40 if kind == "agent" else 56
+            col = colour if on else (GREY_AG if kind == "agent" else GREY)
+            o.append(cube(it, x, y, 90, 90, h, col, r=8))
+            top = P(x + 45, y + 45, h)
         centre[name] = P(x + 45, y + 45, 30)
         labels.append(_halo_text(top[0], top[1] - 16, name, SMALL - 5, "bold" if on else "normal",
                                  TEXT_1 if on else "#98a1ac"))
-    ux, uy = P(-220, 150, 0)
+    ux, uy = P(-260, 470, 0)
     o.append(cl.person(ux, uy - 60, 16, "#c9d3df", "wp-user"))
     labels.append(_halo_text(ux, uy + 16, "user", SMALL - 6, "normal", TEXT_2))
     centre["user"] = (ux + 18, uy - 40)
-    for a, b in WMS_FLOW:
-        (x1, y1), (x2, y2) = centre[a], centre[b]
+    for a_, b_ in WMS_FLOW:
+        (x1, y1), (x2, y2) = centre[a_], centre[b_]
         o.append(f'<path d="M{x1:.1f},{y1:.1f} L{x2:.1f},{y2:.1f}" stroke="#aab3be" stroke-width="3" '
                  f'stroke-dasharray="2 9" stroke-linecap="round" fill="none"/>')
     o += labels
-    cx, cy = P(1060, 330, 0)
-    o.append(text(cx - 30, cy + 64, "central services", SMALL - 4, "bold", anchor="end", fill=TEXT_2))
-    sx, sy = P(0, 1160, 0)
-    o.append(text(sx + 10, sy + 60, "site", SMALL - 4, "bold", anchor="start", fill=TEXT_2))
+    for (x, y, t) in [(1060, 500, "DIRAC installation"), (240, 1380, "site")]:
+        lx, ly = P(x, y, 0)
+        o.append(text(lx - 20, ly + 60, t, SMALL - 4, "bold", anchor="end", fill=TEXT_2))
+    for (y, t) in [(75, "databases"), (235, "agents"), (425, "services")]:
+        lx, ly = P(1060, y, 0)
+        o.append(text(lx + 24, ly + 8, t, SMALL - 7, italic=True, anchor="start", fill=TEXT_2))
+    wx, wy = P(225, 860, 0)
+    o.append(text(wx + 16, wy + 6, "worker node", SMALL - 7, italic=True, anchor="start", fill="#8a6d2c"))
     edge = shade(colour, -0.45)
     for name, spec in highlight.items():
         if not spec:
@@ -567,46 +580,50 @@ def wms_path(highlight: dict, colour: str) -> str:
         for j, l in enumerate(lines):
             o.append(text(bx, by - h / 2 + 37 + j * 32, l, SMALL - 7, "bold" if j == 0 else "normal",
                           fill=TEXT_1 if j == 0 else TEXT_2))
+    if debug:
+        for n, (x, y) in centre.items():
+            o.append(text(x, y + 30, f"{x:.0f},{y:.0f}", 16, fill="#c00"))
     o.append("</svg>")
     return "".join(o)
 
 
 def path_faster() -> str:
     return wms_path({
-        "JobDB": ((760, 90), ["insertion: 115 → 190 jobs/s", "#8801 · index #8463"]),
-        "TaskQueueDB": ((1250, 110), ["matching: 30 ms → 3 ms (#8462)", "323 queues: 3.4 s → 0.2 s (#8801)"]),
-        "Matcher": ((1450, 330), ["sub-second delay", "#8711"]),
-        "PilotAgentsDB": ((1330, 730), ["missing indices", "#8463"]),
-        "PilotManager": ((930, 740), ["fewer calls", "#8569 · #8624"]),
+        "JobDB": ((900, 75), ["insertion: 115 → 190 jobs/s", "#8801 · index #8463"]),
+        "TaskQueueDB": ((1345, 110), ["matching: 30 ms → 3 ms (#8462)", "323 queues: 3.4 s → 0.2 s (#8801)"]),
+        "PilotAgentsDB": ((1470, 280), ["missing indices", "#8463"]),
+        "Matcher": ((980, 730), ["sub-second delay", "#8711"]),
+        "Pilot agents": ((1360, 700), ["fewer calls", "#8569 · #8624"]),
     }, "#9fd3a8")
 
 
 def path_reliable() -> str:
     return wms_path({
-        "TaskQueueDB": ((1250, 110), ["keeps site, platform, tags", "#8801"]),
-        "SiteDirector": ((1450, 340), ["skips banned CEs", "#8340"]),
-        "JobAgent": ((470, 700), ["leaves rescheduled jobs alone", "#8441"]),
-        "JobWrapper": ((840, 800), ["no NaN parameters", "#8750"]),
+        "TaskQueueDB": ((1345, 110), ["keeps site, platform, tags", "#8801"]),
+        "SiteDirector": ((800, 75), ["skips banned CEs", "#8340"]),
+        "Pilot": ((330, 250), ["Python 3 only", "Pilot #268"]),
+        "JobAgent": ((365, 720), ["leaves rescheduled jobs alone", "#8441"]),
+        "JobWrapper": ((700, 790), ["no NaN parameters", "#8750"]),
     }, "#adc3e3")
 
 
 def path_safer() -> str:
     return wms_path({
-        "SandboxStore": ((330, 150), ["no writes outside", "GHSA-pwvr"]),
-        "JobStateUpdate": ((730, 90), ["only your own jobs", "GHSA-j3xg"]),
-        "Pilot logging": ((870, 760), ["no file reads", "GHSA-vm3r"]),
-        "PilotManager": ((1230, 770), ["SQL injection, access", "GHSA-7xw9"]),
-        "Pilot files": ((1460, 620), ["verified HTTPS", "GHSA-vg99"]),
-        "TaskQueueDB": ((1250, 110), ["parameterised SQL, all DBs", "v9.1.13 to v9.1.15"]),
+        "SandboxStore": ((600, 75), ["no writes outside", "GHSA-pwvr"]),
+        "TaskQueueDB": ((1345, 110), ["parameterised SQL, all DBs", "v9.1.13 to v9.1.15"]),
+        "PilotManager": ((1440, 640), ["SQL injection, access", "GHSA-7xw9"]),
+        "Pilot logging": ((1230, 770), ["no file reads", "GHSA-vm3r"]),
+        "JobStateUpdate": ((880, 740), ["only your own jobs", "GHSA-j3xg"]),
+        "Pilot": ((330, 250), ["verified HTTPS download", "GHSA-vg99"]),
         "JobDB": None, "PilotAgentsDB": None,
     }, "#f0b9a8")
 
 def hetero() -> str:
     """One image name for every architecture (CVMFS .multiarch), CPU and memory limits with
     cgroup2, and HPC access through the SSH CE. Isometric clay."""
-    W, H = 1600, 820
+    W, H = 1600, 880
     o = [head(W, H)]
-    it = Iso(760, 150, 0.82)
+    it = Iso(760, 230, 0.82)
     P = it.p
     X86, ARM = "#adc3e3", "#e8a33c"
     # CVMFS, at the back
@@ -616,9 +633,10 @@ def hetero() -> str:
         o.append(cube(it, x, 10, 110, 110, 30, shade(col, 0.2), r=8))
         o.append(cube(it, x, 10, 110, 110, 24, col, z0=30, r=8))
         stacks[k] = P(x + 55, 65, 54)
-    tx, ty = P(0, -40, 0)
-    o.append(text(tx - 70, ty - 70, "CVMFS: /.multiarch/&lt;arch&gt;/&lt;image&gt;", SMALL - 2, "bold", anchor="end", fill=TEXT_1))
-    o.append(text(tx - 70, ty - 36, "layout built by DUCC 2.14.1", SMALL - 6, anchor="end", fill=TEXT_2))
+    tx, ty = P(280, -40, 0)
+    tx = P(280, 60, 0)[0]
+    o.append(text(tx, ty - 215, "CVMFS: /.multiarch/&lt;arch&gt;/&lt;image&gt;", SMALL - 2, "bold", fill=TEXT_1))
+    o.append(text(tx, ty - 181, "layout built by DUCC 2.14.1", SMALL - 6, fill=TEXT_2))
     o.append(text(stacks[0][0], stacks[0][1] - 40, "amd64", SMALL - 4, "bold", fill=INK_BLUE))
     o.append(text(stacks[1][0], stacks[1][1] - 40, "arm64", SMALL - 4, "bold", fill="#7a5410"))
     # worker nodes
@@ -642,19 +660,95 @@ def hetero() -> str:
     o.append(text(cx + 20, cy + 6, "cgroup2: CPU and", SMALL - 6, anchor="start", fill="#8a6d2c"))
     o.append(text(cx + 20, cy + 36, "memory limits", SMALL - 6, anchor="start", fill="#8a6d2c"))
     o.append(text(cx + 20, cy + 66, "#8110 · #8366", SMALL - 8, anchor="start", fill=TEXT_2))
-    # HPC, to the right
-    o.append(slab(it, 760, 60, 220, 220, 14, "#e9e1f5", "ht-hpc"))
-    for (x, y) in [(790, 90), (870, 90), (790, 170), (870, 170)]:
-        o.append(cube(it, x, y, 60, 60, 40, "#c3b1e1", slots=True, r=6))
-    hx, hy = P(980, 280, 0)
-    o.append(text(hx - 60, hy + 56, "HPC", SUB - 4, "bold", fill=TEXT_1))
-    o.append(text(hx - 60, hy + 90, "SSH CE on Fabric · #7703", SMALL - 6, fill=TEXT_2))
+    # a batch-system node, reached over SSH
+    o.append(slab(it, 760, 120, 200, 200, 14, "#e9e1f5", "ht-hpc"))
+    o.append(cube(it, 810, 170, 90, 90, 56, "#c3b1e1", slots=True, r=7))
+    nx, ny = P(855, 215, 56)
+    o.append(text(nx, ny - 20, "batch system", SMALL - 6, "bold", fill=TEXT_1))
+    o.append(label_pill(1300, 200, 270, 70, "#c3b1e1", "ht-ssh", "SSH CE", "#3d2a63", size=SMALL))
+    o.append(arrow(1420, 276, nx + 95, ny + 40, 20, sw=4))
+    o.append(text(1400, 320, "Fabric · #7703", SMALL - 6, anchor="end", fill=TEXT_2))
+    hx, hy = P(960, 320, 0)
+    o.append(text(hx - 60, hy + 56, "HPC or any batch system", SMALL - 4, "bold", fill=TEXT_1))
     o.append(text(800, H - 20, "the pilot reads uname -m and picks the matching directory (#8456)", SMALL - 4, italic=True, fill=TEXT_2))
     o.append("</svg>")
     return "".join(o)
 
 
-FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero}
+def matcher_poc() -> str:
+    """What the POC matcher does today for one pilot request: all waiting jobs, then match
+    against the node, filter by job-type limits and priority, rank by fair share, pick one."""
+    W, H = 1600, 520
+    o = [head(W, H)]
+    steps = [
+        ("waiting jobs", ["loaded from the database", ""], 16, "#d5dbe3"),
+        ("1 · match", ["site, OS, cores, memory,", "GPU, tags vs the node"], 9, "#9fd3a8"),
+        ("2 · filter", ["job-type limits at the site,", "then priority (weighted)"], 5, "#f0d9a6"),
+        ("3 · rank", ["fair share: group, owner,", "then oldest first"], 3, "#adc3e3"),
+    ]
+    for k, (title, sub, n, col) in enumerate(steps):
+        cx = 170 + k * 360
+        it = Iso(cx, 130, 0.5)
+        o.append(slab(it, 0, 0, 280, 280, 12, "#f3f5f8", f"mp-s{k}"))
+        cells = [(28 + (i % 4) * 62, 28 + (i // 4) * 62) for i in range(n)]
+        for (x, y) in sorted(cells, key=lambda c: c[0] + c[1]):
+            o.append(cube(it, x, y, 44, 44, 30, col, r=5))
+        o.append(text(cx, 380, title, SUB - 4, "bold", fill=TEXT_1))
+        o.append(text(cx, 414, sub[0], SMALL - 8, fill=TEXT_2))
+        o.append(text(cx, 442, sub[1], SMALL - 8, fill=TEXT_2))
+        if k < 3:
+            o.append(arrow(cx + 140, 200, cx + 222, 200, 0, sw=4))
+    o.append(arrow(1390, 200, 1440, 200, 0, sw=4))
+    o.append(label_pill(1448, 166, 145, 68, AMBER, "mp-p", "one job", INK_AMBER, size=SMALL - 2))
+    o.append(text(1520, 270, "to the pilot", SMALL - 8, fill=TEXT_2))
+    o.append(text(800, 500, "one request at a time, in Python: every waiting job is checked", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def intercede_flow() -> str:
+    """interCEde: requirements in, then the library is checked against real CEs in integration
+    tests before any release reaches DiracX."""
+    W, H = 1600, 640
+    o = [head(W, H)]
+    # 1. the library
+    it = Iso(250, 300, 0.7)
+    o.append(slab(it, 0, 0, 220, 220, 14, "#fff3dd", "ic-l"))
+    for z, col in [(0, "#f0d9a6"), (30, "#ecc884"), (60, "#e8b35f")]:
+        o.append(cube(it, 50, 50, 120, 120, 26, col, z0=z, r=8))
+    o.append(text(250, 540, "interCEde", SUB - 2, "bold", fill="#7a5410"))
+    o.append(text(250, 574, "library, proof of concept", SMALL - 8, fill=TEXT_2))
+    # 2. integration tests against real CEs
+    it = Iso(800, 280, 0.7)
+    o.append(slab(it, 0, 0, 260, 260, 14, "#eef1f5", "ic-t"))
+    for k, (name, x, y) in enumerate([("HTCondor", 30, 30), ("ARC", 150, 30), ("Slurm", 90, 150)]):
+        o.append(cube(it, x, y, 80, 80, 50, "#c7cfd9", slots=True, r=7))
+        tx, ty = it.p(x + 40, y + 40, 50)
+        o.append(text(tx, ty - 16, name, SMALL - 7, "bold", fill=TEXT_1))
+    o.append(text(800, 540, "integration tests", SUB - 2, "bold", fill=TEXT_1))
+    o.append(text(800, 574, "real CEs, before every release", SMALL - 8, fill=TEXT_2))
+    # 3. DiracX
+    it = Iso(1350, 300, 0.7)
+    o.append(slab(it, 0, 0, 220, 220, 14, TEAL, "ic-x"))
+    o.append(cube(it, 50, 50, 120, 120, 50, "#5fb3a8", r=8))
+    o.append(text(1350, 540, "DiracX", SUB - 2, "bold", fill=INK_TEAL))
+    o.append(text(1350, 574, "a WMS backend uses it", SMALL - 8, fill=TEXT_2))
+    for (x1, x2, lab) in [(420, 600, "tested"), (1000, 1180, "released")]:
+        o.append(arrow(x1, 400, x2, 400, 0, sw=4))
+        o.append(text((x1 + x2) / 2, 386, lab, SMALL - 6, italic=True, fill=TEXT_2))
+    # communities: requirements in, increments out
+    for i in range(3):
+        o.append(cl.person(470 + i * 60, 70, 15, ["#adc3e3", "#9fd3a8", "#f0d9a6"][i], f"ic-u{i}"))
+    o.append(text(530, 160, "communities", SMALL - 4, "bold", fill=TEXT_1))
+    o.append(arrow(450, 120, 300, 230, -20, sw=3.6))
+    o.append(text(300, 120, "requirements:", SMALL - 7, "bold", anchor="end", fill=TEXT_1))
+    o.append(text(300, 148, "issues, DOps", SMALL - 7, anchor="end", fill=TEXT_2))
+    o.append(arrow(700, 230, 610, 130, -20, sw=3.6))
+    o.append(text(720, 110, "increments to test", SMALL - 7, "bold", anchor="start", fill=TEXT_1))
+    o.append("</svg>")
+    return "".join(o)
+
+FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow}
 
 
 def main() -> int:
