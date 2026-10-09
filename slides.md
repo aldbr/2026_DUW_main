@@ -30,7 +30,7 @@ fonts:
 
 ---
 
-# ARM and GPUs are gaining ground
+# ARM and GPUs: HPC sees them first
 
 <div style="display:grid;grid-template-columns:1.75fr 1fr;gap:1rem;align-items:center">
 
@@ -39,12 +39,37 @@ fonts:
 <div class="duw-stats1">
 <div><b>276 / 500</b>TOP500 systems with GPUs, June 2026 (110 in 2018)</div>
 <div><b>35</b>ARM systems in the TOP500 (5 in 2020)</div>
-<div><b>11k ARM slots</b>in ATLAS production at 5 grid sites; up to half of a pledge can be ARM</div>
+<div class="grid"><b>Our communities</b>run mostly on grid sites. Some use a few HPCs opportunistically: LHCb on MareNostrum 5, up to 732 jobs at once.</div>
 </div>
 
 </div>
 
-<div class="duw-two mt-2">
+<div class="dx-key mt-2">What appears in HPC and clouds first reaches the grid next. The question is what it asks of the WMS.</div>
+
+---
+
+# From HPC to the grid, and to the WMS
+
+<div class="duw-chain">
+<div class="h">Driver</div><div class="h">HPC and clouds first</div><div class="h">Grid sites now</div><div class="h">What the WMS must do</div>
+
+<div class="d gpu"><b>AI demand</b>NVIDIA data-centre revenue: $194B in FY2026, 90% of its total</div>
+<div>GPUs in 276 of the TOP500</div>
+<div>ATLAS: ~280 GPUs at 8 grid sites, little used; no GPU pledge unit before 2028</div>
+<div class="w">Schedule CPU and GPU work together; match on capabilities</div>
+
+<div class="d arm"><b>Energy and hardware cost</b>"badly hit by AI factories" (WLCG, 2026)</div>
+<div>ARM in 35 of the TOP500; most new AWS CPU capacity is ARM</div>
+<div>ATLAS: ARM up to half of a pledge, 11k slots at 5 sites; Glasgow ~20% ARM</div>
+<div class="w">One site, two architectures: images and matching per architecture</div>
+
+<div class="d core"><b>More cores per node</b>32 per socket in 2017, 192 in 2024; memory getting scarcer</div>
+<div>HPCs hand out whole nodes: 112 cores on MareNostrum 5</div>
+<div>Multicore pilots: 8 cores for 48 h (CMS)</div>
+<div class="w">Fill nodes, not slots: multicore payloads, bundling, memory-aware matching</div>
+</div>
+
+<div class="duw-two mt-3">
 <div class="dx-card dx-card-blue" style="height:auto">
 
 **In DIRAC: temporary solutions**, to keep running on these resources without changing DIRAC, and keep it stable.
@@ -122,24 +147,11 @@ What keeps it running while we migrate
 
 # Faster
 
-<table class="duw-stat">
-<thead><tr><th>Measured on production-sized databases</th><th>before</th><th>after</th><th>release</th></tr></thead>
-<tbody>
-<tr><td>Task queue matching query</td><td>~30 ms</td><td><b>~3 ms</b></td><td>v9.1.0 · #8462</td></tr>
-<tr><td>Finding matching task queues (323 queues)</td><td>3.4 s</td><td><b>0.2 s</b></td><td>v9.1.20 · #8801</td></tr>
-<tr><td>Job insertion</td><td>~115 jobs/s</td><td><b>~190 jobs/s</b></td><td>v9.1.20 · #8801</td></tr>
-<tr><td>Duplicate task queues during a burst</td><td>64</td><td><b>1</b></td><td>v9.1.20 · #8801</td></tr>
-<tr><td>Delay between matches, per job type</td><td>1 s or more</td><td><b>sub-second</b></td><td>v9.1.16 · #8711</td></tr>
-</tbody>
-</table>
+<img :src="'/figures/fig-path-faster.svg'" alt="The DIRAC WMS submission and matching path in clay: JobDB, TaskQueueDB, Matcher, PilotAgentsDB and PilotManager highlighted in green with their improvements; other components grey" style="width:64%;margin:-1rem auto 0;display:block" />
 
-<div class="dx-tight mt-2">
+<div class="duw-prs"><a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8711" target="_blank">#8711</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8569" target="_blank">#8569</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8624" target="_blank">#8624</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8524" target="_blank">#8524</a></div>
 
-- Also: missing indices on pilots and jobs (#8463, manual `ALTER TABLE`), hot paths found with py-spy (#8524), fewer calls in the pilot agents (#8569, #8624).
-
-</div>
-
-<div class="dx-key mt-2">Several fixes made the DIRAC WMS faster and more reliable, for installations at v9 and above. Most of the numbers above need v9.1.</div>
+<div class="dx-key mt-1">Several fixes made the DIRAC WMS faster, for installations at v9 and above. Most of these numbers need v9.1.</div>
 
 ---
 
@@ -147,17 +159,11 @@ What keeps it running while we migrate
 
 # More reliable
 
-<table class="duw-map duw-rows">
-<thead><tr><th>What went wrong</th><th>What happens now</th><th>Release</th></tr></thead>
-<tbody>
-<tr><td>During bursts of submissions, a task queue could lose its site, platform or tag restrictions.</td><td>The restrictions stay; one task queue instead of dozens of duplicates.</td><td>v9.1.20 · #8801</td></tr>
-<tr><td>The SiteDirector kept sending pilots to banned CEs.</td><td>Banned CEs are skipped.</td><td>v9.0.2 · #8340</td></tr>
-<tr><td>The JobAgent failed jobs that had already been rescheduled.</td><td>Those jobs are left alone.</td><td>v9.0.17 · #8441</td></tr>
-<tr><td>The Watchdog could record NaN or infinite values as job parameters.</td><td>Such values are rejected.</td><td>v9.1.16 · #8750</td></tr>
-</tbody>
-</table>
+<img :src="'/figures/fig-path-reliable.svg'" alt="The same path: TaskQueueDB, SiteDirector, JobAgent and JobWrapper highlighted in blue with their fixes" style="width:64%;margin:-1rem auto 0;display:block" />
 
-<div class="dx-key mt-3">None of these change how DIRAC works. They remove ways it could fail.</div>
+<div class="duw-prs"><a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a></div>
+
+<div class="dx-key mt-1">None of these change how DIRAC works. They remove ways it could fail.</div>
 
 ---
 
@@ -165,46 +171,30 @@ What keeps it running while we migrate
 
 # Safer
 
-<table class="duw-map duw-rows">
-<thead><tr><th>Component</th><th>Problem, now fixed</th><th>Fixed in</th></tr></thead>
-<tbody>
-<tr><td>Job state updates</td><td>A user could change the state of someone else's job.</td><td>v9.1.20 · v9.0.26 · v8.0.85</td></tr>
-<tr><td>Sandbox store</td><td>A crafted upload could write files outside the sandbox area.</td><td>v9.1.20 · v9.0.26 · v8.0.85</td></tr>
-<tr><td>Pilot logging</td><td>A crafted request could read files on the server.</td><td>v9.1.20 · v9.0.26 · v8.0.85</td></tr>
-<tr><td>Pilot manager</td><td>SQL injection and missing access checks.</td><td>v9.1.10 · v9.0.22</td></tr>
-<tr><td>Pilot download</td><td>Pilot code fetched over HTTPS without verifying the server.</td><td>v9.1.10 · v9.0.22</td></tr>
-<tr><td>All WMS databases</td><td>Queries built from strings; now parameterised.</td><td>v9.1.13 to v9.1.15</td></tr>
-</tbody>
-</table>
+<img :src="'/figures/fig-path-safer.svg'" alt="The same path: SandboxStore, JobStateUpdate, pilot logging, PilotManager, pilot files and the databases highlighted with the advisory each fix addresses" style="width:64%;margin:-1rem auto 0;display:block" />
 
-<div class="dx-concludes mt-2"><carbon-arrow-right class="dx-concludes-arrow" /><span>DIRAC is patched, not developed: <strong>upgrading is how you get these</strong></span></div>
+<div class="duw-prs"><a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a> <span>fixed in v9.1.20 · v9.0.26 · v8.0.85</span> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a> <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9" target="_blank">GHSA-vg99</a> <span>fixed in v9.1.10 · v9.0.22</span></div>
+
+<div class="dx-concludes mt-1"><carbon-arrow-right class="dx-concludes-arrow" /><span>DIRAC is patched, not developed: <strong>upgrading is how you get these</strong></span></div>
 
 ---
 
 <div class="duw-sec">2 · DIRAC: fixes and performance</div>
 
-# Heterogeneous nodes: architectures, limits, HPC
+# Heterogeneous nodes
 
-<div class="duw-two">
+<img :src="'/figures/fig-hetero.svg'" alt="CVMFS holds one directory per architecture under .multiarch; an x86_64 node and an aarch64 node each pull their own image into a container limited by cgroup2; an HPC centre is reached through the SSH CE" style="width:60%;margin:-1rem auto 0;display:block" />
+
+<div class="duw-two dx-tight">
 <div>
 
-**aarch64 beside x86_64** (DIRAC #8456, pull request open) <span class="duw-was">DUW11</span>
-- The pilot detects the node's architecture and resolves the container image under the CVMFS `.multiarch` layout: `<base>/<arch>/<image>`.
-- Used by the Singularity CE and `dirac-apptainer-exec`.
-- Relies on **CVMFS 2.14** (DUCC 2.14.1) on the publishing side to build the layout from multi-architecture images; `unpacked.cern.ch` has it. Any client reads it.
-- Left to do: certify, review, merge.
+- **aarch64 images** <span class="duw-was">DUW11</span>: <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify. Needs CVMFS 2.14 (DUCC 2.14.1) where images are published; any client reads it.
 
 </div>
 <div>
 
-**CPU and memory limits** <span class="duw-was">DUW11</span>
-- cgroup2 limits for jobs in containers (#8110).
-- Memory taken into account when matching and when filling a multi-core slot (#8366, #8414).
-
-**HPC access** <span class="duw-was">DUW11</span>
-- The SSH computing element now uses Fabric (#7703, v9.0).
-
-**Not solved in DIRAC**: a job that can run on x86_64 *or* aarch64 has a single set of requirements.
+- **Limits** <span class="duw-was">DUW11</span> and **HPC** <span class="duw-was">DUW11</span>: in v9.0.
+- **Not solved in DIRAC**: a job for x86_64 *or* aarch64.
 
 </div>
 </div>
@@ -250,19 +240,20 @@ And the proofs of concept around the future WMS
 
 # No jobs in DiracX
 
-<img :src="'/figures/fig-parcels-only.svg'" alt="User jobs and workgraphs, both CWL, become parcels, the record of work, which a dispatcher sends to a backend; the JobDB in DiracX is legacy, used only to test deployments and deleted once everyone is on DiracX" style="width:82%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-parcels-only.svg'" alt="User jobs and workgraphs, both CWL, become parcels, the record of work, which a dispatcher sends to a backend; the JobDB in DiracX is legacy, used only to test deployments and deleted once everyone is on DiracX" style="width:68%;margin:-.6rem auto 0;display:block" />
 
 <div class="duw-two dx-tight" style="margin-top:.2rem">
 <div>
 
 - A user job is a parcel, like a bundle of transformation inputs. A failed parcel is final: resubmitting creates a new one.
-- A jobs table, if the DiracX WMS needs one, stays private to that backend.
+- We do not port job monitoring or the job manager <span class="duw-was">DUW11</span>.
 
 </div>
 <div>
 
-- The JobDB in DiracX today only receives job status updates from DIRAC, to **test that a DiracX deployment works**.
-- We do not port job monitoring or the job manager <span class="duw-was">DUW11</span>. **Once everyone is on DiracX, it is deleted.**
+- The JobDB in DiracX is legacy. It receives job status updates from DIRAC, to **test that a DiracX deployment works**.
+- It also feeds the **dummy job executor** (<a href="https://github.com/diracgrid/diracx/pull/995" target="_blank">diracx#995</a>): jobs go `Waiting → Matched → Running → Done` without running anything. A stand-in backend, to test the transformation system end to end.
+- **Once everyone is on DiracX, it is deleted.**
 
 </div>
 </div>
