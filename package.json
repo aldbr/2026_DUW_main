@@ -1,0 +1,9 @@
+{
+  "name": "duw12",
+  "private": true,
+  "workspaces": [
+    "directions",
+    "wms",
+    "ts-hackathon"
+  ]
+}

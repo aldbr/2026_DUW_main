@@ -1,20 +1,20 @@
 {
-  "name": "diracx-chep2026",
+  "name": "duw12-directions",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "slidev slides.md --open",
     "build": "slidev build",
-    "export": "slidev export",
+    "export": "slidev export slides.md --per-slide --output DiracXDirections_DUW12.pdf",
     "present": "slidev slides.private.md --open",
     "strip-notes": "python3 scripts/strip_notes.py"
   },
   "dependencies": {
-    "@slidev/cli": "latest",
-    "@slidev/theme-default": "latest",
-    "vue": "latest"
+    "@slidev/cli": "52.15.2",
+    "@slidev/theme-default": "0.25.0",
+    "vue": "3.5.34"
   },
   "devDependencies": {
-    "playwright-chromium": "^1.60.0"
+    "playwright-chromium": "1.60.0"
   }
 }

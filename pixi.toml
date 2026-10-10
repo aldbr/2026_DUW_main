@@ -1,0 +1,37 @@
+[workspace]
+name = "duw12"
+description = "Slides for the 12th DIRAC(X) Users' Workshop, Prague, 13-16 October 2026"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
+
+[dependencies]
+nodejs = "20.*"
+python = "3.12.*"
+# figure scripts (figures/*.py in each deck)
+numpy = "*"
+pandas = "*"
+matplotlib = "*"
+pillow = "*"
+cairosvg = "*"
+
+[tasks]
+# one node_modules for the three decks (npm workspaces, versions pinned in each package.json)
+install = "npm ci"
+# Chromium for the PDF export
+browser = "npx playwright install chromium"
+
+[tasks.dev]
+args = ["deck"]
+cmd = "npm run dev -w {{ deck }}"
+
+[tasks.present]
+args = ["deck"]
+cmd = "npm run present -w {{ deck }}"
+
+[tasks.notes]
+args = ["deck"]
+cmd = "npm run strip-notes -w {{ deck }}"
+
+[tasks.export]
+args = ["deck"]
+cmd = "npm run strip-notes -w {{ deck }} && npm run export -w {{ deck }}"
