@@ -152,3 +152,13 @@
 .slidev-layout.duw-poc pre, .slidev-layout.duw-poc .slidev-code { background: #fffaf0 !important; border: 1px solid #ead8ae; border-radius: 8px; }
 /* inline-code background must not leak into code blocks */
 .slidev-layout pre code, .slidev-layout pre code span { background: transparent !important; }
+/* one shape for every exploratory slide: figure, Why / Where it stands / Next, From you */
+.duw-pocfig { display: block; width: 74%; max-height: 12rem; object-fit: contain; margin: -.6rem auto 0; }
+.duw-pocfig.duw-code { width: 74%; font-size: .62rem; }
+.duw-pocfig.duw-code pre { margin: 0; }
+.duw-poc3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-top: .45rem; font-size: .74rem; line-height: 1.32; }
+.duw-poc3 > div { background: #ffffff; border-radius: 10px; border-top: 4px solid #e0a030; padding: .4rem .7rem; color: var(--dx-gray); }
+.duw-poc3 h4 { margin: 0 0 .15rem 0; font-family: var(--dx-font-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: #a3741c; }
+.duw-poc3 p { margin: 0; }
+.duw-ask { margin-top: .55rem; padding: .4rem .8rem; border: 2px dashed #e0a030; border-radius: 10px; background: #fff6e4; color: var(--dx-ink); font-size: .8rem; }
+.duw-ask b { color: #7a5410; }

@@ -343,42 +343,42 @@ class: duw-poc
 
 <img :src="'/logos/cwl.svg'" alt="Common Workflow Language logo" style="position:absolute;top:2.5rem;right:2.6rem;height:2.4rem" />
 
-<div class="duw-two" style="grid-template-columns:1fr 1.05fr">
-<div>
+<div class="duw-pocfig duw-code">
 
 ```yaml
 cwlVersion: v1.2
 class: CommandLineTool
 $namespaces: {dirac: https://diracgrid.org/cwl#}
 hints:
-  dirac:Job: {}       # a user payload
+  dirac:Job: {}       # a user payload (draft syntax)
 baseCommand: [python, fit.py]
 inputs:
-  data:               # "lfn:/vo/..." on the grid,
-    type: File        # a local file on a laptop
-    inputBinding: {position: 1}
+  data: {type: File, inputBinding: {position: 1}}   # lfn:/... on the grid
 outputs:
   plots: {type: File, outputBinding: {glob: "*.png"}}
 ```
 
-<div class="duw-small">Draft syntax (DX-ADR-007). Runs as is with <code>cwltool</code>.</div>
-
-</div>
-<div class="dx-tight">
-
-- **One format** for a user payload, a workgraph and each transformation: CWL v1.2.
-- DiracX settings are `dirac:` **hints**: the document stays plain CWL.
-- **For a WMS backend**: requirements come from the hints; the job wrapper resolves `lfn:` and `sandbox:` inputs and reports a status per input; DiracX registers the outputs.
-- **Yesterday**: hands-on sessions to convert DIRAC workflows to CWL.
-
-</div>
 </div>
 
-<div class="dx-card dx-card-new mt-2" style="height:auto;padding:.45em .8em">
+<div class="duw-poc3">
+<div><h4>Why</h4>
 
-**With the CWL community**: <a href="https://github.com/common-workflow-language/cwltool/pull/2302" target="_blank">cwltool#2302</a> path mapper, <a href="https://github.com/common-workflow-language/cwltool/pull/2166" target="_blank">cwltool#2166</a> Apptainer sandboxes, <a href="https://github.com/common-workflow-language/schema_salad/pull/1064" target="_blank">schema_salad#1064</a>: merged. <a href="https://github.com/common-workflow-language/cwl-utils/pull/446" target="_blank">cwl-utils#446</a> QuickJS engine: in review.
+One format for a user payload, a workgraph and each transformation. DiracX settings are `dirac:` hints: the same document runs on a laptop and at scale.
 
 </div>
+<div><h4>Where it stands</h4>
+
+DX-ADR-007, draft. `dirac-cwl` 1.3.0; an experimental CWL wrapper in DIRAC (#8425). Upstream: <a href="https://github.com/common-workflow-language/cwltool/pull/2302" target="_blank">cwltool#2302</a>, <a href="https://github.com/common-workflow-language/cwltool/pull/2166" target="_blank">#2166</a>, <a href="https://github.com/common-workflow-language/schema_salad/pull/1064" target="_blank">schema_salad#1064</a> merged; <a href="https://github.com/common-workflow-language/cwl-utils/pull/446" target="_blank">cwl-utils#446</a> in review.
+
+</div>
+<div><h4>Next</h4>
+
+Implemented with the transformation system, from this week's hackathon.
+
+</div>
+</div>
+
+<div class="duw-ask"><b>From you</b>: convert one of your workflows (yesterday's hands-on) and tell us what CWL cannot express.</div>
 
 ---
 class: duw-poc
@@ -388,26 +388,27 @@ class: duw-poc
 
 # interCEde: computing elements, explored from use cases
 
-<div class="duw-two" style="grid-template-columns:1fr 1.5fr;align-items:center">
-<div class="dx-tight">
+<img class="duw-pocfig" :src="'/figures/fig-intercede.svg'" alt="Communities send requirements to interCEde and test its increments; interCEde is tested against real HTCondor, ARC and Slurm CEs, then released to DiracX, where a WMS backend uses it" />
 
-- **An exploratory project**, from the use cases DIRAC covers, and those it does not but should.
-- **Its own repository**: integration tests against real CEs, so that a change cannot break a production instance.
-- **Ends with ADRs and a first implementation**; the ADRs are merged once that implementation works.
+<div class="duw-poc3">
+<div><h4>Why</h4>
 
-</div>
-<div>
-
-<img :src="'/figures/fig-intercede.svg'" alt="Communities send requirements to interCEde and test its increments; interCEde is tested against real HTCondor, ARC and Slurm CEs, then released to DiracX, where a WMS backend uses it" style="width:100%" />
+Talking to CEs is needed by every WMS. Explored from the use cases DIRAC covers, and those it does not but should.
 
 </div>
-</div>
+<div><h4>Where it stands</h4>
 
-<div class="dx-card dx-card-blue mt-2" style="height:auto">
-
-**Open call**: if you work with DIRAC computing elements, test the increments of <a href="https://github.com/DIRACGrid/intercede" target="_blank">interCEde</a> and tell us what does not fit your needs, or what DIRAC does not cover: in an issue, or at a DOps.
+ADRs under review; core contract proposed (#27). Its own repository: integration tests against real CEs, so a change cannot break production.
 
 </div>
+<div><h4>Next</h4>
+
+Increments you can test. The ADRs are merged once a first implementation works.
+
+</div>
+</div>
+
+<div class="duw-ask"><b>From you</b>: if you use DIRAC computing elements, test the increments of <a href="https://github.com/DIRACGrid/intercede" target="_blank">interCEde</a> and report what does not fit, in an issue or at a DOps.</div>
 
 ---
 class: duw-poc
@@ -417,36 +418,27 @@ class: duw-poc
 
 # A matcher for the DiracX WMS
 
-<div class="duw-two dx-tight">
-<div>
+<img class="duw-pocfig" :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters them using the configuration and the running jobs, ranks them by fair share using the running jobs, and hands one job to the pilot" />
 
-**Why**
-- DIRAC's matcher will not be fast enough for what is coming for some communities, such as LHCb.
-- It cannot describe heterogeneous needs: a payload that runs on GPU A, *or* GPU B, *or* CPU C.
+<div class="duw-poc3">
+<div><h4>Why</h4>
 
-</div>
-<div>
-
-**The proof of concept** (<a href="https://github.com/devlink42/poc-dirac-job-matchmaking" target="_blank">poc-dirac-job-matchmaking</a>)
-- A deliberately simple Python matcher, and load tests on LHCb-shaped data to compare solutions.
-- The solution must be easy to deploy and to rebuild: chaos tests with Redis switched off.
+DIRAC's matcher will not be fast enough for what is coming (e.g. LHCb), and cannot express alternatives: GPU A, or GPU B, or CPU C.
 
 </div>
+<div><h4>Where it stands</h4>
+
+A deliberately simple Python matcher (<a href="https://github.com/devlink42/poc-dirac-job-matchmaking" target="_blank">POC</a>), and load tests on LHCb-shaped data: 210 ms per match at 50k candidates.
+
+</div>
+<div><h4>Next</h4>
+
+Redis, measured against this baseline, easy to rebuild (chaos tests with Redis off). Then an ADR, then DiracX.
+
+</div>
 </div>
 
-<div class="dx-key mt-3">Next: matching in Redis, measured against this baseline. Then an ADR, then the implementation in DiracX.</div>
-
----
-class: duw-poc
----
-
-<div class="duw-sec">3 · DiracX · exploratory</div>
-
-# What the matcher POC does today
-
-<img :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters by job-type limits and priority, ranks by fair share, and hands one job to the pilot" style="width:88%;margin:-.2rem auto 0;display:block" />
-
-<div class="dx-key mt-2">Each step reads what it needs: the node for matching, the configuration and the running jobs for filtering, the running jobs again for fair share.</div>
+<div class="duw-ask"><b>From you</b>: the requirements your jobs cannot express today.</div>
 
 ---
 class: duw-poc
@@ -456,15 +448,27 @@ class: duw-poc
 
 # Pilot management: port paused
 
-<img :src="'/figures/fig-pilots.svg'" alt="DIRAC pilot management ported as is to a DiracX pilot database and router, then paused; what comes next is a question mark, to be re-thought with the DiracX WMS" style="width:84%;margin:.4rem auto 0;display:block" />
+<img class="duw-pocfig" :src="'/figures/fig-pilots.svg'" alt="DIRAC pilot management ported as is to a DiracX pilot database and router, then paused; what comes next is a question mark, to be re-thought with the DiracX WMS" />
 
-<div class="duw-three3 mt-2" style="font-size:.86rem">
-<div>We started porting pilot management as it is: a pilot database and router landed (<a href="https://github.com/DIRACGrid/diracx/pull/570" target="_blank">diracx#570</a>) <span class="duw-was">DUW11</span>.</div>
-<div>We learned the data model could be much better; changing it would mean large changes in DIRAC, which we keep stable.</div>
-<div>So the port is paused: registration, pilot tokens and logging wait for the DiracX WMS backend.</div>
+<div class="duw-poc3">
+<div><h4>Why</h4>
+
+Pilots belong to the DiracX WMS backend, which comes after the transformation system.
+
+</div>
+<div><h4>Where it stands</h4>
+
+Pilot database and router ported as is (<a href="https://github.com/DIRACGrid/diracx/pull/570" target="_blank">diracx#570</a>) <span class="duw-was">DUW11</span>. The data model could be much better, and changing it would mean large changes in DIRAC: paused.
+
+</div>
+<div><h4>Next</h4>
+
+Re-thought with the DiracX WMS backend. Meanwhile the DIRAC pilot keeps being patched.
+
+</div>
 </div>
 
-<div class="dx-key mt-3">Pilots belong to the DiracX WMS backend, which comes after the transformation system. The DIRAC pilot keeps being patched.</div>
+<div class="duw-ask"><b>From you</b>: what you need from pilots: identity, logging, push or pull.</div>
 
 ---
 class: duw-poc
@@ -474,15 +478,27 @@ class: duw-poc
 
 # The job wrapper: one for all of us
 
-<img :src="'/figures/fig-wrappers.svg'" alt="Today: the DIRAC JobWrapper, the dirac-cwl wrapper and DiracX executor prototypes, each with community steps around them; to build: one job wrapper for all, still a question mark" style="width:74%;margin:-.4rem auto 0;display:block" />
+<img class="duw-pocfig" :src="'/figures/fig-wrappers.svg'" alt="Today: the DIRAC JobWrapper, the dirac-cwl wrapper and DiracX executor prototypes, each with community steps around them; to build: one job wrapper for all, still a question mark" />
 
-<div class="duw-small" style="font-size:.8rem;margin-top:.3rem"><b>Requirements to gather</b>: inputs (data, sandboxes, protocol access) · time left and graceful stop · containers and architectures · nodes without outbound network · reporting (status, parameters, logs) · what happens when an upload fails.</div>
+<div class="duw-poc3">
+<div><h4>Why</h4>
 
-<div class="dx-card dx-card-blue mt-2" style="height:auto">
-
-**We are looking for someone** to gather the requirements and the feedback, build a proof of concept, then design the ADR, working alongside someone who has been through the process once. Come and talk to us this week.
+Several wrappers today, and each community adds its own steps around the payload.
 
 </div>
+<div><h4>Where it stands</h4>
+
+Requirements to gather: inputs, time left and graceful stop, containers, nodes without outbound network, reporting, failed uploads.
+
+</div>
+<div><h4>Next</h4>
+
+A proof of concept, then an ADR.
+
+</div>
+</div>
+
+<div class="duw-ask"><b>From you</b>: someone to gather requirements and feedback, build the proof of concept, then design the ADR, with someone who has done it once.</div>
 
 ---
 
