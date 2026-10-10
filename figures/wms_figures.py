@@ -957,7 +957,37 @@ def pilots_paused() -> str:
     return "".join(o)
 
 
-FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers}
+def poc_map() -> str:
+    """Where each WMS proof of concept sits on the way from a parcel to a worker node.
+    Dashed amber = proof of concept; solid = settled (ADR draft) or existing."""
+    W, H = 1600, 520
+    o = [head(W, H)]
+    def poc_box(x, y, w, h, t1, t2):
+        o.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="24" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="12 9"/>')
+        o.append(text(x + w / 2, y + h / 2 - 4, t1, SMALL, "bold", fill="#7a5410"))
+        o.append(text(x + w / 2, y + h / 2 + 28, t2, SMALL - 8, fill="#7a5410"))
+    # the path
+    o.append(label_pill(30, 200, 230, 100, TEAL, "pm-p", "parcel", INK_TEAL, "dispatched", size=SUB - 4))
+    o.append(f'<rect x="320" y="60" width="440" height="380" rx="30" fill="#eef7f5" stroke="#8fb9b2" stroke-width="3"/>')
+    o.append(text(540, 104, "DiracX WMS backend", SMALL, "bold", fill=INK_TEAL))
+    poc_box(350, 140, 380, 110, "matcher", "which job for which node")
+    poc_box(350, 290, 380, 110, "pilot management", "paused")
+    o.append(label_pill(830, 200, 230, 100, "#c7cfd9", "pm-ce", "CEs", TEXT_1, "grid, HPC, cloud", size=SUB - 4))
+    o.append(label_pill(1130, 200, 440, 100, "#f6efe0", "pm-wn", "worker node", "#8a6d2c", "the pilot starts there", size=SUB - 4))
+    for x1, x2 in [(262, 318), (762, 828), (1062, 1128)]:
+        o.append(arrow(x1, 250, x2, 250, 0, sw=4))
+    # POCs that sit on the path
+    poc_box(30, 360, 230, 110, "CWL", "describes the payload")
+    o.append(f'<line x1="145" y1="358" x2="145" y2="304" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
+    poc_box(800, 40, 290, 110, "interCEde", "talks to the CEs")
+    o.append(f'<line x1="945" y1="152" x2="945" y2="198" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
+    poc_box(1200, 360, 300, 110, "job wrapper", "runs the payload")
+    o.append(f'<line x1="1350" y1="358" x2="1350" y2="304" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
+    o.append("</svg>")
+    return "".join(o)
+
+
+FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers, "fig-pocmap": poc_map}
 
 
 def main() -> int:

@@ -162,3 +162,6 @@
 .duw-poc3 p { margin: 0; }
 .duw-ask { margin-top: .55rem; padding: .4rem .8rem; border: 2px dashed #e0a030; border-radius: 10px; background: #fff6e4; color: var(--dx-ink); font-size: .8rem; }
 .duw-ask b { color: #7a5410; }
+.duw-poc5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: .55rem; margin-top: .5rem; font-size: .74rem; line-height: 1.3; }
+.duw-poc5 > div { background: #ffffff; border-radius: 10px; border-top: 4px solid #e0a030; padding: .4rem .6rem; color: var(--dx-gray); }
+.duw-poc5 h4 { margin: 0 0 .15rem 0; font-size: .82rem; color: #7a5410; }

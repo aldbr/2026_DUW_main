@@ -339,6 +339,26 @@ class: duw-poc
 
 <div class="duw-sec">3 · DiracX · exploratory</div>
 
+# Proofs of concept around the DiracX WMS
+
+<img class="duw-pocfig" :src="'/figures/fig-pocmap.svg'" alt="From a parcel to a worker node: CWL describes the payload, the DiracX WMS backend holds the matcher and pilot management, interCEde talks to the CEs, and the job wrapper runs the payload on the worker node; all five are proofs of concept" style="max-height:14rem;width:86%" />
+
+<div class="duw-poc5">
+<div><h4>CWL</h4>ADR in draft; implemented with the transformation system</div>
+<div><h4>interCEde</h4>ADRs in review; core proposed; integration tests</div>
+<div><h4>Matcher</h4>Python baseline and load tests; Redis next</div>
+<div><h4>Pilot management</h4>ported as is, then paused</div>
+<div><h4>Job wrapper</h4>gathering requirements</div>
+</div>
+
+<div class="duw-ask"><b>The same path for each</b>: explore, write an ADR, then implement in DiracX. Each is tested in small increments you can try.</div>
+
+---
+class: duw-poc
+---
+
+<div class="duw-sec">3 · DiracX · exploratory</div>
+
 # CWL describes all the work
 
 <img :src="'/logos/cwl.svg'" alt="Common Workflow Language logo" style="position:absolute;top:2.5rem;right:2.6rem;height:2.4rem" />
