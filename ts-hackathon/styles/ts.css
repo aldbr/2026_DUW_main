@@ -1,0 +1,154 @@
+/* Transformation System hackathon additions: program strip, game diagram,
+   round slides, 1-2-4-All steps, planning-poker cards. Built on diracx.css. */
+
+:root {
+  --ts-red:    #d8463c;
+  --ts-green:  var(--dx-green);
+  --ts-blue:   var(--dx-blue);
+  --ts-yellow: #f2cf4a;
+  --ts-pink:   #f19bb4;
+}
+
+/* ---- sticky-note swatches ------------------------------------------------- */
+.ts-note {
+  display: inline-block; width: 1.05em; height: 1.05em; border-radius: 2px;
+  box-shadow: 0 2px 3px rgba(0,0,0,.18); transform: rotate(-4deg); vertical-align: -.15em;
+}
+.ts-note + .ts-note { margin-left: -.35em; transform: rotate(5deg); }
+.ts-note.r { background: var(--ts-red); }
+.ts-note.g { background: var(--ts-green); }
+.ts-note.b { background: var(--ts-blue); }
+.ts-note.y { background: var(--ts-yellow); }
+.ts-note.p { background: var(--ts-pink); }
+.ts-strip { display: inline-flex; gap: 1px; padding: 2px; background: rgba(255,255,255,.7); border: 1px solid #b9c2c8; border-radius: 3px; vertical-align: -.2em; }
+.ts-strip i { width: .7em; height: 1em; background: var(--ts-blue); display: block; }
+
+/* ---- program -------------------------------------------------------------- */
+.ts-program { display: grid; grid-template-columns: repeat(5, 1fr); gap: .55rem; margin-top: .4rem; }
+.ts-step { background: #fff; border-radius: 10px; border-top: 4px solid var(--dx-blue); padding: .6rem .7rem .7rem; display: flex; flex-direction: column; gap: .3rem; }
+.ts-step:first-child { border-top-color: var(--ts-red); }
+.ts-step:last-child { border-top-color: var(--dx-green); background: var(--dx-green-soft); }
+.ts-step .n { font-family: var(--dx-font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--dx-gray-mid); }
+.ts-step b { font-size: 1.08rem; color: var(--dx-ink); line-height: 1.15; }
+.ts-step .t { font-family: var(--dx-font-mono); font-size: .78rem; color: var(--dx-blue); }
+.ts-step p { margin: 0; font-size: .82rem; line-height: 1.3; color: var(--dx-gray); }
+.ts-arrowrow { display: flex; justify-content: space-around; color: var(--dx-gray-mid); font-size: .9rem; margin-top: -.2rem; }
+
+/* ---- game: the chain of boards --------------------------------------------- */
+.ts-chain { display: grid; grid-template-columns: .9fr auto 1.1fr auto 1.3fr auto 1.45fr auto .95fr; align-items: stretch; gap: .35rem; }
+.ts-board { background: #fff; border-radius: 10px; padding: .7rem .75rem; border-top: 4px solid var(--dx-gray-mid); display: flex; flex-direction: column; gap: .15rem; }
+.ts-board b { font-size: 1.08rem; color: var(--dx-ink); letter-spacing: .02em; }
+.ts-board span { font-size: .9rem; color: var(--dx-gray); line-height: 1.25; }
+.ts-board .io { font-size: 1.5rem; margin-top: .4rem; }
+.ts-board.src { border-top-color: var(--ts-red); background: transparent; border: 2px dashed #c4c9cc; }
+.ts-board.sim { border-top-color: var(--ts-red); }
+.ts-board.reco { border-top-color: var(--ts-green); }
+.ts-board.merge { border-top-color: var(--ts-blue); }
+.ts-board.out { border-top-color: var(--dx-green); background: var(--dx-green-soft); }
+.ts-chain .arr { align-self: center; color: var(--dx-gray-mid); font-size: 1.25rem; }
+
+/* ---- game: the parcel loop ------------------------------------------------- */
+.ts-looptitle { font-family: var(--dx-font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--dx-gray-mid); margin: 2rem 0 .6rem; }
+.ts-loop { display: flex; align-items: center; gap: .22rem; }
+.ts-loop .arr { color: var(--dx-gray-mid); font-size: 1.05rem; }
+.ts-who { background: var(--dx-ink); color: #fff; border-radius: 999px; padding: .42rem .62rem; font-size: .9rem; font-weight: 600; white-space: nowrap; }
+.ts-where { border: 2px dashed #b9c2c8; border-radius: 8px; padding: .3rem .5rem; font-size: .88rem; color: var(--dx-gray); white-space: nowrap; background: #fff; }
+.ts-where small { display: block; font-size: .66rem; color: var(--dx-gray-mid); }
+.ts-ends { display: flex; flex-direction: column; gap: .3rem; }
+.ts-retry { margin: .3rem 0 0 114px; width: 541px; border: 2px solid var(--ts-red); border-top: 0; border-radius: 0 0 10px 10px; height: .7rem; position: relative; }
+.ts-retry span { position: absolute; left: 50%; top: .45rem; transform: translateX(-50%); background: var(--dx-paper); padding: 0 .5rem; font-size: .9rem; color: var(--ts-red); white-space: nowrap; }
+.ts-legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: .85rem; color: var(--dx-gray-mid); margin-top: 1.8rem; align-items: center; }
+
+/* ---- round slides --------------------------------------------------------- */
+.ts-round { display: grid; grid-template-columns: 13rem 1fr; gap: 1.6rem; align-items: center; margin-top: .6rem; }
+.ts-roundno { background: #fff; border-radius: 16px; padding: 1rem; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,.07); }
+.ts-roundno .k { font-family: var(--dx-font-mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--dx-gray-mid); }
+.ts-roundno .v { font-family: var(--dx-font-serif); font-size: 5.2rem; line-height: 1; font-weight: 800; color: var(--dx-ink); }
+.ts-roundno .t { font-family: var(--dx-font-mono); font-size: 1.3rem; color: var(--dx-blue); margin-top: .2rem; }
+.ts-big { font-size: 1.35rem; line-height: 1.4; }
+.ts-big li { margin: .3em 0; }
+.ts-goal { margin-top: .9rem; font-size: 1.05rem; }
+
+/* ---- 1-2-4-All ------------------------------------------------------------ */
+.ts-question { font-family: var(--dx-font-serif); font-size: 1.8rem; line-height: 1.25; color: var(--dx-ink); border-left: 6px solid var(--dx-green); background: #fff; padding: .7rem 1rem; border-radius: 0 12px 12px 0; }
+.ts-124 { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin-top: 1.4rem; }
+.ts-124 > div { background: #fff; border-radius: 10px; padding: .8rem .9rem 1rem; border-top: 4px solid var(--dx-blue); }
+.ts-124 .who { font-family: var(--dx-font-serif); font-size: 2.4rem; font-weight: 800; color: var(--dx-ink); line-height: 1; }
+.ts-124 .min { font-family: var(--dx-font-mono); color: var(--dx-blue); font-size: 1rem; margin: .15rem 0 .25rem; }
+.ts-124 p { margin: 0; font-size: .98rem; line-height: 1.3; color: var(--dx-gray); }
+.ts-124 > div:last-child { border-top-color: var(--dx-green); }
+
+/* ---- planning poker ------------------------------------------------------- */
+.ts-fib { display: grid; grid-template-columns: repeat(8, 1fr); gap: .5rem; margin-top: .5rem; }
+.ts-card { background: #fff; border-radius: 10px; border: 2px solid var(--dx-ink); aspect-ratio: 5 / 7; padding: .4rem .45rem; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,.07); }
+.ts-card .v { font-family: var(--dx-font-serif); font-weight: 800; font-size: 2.6rem; line-height: 1; color: var(--dx-ink); }
+.ts-card p { margin: auto 0 0; font-size: .86rem; line-height: 1.25; color: var(--dx-gray); }
+.ts-card.warn { border-color: #c9774a; }
+.ts-card.warn .v { color: #c9774a; }
+.ts-card.meta { border-style: dashed; border-color: var(--dx-gray-mid); box-shadow: none; }
+.ts-card.meta .v { color: var(--dx-gray-mid); }
+
+/* ---- role sheets (backup) ------------------------------------------------- */
+.ts-role { display: grid; grid-template-columns: 19rem 1fr; gap: 1.4rem; margin-top: .3rem; }
+.ts-role .side { display: flex; flex-direction: column; gap: .6rem; }
+.ts-role .name { font-family: var(--dx-font-serif); font-size: 2.3rem; font-weight: 800; line-height: 1.05; color: var(--dx-ink); }
+.ts-role .real { font-size: 1.05rem; color: var(--dx-gray); line-height: 1.35; }
+.ts-role ol { font-size: 1.3rem; line-height: 1.4; margin: 0; padding-left: 1.3em; }
+.ts-role ol li { margin: .25em 0; }
+
+/* ---- table layout (backup) ------------------------------------------------ */
+.ts-table { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+.ts-table .bd { background: #fff; border-radius: 10px; padding: .5rem .7rem; border-top: 4px solid var(--dx-gray-mid); }
+.ts-table .bd b { display: block; font-size: 1rem; }
+.ts-table .bd .cols { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: .35rem; border-top: 1px solid #ddd8cc; }
+.ts-table .bd .cols span { font-size: .78rem; color: var(--dx-gray); padding: .3rem .3rem 1.4rem; border-left: 1px dashed #ccc; }
+.ts-table .bd .cols span:first-child { border-left: 0; }
+.ts-spots { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin-top: .6rem; }
+.ts-spots > div { border: 2px dashed #b9c2c8; border-radius: 10px; padding: .45rem .65rem; font-size: .82rem; color: var(--dx-gray); }
+.ts-spots b { display: block; color: var(--dx-ink); font-size: .95rem; }
+
+/* ---- closing slide -------------------------------------------------------- */
+.slidev-layout.cover .ts-next { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.6rem; }
+.slidev-layout.cover .ts-next span { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35); color: #fff; border-radius: 999px; padding: .35rem .9rem; font-size: .95rem; }
+
+/* ---- programme message ------------------------------------------------------ */
+.ts-message { font-family: var(--dx-font-serif); font-size: 1.75rem; line-height: 1.3; color: var(--dx-ink); border-left: 6px solid var(--dx-green); padding: .4rem 0 .4rem 1rem; }
+.ts-message b { color: var(--dx-blue); }
+
+/* ---- game: which parts are per transformation, which are shared ----------- */
+.ts-scope { position: relative; height: 1.5rem; margin-bottom: .2rem; }
+.ts-scope span { position: absolute; top: 0; white-space: nowrap; font-size: .74rem; color: var(--dx-gray); text-align: center; border-bottom: 2px solid; padding-bottom: .15rem; }
+.ts-scope .per { left: 0; width: 227px; border-color: var(--ts-red); }
+.ts-scope .shared { left: 334px; width: 368px; border-color: var(--dx-blue); }
+
+/* ---- poker: finger hint ----------------------------------------------------- */
+.ts-fib { grid-template-columns: repeat(7, 1fr); }
+.ts-card .hand { font-family: var(--dx-font-mono); font-size: .7rem; color: var(--dx-blue); border-top: 1px solid #ddd8cc; margin-top: .35rem; padding-top: .25rem; }
+
+/* ---- mob programming loop --------------------------------------------------- */
+.ts-build { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin-top: .2rem; }
+.ts-build .lbl { font-family: var(--dx-font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--dx-gray-mid); margin-right: .3rem; }
+.ts-build .dx-chip { font-size: .78rem; }
+.ts-mob { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: .45rem; align-items: stretch; margin-top: 1.6rem; }
+.ts-mob .arr { align-self: center; color: var(--dx-gray-mid); font-size: 1.3rem; }
+.ts-mobnode { background: #fff; border-radius: 12px; border-top: 4px solid var(--dx-blue); padding: .7rem .8rem; display: flex; flex-direction: column; gap: .25rem; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+.ts-mobnode .k { font-family: var(--dx-font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dx-gray-mid); }
+.ts-mobnode b { font-size: 1.12rem; color: var(--dx-ink); line-height: 1.2; }
+.ts-mobnode span:last-child { font-size: .85rem; color: var(--dx-gray); }
+.ts-mobnode.dark { background: var(--dx-ink); border-top-color: var(--dx-green); }
+.ts-mobnode.dark b { color: #fff; }
+.ts-mobnode.dark .k, .ts-mobnode.dark span:last-child { color: #c9d3d9; }
+.ts-mobback { margin: .3rem 12% 0 12%; height: .9rem; border: 2px solid var(--dx-green); border-top: 0; border-radius: 0 0 12px 12px; position: relative; }
+.ts-mobback span { position: absolute; left: 50%; top: .55rem; transform: translateX(-50%); background: var(--dx-paper); padding: 0 .6rem; font-size: .92rem; color: var(--dx-green); font-weight: 600; white-space: nowrap; }
+.ts-card .hand { font-size: .78rem; }
+.ts-card .hand i { display: block; font-style: normal; font-size: 1.9rem; line-height: 1.1; text-align: center; margin-bottom: .1rem; }
+.ts-card .hand { text-align: center; }
+.ts-card .v { font-size: 2.2rem; }
+.ts-fib { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .45rem; }
+.ts-card { min-width: 0; }
+.ts-card p { font-size: .8rem; }
+.ts-card .hand i { font-size: 1.6rem; }
+.ts-card .hand { font-size: .72rem; white-space: nowrap; }
+
+/* ---- cover subtitle --------------------------------------------------------- */
+.slidev-layout.cover .ts-subtitle { font-family: var(--dx-font-serif); font-size: 1.7rem; line-height: 1.2; color: #fff; margin: -.4rem 0 1.4rem; opacity: .95; }
