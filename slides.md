@@ -17,7 +17,9 @@ fonts:
   italic: true
 ---
 
-# DiracX developments: directions
+# DiracX developments
+
+<div class="duw-subtitle">Directions</div>
 
 <span class="dx-author">Alexandre F. Boyer</span> · CERN
 
@@ -225,15 +227,16 @@ Responding to changing requirements, in small steps
 
 # Almost the current process
 
-<img :src="'/figures/fig-pipeline.svg'" alt="One round from requirement to delivered increment, seven steps" style="width:51%;margin:0 auto;display:block" />
+<img :src="'/figures/fig-pipeline.svg'" alt="One round from requirement to delivered increment, seven steps" style="width:47%;margin:0 auto;display:block" />
 
 <div class="dx-tight mt-2">
 
 - **Scrum since 21 January 2026**: two-week sprints; planning and refinement in one weekly meeting; a monthly meeting with the representatives (DOps); hackathons.
 - **Large changes start with a proof of concept, then an ADR** that the other developers approve. ADRs and roadmap are public; the board is not.
-- **We are moving towards this process; it is not there yet.** Like the roadmap, it adapts as we learn.
 
 </div>
+
+<div class="dx-key mt-2"><b>Individuals and interactions over processes and tools.</b> The process is a guide, not a rule, and it adapts as we learn.</div>
 
 ---
 
@@ -275,116 +278,54 @@ Responding to changing requirements, in small steps
 <div class="duw-small mt-2">This week: <a href="https://indico.cern.ch/event/1588323/contributions/7286647/" target="_blank">Data Management for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264662/" target="_blank">Analytics for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264658/" target="_blank">RSS in DIRAC and DiracX</a> (all Wednesday)</div>
 
 ---
+
+<div class="duw-sec">3 · Adapting quickly</div>
+
+# Delivered since the last workshop
+
+<div class="duw-three3 mt-2">
+
+<div class="dx-card dx-card-new">
+
+### DiracX, in use
+- From alpha to **22 releases**: the first official one on 22 October 2025, **v0.6.0** on 8 October 2026.
+- **LHCb in production**; two other installations certifying.
+
+</div>
+
+<div class="dx-card dx-card-blue">
+
+### Usable now
+**Sandboxes in S3**, **job status** through the future client, **resource status** read in DiracX, the **tasks framework**, and experimental **OpenTelemetry** observability.
+
+</div>
+
+<div class="dx-card dx-card-legacy">
+
+### DIRAC kept safe
+v8, v9.0 and v9.1 patched: **security fixes** and **SQL hardening**, with GridPP.
+
+</div>
+
+</div>
+
+<div class="dx-card dx-card-blue mt-3" style="height:auto;padding:.5em .9em">
+
+**Your needs, handled.** CMS and FCC joined, and their requirements reordered the roadmap. Requirements from five communities became **eight transformation-system ADRs**, reviewed together. **CWL** went from a proof of concept with CTAO to the project's direction. **268 issues** closed as completed.
+
+</div>
+
+---
 layout: section
 ---
 
-# 4 · Results so far
+# 4 · How we work, measured
 
-Numbers since the last workshop
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Activity since the last workshop
-
-<table class="duw-stat">
-<thead><tr><th>17 Sep 2025 – 4 Sep 2026</th><th>DIRAC stack</th><th>DiracX stack</th><th>Both</th></tr></thead>
-<tbody>
-<tr><td>Merged pull requests</td><td><b>367</b></td><td><b>261</b></td><td>634</td></tr>
-<tr><td>People who merged one</td><td>20</td><td>28</td><td>36</td></tr>
-<tr><td>People who gave a first review</td><td>12</td><td>11</td><td>17</td></tr>
-<tr><td>New contributors</td><td>9</td><td>14</td><td>17</td></tr>
-<tr><td>Issues opened</td><td>89</td><td>206</td><td>296</td></tr>
-<tr><td>Issues closed (completed / not planned)</td><td>117 (76 / 41)</td><td>224 (191 / 33)</td><td>343 (268 / 75)</td></tr>
-</tbody></table>
-
-<div class="duw-small mt-2">DIRAC stack: DIRAC, WebAppDIRAC, DIRACOS2, Pilot. DiracX stack: diracx, diracx-charts, diracx-web, signurlarity, dirac-cwl, interCEde. Bots excluded; copies of one change on several release branches counted once. Issues to 2 Sep.</div>
+What the numbers tell us about our process
 
 ---
 
-<div class="duw-sec">4 · Results so far</div>
-
-# Since Scrum: the backlog is shrinking
-
-<div class="duw-stats3">
-<div><b>295 → 195</b>open issues, January 2026 to September</div>
-<div><b>10.6 → 36.6</b>closures a month; 26.6 completed, 10.0 not planned or duplicate</div>
-<div><b>16.3 → 27.3</b>issues opened a month</div>
-</div>
-
-<img :src="'/figures/fig-burnup.svg'" alt="Cumulative issues in the DIRACGrid repositories since January 2024: open issues rose from 156 to 295 before January 2026 and fell to 195 by September" style="width:66%;margin:0 auto;display:block" />
-
-<div class="duw-small" style="text-align:center">All issues in the DIRACGrid repositories, bots excluded. Part of the fall is triage, and about 120 of the 195 still open are not triaged yet.</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Velocity
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-7">
-
-<img :src="'/figures/fig-velocity.svg'" alt="Story points per person and sprint, expected against delivered, for sprints 1 to 23, sprints 1 to 5 shaded as the pilot with CTAO: expected is about twice what is delivered in every sprint since January" style="width:100%" />
-
-</div>
-
-<div class="col-span-5 dx-tight">
-
-- **We expect about twice what we deliver**: since January, a median of 14 story points per person and sprint expected, 6.6 delivered.
-- Delivered velocity follows availability: workshops, conferences, holidays.
-- No sprint since January delivered what was expected; the best reached about three quarters.
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Where an issue goes
-
-<img :src="'/figures/fig-flow.svg'" alt="Issues on the board: 121 in Needs triage, 13 in Needs design, 34 in Backlog, 34 in In progress, 317 Done. Those who left a column stayed 3, 27, 7 and 3 days; those still there have waited 227, 190, 50 and 67 days" style="width:100%;margin:0 auto;display:block" />
-
-<div class="dx-tight mt-1">
-
-- **Issues that move on do so quickly. The ones still waiting have waited far longer.**
-- **121 issues sit in triage**, most since the January board sweep. 34 are "in progress" with a median of two months.
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Unplanned work lives in DIRAC
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-6">
-
-<img :src="'/figures/fig-unplanned.svg'" alt="Since January 2026, 56% of story points delivered on DIRAC were unplanned against 11% on DiracX, and 84% of merged pull requests on DIRAC have no linked issue against 49% on DiracX" style="width:100%" />
-
-</div>
-
-<div class="col-span-6 dx-tight">
-
-- Since January, **56% of the story points delivered on DIRAC were unplanned**, against 11% on DiracX.
-- **84% of DIRAC pull requests have no linked issue**, against 49% on DiracX.
-- Security and performance work arrives when it arrives. It is the cost of keeping DIRAC running, and why DIRAC only gets patches.
-
-<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For developers:</b> we overestimate what a sprint can hold, partly because we do not count the unplanned DIRAC maintenance. Plan for it.</div>
-
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
+<div class="duw-sec">4 · How we work, measured</div>
 
 # More hands, from more communities
 
@@ -394,7 +335,7 @@ Numbers since the last workshop
 
 <div>
 
-**36 people** from nine communities merged a change since the last workshop; **17 were new**. Almost all are part-time, so effort varies from month to month.
+**634 pull requests** merged across all DIRACGrid repositories since the last workshop (367 DIRAC, 261 DiracX), from nine communities; **17 new contributors**. Almost all are part-time, so effort varies from month to month.
 
 </div>
 
@@ -414,7 +355,49 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 
 ---
 
-<div class="duw-sec">4 · Results so far</div>
+<div class="duw-sec">4 · How we work, measured</div>
+
+# Since Scrum: the backlog is shrinking
+
+<div class="duw-stats3">
+<div><b>295 → 195</b>open issues, January 2026 to September</div>
+<div><b>10.6 → 36.6</b>closures a month; 26.6 completed, 10.0 not planned or duplicate</div>
+<div><b>16.3 → 27.3</b>issues opened a month</div>
+</div>
+
+<img :src="'/figures/fig-burnup.svg'" alt="Cumulative issues in the DIRACGrid repositories since January 2024: open issues rose from 156 to 295 before January 2026 and fell to 195 by September" style="width:66%;margin:0 auto;display:block" />
+
+<div class="duw-small" style="text-align:center">All issues in the DIRACGrid repositories, bots excluded. Part of the fall is triage, and about 120 of the 195 still open are not triaged yet.</div>
+
+---
+
+<div class="duw-sec">4 · How we work, measured</div>
+
+# We plan for twice what we deliver
+
+<div class="grid grid-cols-12 gap-5">
+
+<div class="col-span-7">
+
+<img :src="'/figures/fig-velocity.svg'" alt="Story points per person and sprint, expected against delivered, for sprints 1 to 23, sprints 1 to 5 shaded as the pilot with CTAO: expected is about twice what is delivered in every sprint since January" style="width:100%" />
+
+</div>
+
+<div class="col-span-5 dx-tight">
+
+- Since January, a median of **14 story points** per person and sprint expected, **6.6 delivered**. No sprint delivered what was expected.
+- Delivered velocity follows availability: workshops, conferences, holidays.
+- **Unplanned work lives in DIRAC**: 56% of the story points delivered on DIRAC were unplanned, against 11% on DiracX.
+
+<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For developers:</b> we overestimate what a sprint can hold, partly because we do not count the unplanned DIRAC maintenance. Plan for it.</div>
+
+</div>
+
+</div>
+
+---
+
+<div class="duw-sec">4 · How we work, measured</div>
 
 # The bottleneck is review
 
@@ -430,43 +413,13 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 
 <div class="col-span-6 dx-tight">
 
-- **Two people give three quarters of first reviews.** The top reviewer alone went from a third to over half.
-- **None of the 14 contributors new since January has given a first review yet.**
-- **Design review is not in these numbers.** ADRs are reviewed by everyone, in meetings and on chat.
-
-<div class="dx-concludes"><carbon-arrow-right class="dx-concludes-arrow" /><span>writing code has spread; <strong>reading it has not</strong></span></div>
+- **Two people give three quarters of first reviews.** None of the 14 contributors new since January has given one yet.
+- **Smaller pull requests get reviewed sooner**: 2.6 hours under 10 lines, 23 hours from 500 lines. On small changes the core five wait 2.5 hours, everyone else 11.
+- Design review (ADRs, in meetings and on chat) is not in these numbers.
 
 <div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>Question for developers:</b> kanban style, should you review before starting something new once your tasks are done?</div>
 
-</div>
-
-</div>
-
----
-
-<div class="duw-sec">4 · Results so far</div>
-
-# Smaller pull requests get reviewed sooner
-
-<div class="grid grid-cols-12 gap-5">
-
-<div class="col-span-6">
-
-<img :src="'/figures/fig-review-size.svg'" alt="Median hours to first review rises from 2.6 hours for pull requests under 10 lines to 23 hours for 500 lines or more, on a log scale, with the middle half of the pull requests shown as a bar" style="width:100%" />
-
-<div class="dx-ref mt-1">Median wait for a first review, with the middle half of the pull requests</div>
-
-</div>
-
-<div class="col-span-6 dx-tight">
-
-- **Under 10 lines: 2.6 hours. 500 lines or more: 23 hours.** Time to merge goes from a few hours to five days.
-- **The spread is wide at every size**, so size helps but does not decide.
-- **Who writes it matters too.** For pull requests under 50 lines, the five core developers wait 2.5 hours; everyone else waits 11.
-
-<div class="dx-concludes"><carbon-arrow-right class="dx-concludes-arrow" /><span>split the work, and <strong>announce a big change early</strong></span></div>
-
-<div class="mt-2"><a href="https://diracx.diracgrid.org/en/latest/dev/explanations/splitting-prs/" target="_blank" class="dx-ref">How to split a large change into stacked pull requests: DiracX contributing guide</a></div>
+<div class="mt-2"><a href="https://diracx.diracgrid.org/en/latest/dev/explanations/splitting-prs/" target="_blank" class="dx-ref">How to split a large change into stacked pull requests</a></div>
 
 </div>
 
@@ -474,7 +427,7 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 
 ---
 
-<div class="duw-sec">4 · Results so far</div>
+<div class="duw-sec">4 · How we work, measured</div>
 
 # Where work waits
 
@@ -490,8 +443,16 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 </div>
 
 ---
+layout: section
+---
 
-<div class="duw-sec">4 · Results so far</div>
+# 5 · What’s next
+
+How we could improve, and the roadmap
+
+---
+
+<div class="duw-sec">5 · What’s next</div>
 
 # Cheaper code: easier to explore, same bottlenecks
 
@@ -528,14 +489,6 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 </div>
 
 ---
-layout: section
----
-
-# 5 · What’s next
-
-How we could improve, and the roadmap
-
----
 
 <div class="duw-sec">5 · What’s next</div>
 
@@ -565,7 +518,7 @@ How we could improve, and the roadmap
 
 </div>
 
-<div class="dx-card dx-card-blue mt-3" style="height:auto;padding:.5em .9em"><b>This afternoon, two hackathons:</b> adapting your community's workflows to <b>CWL</b>, and building the <b>transformation system</b>.</div>
+<div class="dx-card dx-card-blue mt-3" style="height:auto;padding:.5em .9em"><b>This afternoon:</b> adapting your community's workflows to <b>CWL</b> from 14:00, then building the <b>transformation system</b> on them from 16:10.</div>
 
 ---
 
@@ -576,6 +529,34 @@ How we could improve, and the roadmap
 <img :src="'/figures/fig-roadmap2.svg'" alt="Long-running lines of work: Transformation System, Job Wrapper, Data Management System, Resource status; and exploratory spikes: WMS, analytics and observability, MCP server, clients" style="width:84%;margin:0 auto;display:block" />
 
 <div class="dx-oneline mt-2">Priorities, not commitments. New requirements can reorder this page, and the team writes the detailed plan.</div>
+
+---
+
+<div class="duw-sec">5 · What’s next</div>
+
+# A word on the web app
+
+<div class="duw-small" style="margin-top:-.4rem">Announced at past workshops, not on this week's agenda.</div>
+
+<div class="grid grid-cols-12 gap-5 mt-2">
+
+<div class="col-span-7">
+
+<img :src="'/figures/diracx-web-job-monitor.png'" alt="The DiracX web app's job monitor: a filterable list of jobs with a status chart beside it" style="width:100%;border:1px solid #d8dee2;border-radius:6px" />
+
+</div>
+
+<div class="col-span-5 dx-tight">
+
+- **Today: a job monitor**, smooth and responsive; extensible, unit and end-to-end tested.
+- **We promised a simple app on popular libraries.** AI changes the game: richer interfaces from simple components, fewer dependencies.
+- **Next: a consistent, user-centric experience** around the new transformation system and its components.
+
+<div class="dx-key mt-2"><b>Increments at DOps</b> once the transformation system is usable. Feedback welcome any time.</div>
+
+</div>
+
+</div>
 
 ---
 
@@ -628,7 +609,7 @@ layout: default
 <div class="dx-eyebrow">For this afternoon</div>
 <div class="dx-tight">
 
-- **Join one of the two hackathons**: adapting your workflows to CWL, or building the transformation system.
+- **Join the hackathon**: your workflows in CWL from 14:00, then the transformation system from 16:10.
 
 </div>
 </div>

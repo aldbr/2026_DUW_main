@@ -93,3 +93,7 @@
 .duw-three3 .dx-card { height: auto; }
 .duw-contact { color: #fff; font-size: 1.15rem; margin: .5rem 0; }
 .duw-contact b { color: #fff; }
+
+/* cover: subtitle and author in white (same as the WMS deck) */
+.slidev-layout.cover .duw-subtitle { font-family: var(--dx-font-serif); font-size: 1.45rem; color: rgba(255,255,255,0.92); margin: -.4rem 0 1.1rem; }
+.slidev-layout.cover .dx-author { color: #ffffff; }
