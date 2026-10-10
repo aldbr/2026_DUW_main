@@ -310,10 +310,8 @@ layout: section
 And the proofs of concept around the future WMS
 
 ---
-class: duw-poc
----
 
-<div class="duw-sec">3 · DiracX · exploratory</div>
+<div class="duw-sec">3 · DiracX</div>
 
 # No jobs in DiracX
 
@@ -446,41 +444,9 @@ class: duw-poc
 
 # What the matcher POC does today
 
-<img :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters by job-type limits and priority, ranks by fair share, and hands one job to the pilot" style="width:76%;margin:-.4rem auto 0;display:block" />
+<img :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters by job-type limits and priority, ranks by fair share, and hands one job to the pilot" style="width:88%;margin:-.2rem auto 0;display:block" />
 
-<div class="duw-two" style="font-size:.7rem">
-<div>
-
-```yaml
-# a job's requirements (excerpt)
-matching_specs:      # a list: alternatives
-  - cpu:
-      num-cores: {min: 1, max: 4}
-      architecture: {name: x86_64}
-    gpu:
-      count: {min: 1, max: 1}
-      vendor: nvidia
-      compute-capability: {min: 8.0}
-    tags: cvmfs:lhcb & (os:el9 | os:alma9)
-```
-
-</div>
-<div>
-
-```yaml
-# the node a pilot describes (excerpt)
-site: LCG.CERN.cern
-cpu:
-  num-cores: 8
-  ram-mb: 32768
-  architecture: {name: x86_64}
-gpu: {count: 1, vendor: nvidia,
-      compute-capability: 8.0}
-tags: [cvmfs:lhcb, os:el9, gpu:nvidia]
-```
-
-</div>
-</div>
+<div class="dx-key mt-2">Each step reads what it needs: the node for matching, the configuration and the running jobs for filtering, the running jobs again for fair share.</div>
 
 ---
 class: duw-poc
@@ -508,30 +474,11 @@ class: duw-poc
 
 # The job wrapper: one for all of us
 
-<div class="duw-two">
-<div>
+<img :src="'/figures/fig-wrappers.svg'" alt="Today: the DIRAC JobWrapper, the dirac-cwl wrapper and DiracX executor prototypes, each with community steps around them; to build: one job wrapper for all, still a question mark" style="width:74%;margin:-.4rem auto 0;display:block" />
 
-**Today there are several**
-- DIRAC's JobWrapper: pre-processing, payload, post-processing; an offline variant for push.
-- The `dirac-cwl` wrapper, experimental in DIRAC.
-- Executor prototypes in DiracX.
+<div class="duw-small" style="font-size:.8rem;margin-top:.3rem"><b>Requirements to gather</b>: inputs (data, sandboxes, protocol access) · time left and graceful stop · containers and architectures · nodes without outbound network · reporting (status, parameters, logs) · what happens when an upload fails.</div>
 
-Each community also adds its own steps around the payload.
-
-</div>
-<div>
-
-**Requirements to gather**
-- Inputs: data, sandboxes, protocol access.
-- Time left, graceful stop, containers, architectures.
-- Nodes without outbound network.
-- Reporting: status, parameters, logs.
-- What happens when an upload fails.
-
-</div>
-</div>
-
-<div class="dx-card dx-card-blue mt-3" style="height:auto">
+<div class="dx-card dx-card-blue mt-2" style="height:auto">
 
 **We are looking for someone** to gather the requirements and the feedback, build a proof of concept, then design the ADR, working alongside someone who has been through the process once. Come and talk to us this week.
 

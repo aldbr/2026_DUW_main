@@ -148,3 +148,7 @@
 .slidev-layout.duw-poc { background: #fbf5e6 !important; box-shadow: inset 6px 0 0 #e0a030; }
 .slidev-layout.duw-poc .duw-sec { color: #a3741c; }
 .slidev-layout.duw-poc .dx-card { box-shadow: none; }
+/* code on exploratory slides: warm paper instead of the default light grey */
+.slidev-layout.duw-poc pre, .slidev-layout.duw-poc .slidev-code { background: #fffaf0 !important; border: 1px solid #ead8ae; border-radius: 8px; }
+/* inline-code background must not leak into code blocks */
+.slidev-layout pre code, .slidev-layout pre code span { background: transparent !important; }

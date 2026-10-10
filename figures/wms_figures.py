@@ -695,34 +695,66 @@ def hetero() -> str:
 
 
 def matcher_poc() -> str:
-    """What the POC matcher does today for one pilot request: all waiting jobs, then match
-    against the node, filter by job-type limits and priority, rank by fair share, pick one."""
-    W, H = 1600, 520
+    """What the POC matcher does today for one pilot request, with the inputs each step
+    reads: the node description (match), the configuration and the running jobs (filter),
+    the running jobs again (rank)."""
+    W, H = 1600, 640
     o = [head(W, H)]
+    Y0 = 240
     steps = [
-        ("waiting jobs", ["loaded from the database", ""], 16, "#d5dbe3"),
+        ("waiting jobs", ["each with its requirements", "e.g. 1-4 cores, 1 NVIDIA GPU"], 16, "#d5dbe3"),
         ("1 · match", ["site, OS, cores, memory,", "GPU, tags vs the node"], 9, "#9fd3a8"),
-        ("2 · filter", ["job-type limits at the site,", "then priority (weighted)"], 5, "#f0d9a6"),
+        ("2 · filter", ["job types under their site limit,", "then priority (weighted)"], 5, "#f0d9a6"),
         ("3 · rank", ["fair share: group, owner,", "then oldest first"], 3, "#adc3e3"),
     ]
     for k, (title, sub, n, col) in enumerate(steps):
         cx = 170 + k * 360
-        it = Iso(cx, 130, 0.5)
+        it = Iso(cx, Y0, 0.5)
         o.append(slab(it, 0, 0, 280, 280, 12, "#f3f5f8", f"mp-s{k}"))
         cells = [(28 + (i % 4) * 62, 28 + (i // 4) * 62) for i in range(n)]
         for (x, y) in sorted(cells, key=lambda c: c[0] + c[1]):
             o.append(cube(it, x, y, 44, 44, 30, col, r=5))
-        o.append(text(cx, 380, title, SUB - 4, "bold", fill=TEXT_1))
-        o.append(text(cx, 414, sub[0], SMALL - 8, fill=TEXT_2))
-        o.append(text(cx, 442, sub[1], SMALL - 8, fill=TEXT_2))
+        o.append(text(cx, Y0 + 250, title, SUB - 4, "bold", fill=TEXT_1))
+        o.append(text(cx, Y0 + 284, sub[0], SMALL - 8, fill=TEXT_2))
+        o.append(text(cx, Y0 + 312, sub[1], SMALL - 8, fill=TEXT_2))
         if k < 3:
-            o.append(arrow(cx + 140, 200, cx + 222, 200, 0, sw=4))
-    o.append(arrow(1390, 200, 1440, 200, 0, sw=4))
-    o.append(label_pill(1448, 166, 145, 68, AMBER, "mp-p", "one job", INK_AMBER, size=SMALL - 2))
-    o.append(text(1520, 270, "to the pilot", SMALL - 8, fill=TEXT_2))
-    o.append(label_pill(20, 20, 330, 64, AMBER, "mp-n", "pilot: node description", INK_AMBER, size=SMALL - 6))
-    o.append(arrow(330, 90, 470, 150, 20, sw=3.6))
-    o.append(text(800, 500, "one request at a time, in Python: every waiting job is checked", SMALL - 4, italic=True, fill=TEXT_2))
+            o.append(arrow(cx + 140, Y0 + 70, cx + 222, Y0 + 70, 0, sw=4))
+    o.append(arrow(1390, Y0 + 70, 1440, Y0 + 70, 0, sw=4))
+    o.append(label_pill(1448, Y0 + 36, 145, 68, AMBER, "mp-p", "one job", INK_AMBER, size=SMALL - 2))
+    o.append(text(1520, Y0 + 140, "to the pilot", SMALL - 8, fill=TEXT_2))
+    # inputs, above the step that reads them
+    ins = [(530, AMBER, INK_AMBER, "pilot: node description", "e.g. 8 cores, 32 GB, 1 NVIDIA GPU", "mp-n"),
+           (890, "#c7cfd9", TEXT_1, "configuration", "site limits, job-type priorities", "mp-c"),
+           (1250, "#adc3e3", INK_BLUE, "running jobs", "per site, type, group, owner", "mp-r")]
+    for cx, col, ink, t1, t2, gid in ins:
+        o.append(label_pill(cx - 175, 20, 350, 96, col, gid, t1, ink, t2, size=SMALL - 4))
+        o.append(arrow(cx, 122, cx, Y0 - 6, 0, sw=3.6))
+    o.append(arrow(1140, 122, 930, Y0 - 6, 0, sw=3.2))
+    o.append(text(800, H - 14, "one request at a time, in Python: every waiting job is checked", SMALL - 4, italic=True, fill=TEXT_2))
+    o.append("</svg>")
+    return "".join(o)
+
+
+def wrappers() -> str:
+    """Today several job wrappers, each with community additions; tomorrow one, shared,
+    whose shape is still open."""
+    W, H = 1600, 520
+    o = [head(W, H)]
+    today = [("DIRAC JobWrapper", "pre, payload, post; offline variant", BLUE, INK_BLUE),
+             ("dirac-cwl wrapper", "experimental, in DIRAC", GREEN, "#2d5a33"),
+             ("DiracX executors", "prototypes", TEAL, INK_TEAL)]
+    for k, (t1, t2, col, ink) in enumerate(today):
+        y = 40 + k * 150
+        o.append(label_pill(40, y, 420, 100, col, f"wr{k}", t1, ink, t2, size=SMALL))
+        o.append(f'<rect x="480" y="{y + 22}" width="190" height="56" rx="16" fill="#fff6e4" stroke="#e0a030" stroke-width="3" stroke-dasharray="8 7"/>')
+        o.append(text(575, y + 58, "+ community steps", SMALL - 9, fill="#7a5410"))
+        o.append(arrow(690, y + 50, 900, 250, 0, sw=3.6))
+    o.append(f'<rect x="920" y="90" width="620" height="320" rx="34" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="14 10"/>')
+    o.append(text(1230, 170, "one job wrapper, for all of us", SUB - 2, "bold", fill="#7a5410"))
+    o.append(text(1230, 320, "?", 150, "bold", fill="#e0a030"))
+    o.append(text(1230, 380, "requirements first, then a proof of concept, then an ADR", SMALL - 8, fill="#7a5410"))
+    o.append(text(250, 500, "today", SUB - 4, "bold", fill=TEXT_2))
+    o.append(text(1230, 500, "to build", SUB - 4, "bold", fill=TEXT_2))
     o.append("</svg>")
     return "".join(o)
 
@@ -925,7 +957,7 @@ def pilots_paused() -> str:
     return "".join(o)
 
 
-FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused}
+FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers}
 
 
 def main() -> int:
