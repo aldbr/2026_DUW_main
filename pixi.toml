@@ -13,6 +13,8 @@ pandas = "*"
 matplotlib = "*"
 pillow = "*"
 cairosvg = "*"
+# extracting the printable pages
+qpdf = "*"
 
 [tasks]
 # one node_modules for the three decks (npm workspaces, versions pinned in each package.json)
@@ -35,3 +37,8 @@ cmd = "npm run strip-notes -w {{ deck }}"
 [tasks.export]
 args = ["deck"]
 cmd = "npm run strip-notes -w {{ deck }} && npm run export -w {{ deck }}"
+
+[tasks.print-kit]
+# hackathon: set-up, table, role sheets, boards and cards (pages 17-28) for printing
+cmd = "qpdf TSHackathon_DUW12.pdf --pages . 17-28 -- print-kit.pdf"
+cwd = "ts-hackathon"
