@@ -12,7 +12,7 @@
 /* ---- sticky-note swatches ------------------------------------------------- */
 .ts-note {
   display: inline-block; width: 1.05em; height: 1.05em; border-radius: 2px;
-  box-shadow: 0 2px 3px rgba(0,0,0,.18); transform: rotate(-4deg); vertical-align: -.15em;
+  border: 1px solid #7d878e; transform: rotate(-4deg); vertical-align: -.15em;
 }
 .ts-note + .ts-note { margin-left: -.35em; transform: rotate(5deg); }
 .ts-note.r { background: var(--ts-red); }
@@ -61,7 +61,7 @@
 
 /* ---- round slides --------------------------------------------------------- */
 .ts-round { display: grid; grid-template-columns: 13rem 1fr; gap: 1.6rem; align-items: center; margin-top: .6rem; }
-.ts-roundno { background: #fff; border-radius: 16px; padding: 1rem; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,.07); }
+.ts-roundno { background: #fff; border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid #d4d9dc; }
 .ts-roundno .k { font-family: var(--dx-font-mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--dx-gray-mid); }
 .ts-roundno .v { font-family: var(--dx-font-serif); font-size: 5.2rem; line-height: 1; font-weight: 800; color: var(--dx-ink); }
 .ts-roundno .t { font-family: var(--dx-font-mono); font-size: 1.3rem; color: var(--dx-blue); margin-top: .2rem; }
@@ -80,12 +80,12 @@
 
 /* ---- planning poker ------------------------------------------------------- */
 .ts-fib { display: grid; grid-template-columns: repeat(8, 1fr); gap: .5rem; margin-top: .5rem; }
-.ts-card { background: #fff; border-radius: 10px; border: 2px solid var(--dx-ink); aspect-ratio: 5 / 7; padding: .4rem .45rem; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,.07); }
+.ts-card { background: #fff; border-radius: 10px; border: 2px solid var(--dx-ink); aspect-ratio: 5 / 7; padding: .4rem .45rem; display: flex; flex-direction: column; }
 .ts-card .v { font-family: var(--dx-font-serif); font-weight: 800; font-size: 2.6rem; line-height: 1; color: var(--dx-ink); }
 .ts-card p { margin: auto 0 0; font-size: .86rem; line-height: 1.25; color: var(--dx-gray); }
 .ts-card.warn { border-color: #c9774a; }
 .ts-card.warn .v { color: #c9774a; }
-.ts-card.meta { border-style: dashed; border-color: var(--dx-gray-mid); box-shadow: none; }
+.ts-card.meta { border-style: dashed; border-color: var(--dx-gray-mid); }
 .ts-card.meta .v { color: var(--dx-gray-mid); }
 
 /* ---- role sheets (backup) ------------------------------------------------- */
@@ -131,7 +131,7 @@
 .ts-build .dx-chip { font-size: .78rem; }
 .ts-mob { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: .45rem; align-items: stretch; margin-top: 1.6rem; }
 .ts-mob .arr { align-self: center; color: var(--dx-gray-mid); font-size: 1.3rem; }
-.ts-mobnode { background: #fff; border-radius: 12px; border-top: 4px solid var(--dx-blue); padding: .7rem .8rem; display: flex; flex-direction: column; gap: .25rem; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+.ts-mobnode { background: #fff; border-radius: 12px; border: 1px solid #d4d9dc; border-top: 4px solid var(--dx-blue); padding: .7rem .8rem; display: flex; flex-direction: column; gap: .25rem; }
 .ts-mobnode .k { font-family: var(--dx-font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dx-gray-mid); }
 .ts-mobnode b { font-size: 1.12rem; color: var(--dx-ink); line-height: 1.2; }
 .ts-mobnode span:last-child { font-size: .85rem; color: var(--dx-gray); }
@@ -151,7 +151,7 @@
 .ts-card .hand { font-size: .72rem; white-space: nowrap; }
 
 /* ---- cover subtitle --------------------------------------------------------- */
-.slidev-layout.cover .ts-subtitle { font-family: var(--dx-font-serif); font-size: 1.7rem; line-height: 1.2; color: #fff; margin: -.4rem 0 1.4rem; opacity: .95; }
+.slidev-layout.cover .ts-subtitle { font-family: var(--dx-font-serif); font-size: 1.7rem; line-height: 1.2; color: #fff; margin: -.4rem 0 1.4rem; }
 
 /* ---- printable play boards (backup) ---------------------------------------- */
 .ts-mat-sub { font-size: 1.05rem; color: var(--dx-gray); margin: -.3rem 0 .7rem; }
