@@ -324,20 +324,26 @@ def journey() -> str:
           ("Jan 2026", ["Scrum"]),
           ("Feb 2026", ["RSS:", "read side"]),
           ("Apr 2026", ["Tasks", "framework"]),
+          ("Summer 2026", ["CMS and FCC", "join"]),
           ("Jul 2026", ["Transformation", "system: ADRs"])]
-    xs = [200 + i * 180 for i in range(len(ms))]
+    JOIN = 7                      # the milestone drawn in blue: new communities join
+    BLUE = "#2f6fb5"
+    xs = [172 + i * 162 for i in range(len(ms))]
     o.append(f'<line x1="60" y1="{Y}" x2="1560" y2="{Y}" stroke="#8aa7c4" stroke-width="8" stroke-linecap="round"/>')
     o.append(arrowhead(1590, Y, 1, 0, length=34, half_width=18, color="#8aa7c4"))
     for i, (x, (date, lines)) in enumerate(zip(xs, ms)):
         top = 20 if i % 2 else 150
         o.append(f'<line x1="{x}" y1="{top + 40 + 32 * len(lines)}" x2="{x}" y2="{Y - 20}" stroke="#c0cad4" stroke-width="3"/>')
-        o.append(text(x, top + 22, date, 24, "bold", fill=TEXT_2))
+        join = i == JOIN
+        o.append(text(x, top + 22, date, 24, "bold", fill=BLUE if join else TEXT_2))
         for j, l in enumerate(lines):
-            o.append(text(x, top + 54 + j * 32, l, 27, "bold" if j == 0 else "normal", fill=TEXT_1))
-        o.append(blob(x, Y, 17, 17, TEAL if i < 7 else "#9fd3a8", f"jm{i}"))
+            o.append(text(x, top + 54 + j * 32, l, 27, "bold" if j == 0 else "normal", fill=BLUE if join else TEXT_1))
+        o.append(blob(x, Y, 17, 17, BLUE if join else TEAL if i < len(ms) - 1 else "#9fd3a8", f"jm{i}"))
     o.append(text(60, 662, "In parallel: proofs of concept, linked to when they started", 26, "bold", anchor="start", fill="#7a5410"))
-    pocs = [("dirac-cwl", "2023, with CTAO", 170, 230), ("Web app", "2025", 410, 420), ("Pilot security", "2025", 650, 470),
-            ("Matchmaking", "2026", 930, 1110), ("interCEde", "2026", 1170, 1250), ("Analytics,", "observability", 1410, 1300)]
+    o.append(text(1560, 662, "Blue: new communities join", 26, "bold", anchor="end", fill=BLUE))
+    # last value: where the arrow meets the line, at the time the proof of concept started
+    pocs = [("dirac-cwl", "2023, with CTAO", 170, 199), ("Web app", "2025", 410, 370), ("Pilot security", "2025", 650, 415),
+            ("Matchmaking", "2026", 930, 1006), ("interCEde", "2026", 1170, 1131), ("Analytics,", "observability", 1410, 1180)]
     for i, (t1, t2, cx, lx) in enumerate(pocs):
         w = 220
         o.append(f'<path d="M{cx},520 C{cx},470 {lx},440 {lx},{Y + 40}" fill="none" stroke="#e0a030" stroke-width="3.5" stroke-dasharray="9 8"/>')

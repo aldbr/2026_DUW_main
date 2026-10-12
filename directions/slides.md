@@ -51,33 +51,99 @@ DIRAC and DiracX today
 <div>
 
 **DIRAC** v9.1.21 · v9.0.27 · v8.0.85<br/>
-WebAppDIRAC 6.0.6 · DIRACOS2 2.63<br/>
-**Patched, not developed**: security fixes, and performance fixes when needed.
+WebAppDIRAC 6.0.7 · DIRACOS2 2.63<br/>
+**Maintained**: security fixes, and performance fixes when needed.
 
 </div>
 
 <div>
 
-**DiracX** v0.6.0: foundations, authentication, jobs (search, status), sandboxes, read-only resource status, and experimental observability (OpenTelemetry).<br/>
+**DiracX** v0.6.1<br/>
+diracx-charts 1.1.17<br/>
+**Developed**, one component at a time.<br/>
 The web app (diracx-web 0.1.0-a11) and the `dirac` CLI are still experimental.
 
 </div>
 
 </div>
 
-<div class="dx-key mt-1"><b>Adopt what already exists in DiracX.</b> DIRAC is only patched, so that DiracX can progress. LHCb runs one service and one task in production; two other installations are certifying DiracX.</div>
+<div class="dx-key mt-1"><b>Adopt what already exists in DiracX.</b> DIRAC is only patched, so that DiracX can progress.</div>
+
+---
+
+<div class="duw-sec">1 · Where we are now</div>
+
+# The journey so far
+
+<img :src="'/figures/fig-journey.svg'" alt="Timeline of DiracX milestones from July 2023 to July 2026, with proofs of concept running in parallel: web app, pilot security, matchmaking, interCEde, analytics and observability" style="width:84%;margin:0 auto;display:block" />
+
+<div class="dx-tight mt-1">
+
+- **From 2023, three hackathons a year** onboarded new contributors, with no dashboard or regular meeting to follow progress. **Scrum** brought both in 2026.
+- **Proofs of concept run in parallel**, not mandatory: we try an idea before committing to it.
+
+</div>
+
+---
+
+<div class="duw-sec">1 · Where we are now</div>
+
+# Many part-time hands
+
+<img :src="'/figures/fig-collab.svg'" alt="Groups of contributors linked by dashed two-way arrows around the question: how do we work best together?" style="width:66%;margin:0 auto;display:block" />
+
+<div class="dx-tight mt-1">
+
+- **36 people** contributed since the last workshop, **10 to 18** in any given month, almost all part-time: about **5 to 6 full-time equivalents** in total, LHCb core developers included.
+- They maintain DIRAC and develop DiracX at the same time.
+
+</div>
+
+<div class="dx-key mt-2"><b>Finding the best way to work with each other is paramount.</b></div>
+
+---
+
+<div class="duw-sec">1 · Where we are now</div>
+
+# Delivered since the last workshop
+
+<div class="duw-three3 mt-2">
+
+<div class="dx-card dx-card-new">
+
+### DiracX, in use
+- From alpha to **23 releases**, the latest **v0.6.1** on 9 October 2026.
+- **LHCb in production**; two other installations certifying.
+
+</div>
+
+<div class="dx-card dx-card-blue">
+
+### Usable now
+**Sandboxes in S3**, **job status** through the future client, **resource status** read in DiracX, the **tasks framework**, and experimental **OpenTelemetry** observability.
+
+</div>
+
+<div class="dx-card dx-card-legacy">
+
+### DIRAC kept safe
+v8, v9.0 and v9.1 patched: **security fixes** and **SQL hardening**, with GridPP.
+
+</div>
+
+</div>
 
 ---
 layout: section
 ---
 
-# 2 · Evolving requirements, fruitful collaboration
+# 2 · Evolving requirements
 
-New communities, new use cases, and two systems running side by side
+New communities and new use cases
 
 ---
 
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
+<div class="duw-sec">2 · Evolving requirements</div>
 
 # What DIRAC is for, and what it values
 
@@ -90,7 +156,7 @@ New communities, new use cases, and two systems running side by side
 ### Minimal dependencies
 A database and a search index, on a few hosts.
 
-**In DiracX:** standard protocols for what is external (S3, OpenTelemetry, OIDC). Without Kubernetes: [Thursday's talk](https://indico.cern.ch/event/1588323/contributions/7288348/).
+**In DiracX:** standard protocols for what is external, with a minimal option for each.
 
 </div>
 
@@ -118,11 +184,11 @@ Communities add their own pieces.
 
 ---
 
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
+<div class="duw-sec">2 · Evolving requirements</div>
 
 # Requirements keep evolving
 
-<div class="duw-three3">
+<div class="duw-two">
 
 <div class="dx-card dx-card-blue">
 
@@ -138,65 +204,9 @@ Communities add their own pieces.
 
 </div>
 
-<div class="dx-card dx-card-legacy">
-
-### Constant needs
-**GridPP** has few resources: DiracX must stay very simple to deploy, with minimal dependencies.
-
 </div>
 
-</div>
-
-<div class="dx-key mt-3">Share your needs early, at DOps, before building around the system: someone else may need the same thing.</div>
-
----
-
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
-
-# What stays stable, what is new
-
-<div class="duw-two dx-tight mt-2">
-
-<div class="dx-card dx-card-legacy">
-
-### Stable
-
-- **DIRAC keeps running**, with security and performance patches.
-- Components move **one at a time**, over the same databases.
-- **Extensions keep working** while components move.
-
-</div>
-
-<div class="dx-card dx-card-new">
-
-### New
-
-- **The transformation system**: a new data model, new logic, and a much richer scope than DIRAC's.
-- **Decoupled from DIRAC**, so DIRAC's databases need no large changes and stay stable.
-- **Standard protocols** (sandboxes in S3, observability in OpenTelemetry) and multi-VO from the start.
-
-</div>
-
-</div>
-
-<div class="dx-key mt-3">A stable path for what exists, and room for what is new.</div>
-
----
-
-<div class="duw-sec">2 · Evolving requirements, fruitful collaboration</div>
-
-# Many part-time hands
-
-<img :src="'/figures/fig-collab.svg'" alt="Groups of contributors linked by dashed two-way arrows around the question: how do we work best together?" style="width:66%;margin:0 auto;display:block" />
-
-<div class="dx-tight mt-1">
-
-- **36 people** contributed since the last workshop, **10 to 18** in any given month, almost all part-time: about **5 to 6 full-time equivalents** in total, LHCb core developers included.
-- They maintain DIRAC and develop DiracX at the same time.
-
-</div>
-
-<div class="dx-key mt-2"><b>Finding the best way to work with each other is paramount.</b></div>
+<div class="dx-key mt-2" style="font-size:1.15em;padding:.6em 1em"><b>DOps is where you share your use cases.</b> The representatives of the communities decide together whether the vanilla project will fulfil them, or say clearly that it will not. Bring them early: someone else may need the same thing.</div>
 
 ---
 layout: section
@@ -205,21 +215,6 @@ layout: section
 # 3 · Adapting quickly
 
 Responding to changing requirements, in small steps
-
----
-
-<div class="duw-sec">3 · Adapting quickly</div>
-
-# The journey so far
-
-<img :src="'/figures/fig-journey.svg'" alt="Timeline of DiracX milestones from July 2023 to July 2026, with proofs of concept running in parallel: web app, pilot security, matchmaking, interCEde, analytics and observability" style="width:84%;margin:0 auto;display:block" />
-
-<div class="dx-tight mt-1">
-
-- **From 2023, three hackathons a year** onboarded new contributors, with no dashboard or regular meeting to follow progress. **Scrum** brought both in 2026.
-- **Proofs of concept run in parallel**, not mandatory: we try an idea before committing to it.
-
-</div>
 
 ---
 
@@ -281,39 +276,32 @@ Responding to changing requirements, in small steps
 
 <div class="duw-sec">3 · Adapting quickly</div>
 
-# Delivered since the last workshop
+# Standard protocols: one project, many contexts
 
-<div class="duw-three3 mt-2">
+<div class="grid grid-cols-12 gap-5 mt-1">
 
-<div class="dx-card dx-card-new">
+<div class="col-span-5 dx-tight">
 
-### DiracX, in use
-- From alpha to **22 releases**: the first official one on 22 October 2025, **v0.6.0** on 8 October 2026.
-- **LHCb in production**; two other installations certifying.
-
-</div>
-
-<div class="dx-card dx-card-blue">
-
-### Usable now
-**Sandboxes in S3**, **job status** through the future client, **resource status** read in DiracX, the **tasks framework**, and experimental **OpenTelemetry** observability.
+- **We choose our tooling**: standard implementations work, not one product we have to maintain.
+- **You connect DiracX to what you already run**: your identity provider, your storage, your monitoring, your databases.
+- **Small or large**: a small installation does not need a cutting-edge stack; a large one plugs in its own.
 
 </div>
 
-<div class="dx-card dx-card-legacy">
+<div class="col-span-7">
 
-### DIRAC kept safe
-v8, v9.0 and v9.1 patched: **security fixes** and **SQL hardening**, with GridPP.
+<table class="duw-map"><thead><tr><th>For</th><th>Protocol</th><th>In the charts</th><th>Or yours</th></tr></thead><tbody>
+<tr><td>identity</td><td>OIDC</td><td>Dex; INDIGO IAM optional</td><td>your SSO or IAM</td></tr>
+<tr><td>sandboxes</td><td>S3</td><td>SeaweedFS, optional</td><td>your site's S3 service</td></tr>
+<tr><td>metrics, traces</td><td>OpenTelemetry</td><td>collector, Jaeger, Grafana, optional</td><td>your monitoring</td></tr>
+<tr><td>state, job parameters</td><td>SQL, OpenSearch</td><td>MySQL, OpenSearch: <b>tests and demos only</b></td><td>your IT's databases: <b>required in production</b></td></tr>
+</tbody></table>
 
 </div>
 
 </div>
 
-<div class="dx-card dx-card-blue mt-3" style="height:auto;padding:.5em .9em">
-
-**Your needs, handled.** CMS and FCC joined, and their requirements reordered the roadmap. Requirements from five communities became **eight transformation-system ADRs**, reviewed together. **CWL** went from a proof of concept with CTAO to the project's direction. **268 issues** closed as completed.
-
-</div>
+<div class="dx-key mt-4"><b>We ship a minimal option for each, so DiracX works out of the box, as DIRAC does.</b> Databases are the exception: running MySQL or OpenSearch from the charts is not supported in production. Running without Kubernetes: <a href="https://indico.cern.ch/event/1588323/contributions/7288348/" target="_blank">Thursday's talk</a>.</div>
 
 ---
 layout: section
@@ -335,7 +323,7 @@ What the numbers tell us about our process
 
 <div>
 
-**634 pull requests** merged across all DIRACGrid repositories since the last workshop (367 DIRAC, 261 DiracX), from nine communities; **17 new contributors**. Almost all are part-time, so effort varies from month to month.
+**634 pull requests** merged across all DIRACGrid repositories since the last workshop (367 DIRAC, 261 DiracX), from nine communities; **17 new contributors**.
 
 </div>
 
@@ -435,7 +423,6 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 
 <div class="dx-tight mt-2">
 
-- **Scrum widened development**: more contributors, a shrinking backlog.
 - **Specification and review are the narrow parts**, and they will matter more with every new component.
 
 <div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For everyone in the room:</b> representatives, developers and users, where would you improve how we work?</div>
@@ -465,7 +452,7 @@ How we could improve, and the roadmap
 
 <div class="dx-tight mt-3">
 
-- Writing code got cheap, so **spikes and proofs of concept** are easier to try: matchmaking, interCEde, analytics, observability.
+- Writing code got cheap, so **spikes and proofs of concept** are easier to try.
 - **Deciding what to build and checking it** did not get cheaper.
 - It does **not change our process**. It shows its weak points sooner.
 
@@ -475,9 +462,9 @@ How we could improve, and the roadmap
 
 <div class="col-span-3 dx-tight">
 
-**Each one is something we just saw**
+**Each one maps to what we saw**
 
-- **Vague specification** → verbose, AI-generated issues that go stale (an open action). A clear ADR with a scenario test is what an agent, or a newcomer, can implement.
+- **Vague specification** → verbose, AI-generated issues that go stale. A clear ADR with a scenario test is what an agent, or a newcomer, can implement.
 - **Review bottleneck** → more code means more to read, by the same two people.
 - **Unplanned work** → faster code does not shrink urgent maintenance.
 - **A new kind of user** → DiracX speaks HTTP and OAuth2, so an agent can use it through MCP.
@@ -494,7 +481,7 @@ How we could improve, and the roadmap
 
 # Next: building the transformation system
 
-<div class="dx-key" style="font-size:1.1em"><b>Implementation starts at the hackathon this afternoon.</b> The technical details are in the next talk.</div>
+<div class="dx-key" style="font-size:1.1em"><b>Implementation follows the ADRs; code starts on Wednesday.</b> The technical details are in the next talk.</div>
 
 <div class="duw-two dx-tight mt-3">
 
@@ -511,7 +498,7 @@ How we could improve, and the roadmap
 
 **How it will be delivered**
 
-- **Increments the representatives can test**, shown at DOps whenever a sprint delivers one.
+- **Increments you can test**, at DOps.
 - **The more we are, and the better organised, the sooner.**
 
 </div>
@@ -569,11 +556,10 @@ How we could improve, and the roadmap
 ### What you can count on
 
 - **DIRAC keeps running**, with security patches and performance fixes when needed.
-- **You choose when to switch each component**, usually at a shutdown.
+- **You choose when to switch each component**, usually at a shutdown; DIRAC and DiracX run in parallel meanwhile.
 - **No data migration** for anything but the transformation system, which has its own tables.
 - **Your extension keeps working** on DIRAC while you move.
-- **DIRAC and DiracX live in parallel**, and work can move gradually from one to the other.
-- **Increments to test**, shown at DOps whenever a sprint delivers one.
+- **Increments to test**, shown at DOps whenever a sprint delivers one. You test them with your own workflows in **CWL**; we give guidance on writing them, starting with this afternoon's hands-on.
 
 </div>
 
