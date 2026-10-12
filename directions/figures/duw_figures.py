@@ -298,15 +298,15 @@ def mini_protocols() -> str:
     """Systems internal to DIRAC give way to standard protocols."""
     W, H = 760, 420
     o = [head(W, H)]
-    rows = [("Monitoring", "OpenTelemetry", 70), ("Accounting", "Analytics", 230)]
+    rows = [("Monitoring", "OpenTelemetry", 150)]
     for i, (a, b, y) in enumerate(rows):
         o.append(pill(30, y, 270, 90, BLUE, f"mp{i}a", r=28))
         o.append(text(165, y + 58, a, 36, "bold", fill="#25405f"))
         o.append(pill(440, y, 300, 90, "#9fd3a8", f"mp{i}b", r=28))
         o.append(text(590, y + 57, b, 31, "bold", fill="#2d5a33"))
         o.append(arrow(312, y + 45, 430, y + 45, 0, sw=5))
-    o.append(text(165, 380, "DIRAC", 30, italic=True, fill=TEXT_2))
-    o.append(text(590, 380, "DiracX", 30, italic=True, fill=TEXT_2))
+    o.append(text(165, 300, "DIRAC", 30, italic=True, fill=TEXT_2))
+    o.append(text(590, 300, "DiracX", 30, italic=True, fill=TEXT_2))
     o.append("</svg>")
     return "".join(o)
 

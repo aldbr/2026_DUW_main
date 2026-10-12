@@ -206,7 +206,13 @@ Communities add their own pieces.
 
 </div>
 
-<div class="dx-key mt-2" style="font-size:1.15em;padding:.6em 1em"><b>DOps is where you share your use cases.</b> The representatives of the communities decide together whether the vanilla project will fulfil them, or say clearly that it will not. Bring them early: someone else may need the same thing.</div>
+<div class="dx-card dx-card-legacy mt-2" style="height:auto;padding:.4em .9em">
+
+**These advanced needs do not fit today's data model**, shared by DIRAC and DiracX, and DIRAC must stay as stable as possible: they need a new model, decoupled from DIRAC.
+
+</div>
+
+<div class="dx-key mt-2" style="font-size:1.05em;padding:.5em 1em"><b>DOps is where you share your use cases.</b> The representatives of the communities decide together whether the vanilla project will fulfil them, or say clearly that it will not. Bring them early: someone else may need the same thing.</div>
 
 ---
 layout: section
@@ -241,15 +247,6 @@ Responding to changing requirements, in small steps
 
 <div class="duw-three3">
 
-<div class="dx-card dx-card-blue">
-
-### A new data model
-**The spine**: workgraph, transformations, parcels. New requirements need new tables and new logic. The RMS is used as it is, as a backend.
-
-<img :src="'/figures/fig-mini-model.svg'" alt="The DiracX transformation system uses DIRAC's WMS, with new tables of its own" style="width:100%;margin-top:.4rem" />
-
-</div>
-
 <div class="dx-card dx-card-legacy">
 
 ### Future clients
@@ -259,18 +256,27 @@ Responding to changing requirements, in small steps
 
 </div>
 
+<div class="dx-card dx-card-blue">
+
+### A new data model
+**The spine**: workgraph, transformations, parcels. New requirements need new tables and new logic. DIRAC's WMS is used as it is, as a backend.
+
+<img :src="'/figures/fig-mini-model.svg'" alt="The DiracX transformation system uses DIRAC's WMS, with new tables of its own" style="width:100%;margin-top:.4rem" />
+
+</div>
+
 <div class="dx-card dx-card-new">
 
 ### Standard protocols
-**Systems internal to DIRAC give way to standards**: monitoring to OpenTelemetry, accounting to analytics.
+**Systems internal to DIRAC give way to standards**: monitoring becomes OpenTelemetry.
 
-<img :src="'/figures/fig-mini-protocols.svg'" alt="Monitoring becomes OpenTelemetry and accounting becomes analytics" style="width:100%;margin-top:.4rem" />
-
-</div>
+<img :src="'/figures/fig-mini-protocols.svg'" alt="Monitoring becomes OpenTelemetry" style="width:100%;margin-top:.4rem" />
 
 </div>
 
-<div class="duw-small mt-2">This week: <a href="https://indico.cern.ch/event/1588323/contributions/7286647/" target="_blank">Data Management for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264662/" target="_blank">Analytics for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264658/" target="_blank">RSS in DIRAC and DiracX</a> (all Wednesday)</div>
+</div>
+
+<div class="duw-small mt-2">This week: <a href="https://indico.cern.ch/event/1588323/contributions/7286647/" target="_blank">Data Management for DiracX</a> · <a href="https://indico.cern.ch/event/1588323/contributions/7264658/" target="_blank">RSS in DIRAC and DiracX</a> (all Wednesday)</div>
 
 ---
 
