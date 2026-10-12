@@ -39,6 +39,12 @@ args = ["deck"]
 cmd = "npm run strip-notes -w {{ deck }} && npm run export -w {{ deck }}"
 
 [tasks.print-kit]
-# hackathon: set-up, table, role sheets, boards and cards (pages 17-28) for printing
-cmd = "qpdf TSHackathon_DUW12.pdf --pages . 17-28 -- print-kit.pdf"
+# hackathon: set-up, table, role sheets, boards and cards (pages 17-25) for printing
+cmd = "qpdf TSHackathon_DUW12.pdf --pages . 17-25 -- print-kit.pdf"
 cwd = "ts-hackathon"
+
+[tasks.print-all]
+# hackathon, everything to print for 3 tables: set-up and table once, then per table the 3 role sheets, 3 boards and the cards
+cmd = "qpdf --empty --pages print-kit.pdf 1-9 print-kit.pdf 3-9 print-kit.pdf 3-9 -- print-all.pdf"
+cwd = "ts-hackathon"
+depends-on = ["print-kit"]
