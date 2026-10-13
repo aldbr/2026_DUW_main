@@ -485,35 +485,41 @@ def landscape_map() -> str:
 # Components of the submission and matching path. kind: svc (cube) or db (cylinder).
 # Iso coordinates: the central services platform runs along x, the site platform along y.
 WMS_PARTS = {
-    # central installation on a grid with lanes between the cells, so the path runs in the gaps:
-    # what the user talks to at the back, the databases in the middle, what the site talks to in front
-    "JobManager":     ("svc", 40, 40),
-    "Optimizers":     ("agent", 260, 40),
-    "SandboxStore":   ("svc", 480, 40),
-    "JobDB":          ("db", 40, 250),
-    "TaskQueueDB":    ("db", 260, 250),
-    "PilotManager":   ("svc", 480, 250),
-    "PilotAgentsDB":  ("db", 700, 250),
+    # grouped by the slides that walk through them (see WMS_ZONES)
+    "PilotAgentsDB":  ("db", 40, 40),
+    "PilotManager":   ("svc", 40, 250),
     "SiteDirector":   ("agent", 40, 470),
-    "Matcher":        ("svc", 260, 470),
-    "JobStateUpdate": ("svc", 480, 470),
-    "Pilot logging":  ("svc", 700, 470),
+    "JobManager":     ("svc", 290, 40),
+    "Optimizers":     ("agent", 510, 40),
+    "SandboxStore":   ("svc", 730, 40),
+    "JobDB":          ("db", 290, 250),
+    "TaskQueueDB":    ("db", 510, 250),
+    "Matcher":        ("svc", 510, 470),
+    "JobStateUpdate": ("svc", 730, 470),
+    "Pilot logging":  ("svc", 950, 470),
     # site: the CE, and a worker node beside it
     "CE":             ("svc", 30, 760),
     "Pilot":          ("svc", 240, 760),
     "JobAgent":       ("svc", 240, 900),
     "JobWrapper":     ("svc", 240, 1040),
 }
+# floor zones on the central platform, named like the slides: (x0, y0, x1, y1, label)
+WMS_ZONES = [  # (x0, y0, x1, y1, label, label point on the floor, anchor)
+    (10, 10, 170, 600, "Sending pilots", (10, 360), "end"),
+    (260, 10, 860, 370, "Submitting a job", (860, 60), "start"),
+    (480, 420, 640, 600, "Matching", (480, 520), "end"),
+    (700, 420, 1080, 600, "Reports", (1080, 470), "start"),
+]
 # The path, in order. Each step is one or more polylines on the floor grid (x, y), turning at
 # right angles; "user" is drawn as a person and starts from its screen position.
 WMS_FLOW = [
-    (1, "submit", [["user", (85, 85)]]),
-    (2, "queue", [[(135, 85), (255, 85)], [(305, 135), (305, 245)]], 1),
+    (1, "submit", [["user", (335, 85)]]),
+    (2, "queue", [[(385, 85), (505, 85)], [(555, 135), (555, 245)]], 1),
     (3, "send pilots", [[(85, 565), (85, 755)]]),
     (4, "start", [[(125, 805), (235, 805)]]),
-    (5, "ask for a job", [[(335, 945), (410, 945), (410, 615), (305, 615), (305, 565)]]),
+    (5, "ask for a job", [[(335, 945), (555, 945), (555, 565)]]),
     (6, "run", [[(285, 995), (285, 1035)]]),
-    (7, "report", [[(335, 1085), (525, 1085), (525, 565)]]),
+    (7, "report", [[(335, 1085), (775, 1085), (775, 565)]]),
 ]
 
 
@@ -550,11 +556,15 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     arrows show the path. Components in `highlight` are coloured; those with a callout
     (box centre, lines) get one."""
     W, H = 1600, 900
-    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="240 0 1360 720" width="1360" height="720"')]
+    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="250 20 1370 690" width="1370" height="690"')]
     it = Iso(900, 150, 0.6)
     P = it.p
     GREY, GREY_DB, GREY_AG = "#e3e6ea", "#d5dae1", "#d9dde3"
-    o.append(slab(it, 0, 0, 1000, 620, 14, "#eef1f5", "wp-c"))
+    o.append(slab(it, 0, 0, 1100, 620, 14, "#eef1f5", "wp-c"))
+    for (x0, y0, x1, y1, zl, _, _) in WMS_ZONES:
+        poly_ = [P(x0, y0, 0), P(x1, y0, 0), P(x1, y1, 0), P(x0, y1, 0)]
+        o.append(f'<polygon points="{" ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in poly_)}" fill="#ffffff" '
+                 f'fill-opacity="0.55" stroke="#c3cbd6" stroke-width="2.5" stroke-dasharray="8 7"/>')
     o.append(slab(it, 0, 720, 420, 460, 14, "#f6efe0", "wp-s"))
     wn = [P(200, 735, 0), P(370, 735, 0), P(370, 1170, 0), P(200, 1170, 0)]
     o.append(f'<polygon points="{" ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in wn)}" fill="#efe3c6" stroke="#d9c597" stroke-width="3" stroke-dasharray="10 8"/>')
@@ -572,7 +582,7 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
         centre[name] = P(x + 45, y + 45, 30)
         labels.append(_halo_text(top[0], top[1] - 18, name, SMALL - 5, "bold" if on else "normal",
                                  TEXT_1 if on else "#98a1ac"))
-    ux, uy = P(-200, -60, 0)
+    ux, uy = P(120, -230, 0)
     o.append(cl.person(ux, uy - 60, 16, "#c9d3df", "wp-user"))
     labels.append(_halo_text(ux, uy + 16, "user", SMALL - 6, "normal", TEXT_2))
     centre["user"] = (ux + 22, uy - 30)
@@ -599,12 +609,19 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
                       + text(mx + 14, my, str(num), 20, "bold", fill="#ffffff"))
     o += labels
     for k, (num, lab, *_) in enumerate(WMS_FLOW):
-        ly_ = 590 + (k % 4) * 34
-        lx_ = 1080 + (k // 4) * 230
+        ly_ = 60 + (k % 4) * 34
+        lx_ = 300 + (k // 4) * 230
         o.append(f'<circle cx="{lx_:.1f}" cy="{ly_ - 8:.1f}" r="14" fill="#5b6573"/>'
                  + text(lx_, ly_, str(num), 19, "bold", fill="#ffffff")
                  + text(lx_ + 24, ly_, lab, SMALL - 6, anchor="start", fill="#3d4652"))
-    lx, ly = P(1000, 0, 0)
+    for (*_, zl, (zx_, zy_), anc) in WMS_ZONES:
+        zx, zy = P(zx_, zy_, 0)
+        dx = -14 if anc == "end" else 14
+        o.append(f'<text x="{zx + dx:.1f}" y="{zy + 8:.1f}" font-family="{cl.FONT}" font-size="{SMALL - 6}" font-weight="bold" '
+                 f'text-anchor="{anc}" fill="#f7f5ef" stroke="#f7f5ef" stroke-width="7" stroke-linejoin="round">{zl}</text>'
+                 f'<text x="{zx + dx:.1f}" y="{zy + 8:.1f}" font-family="{cl.FONT}" font-size="{SMALL - 6}" font-weight="bold" '
+                 f'text-anchor="{anc}" fill="#6b7686">{zl}</text>')
+    lx, ly = P(1100, 0, 0)
     o.append(text(lx + 10, ly + 66, "DIRAC installation", SMALL - 4, "bold", fill=TEXT_2))
     lx, ly = P(380, 1180, 0)
     o.append(text(lx - 20, ly + 60, "site", SMALL - 4, "bold", anchor="end", fill=TEXT_2))
