@@ -11,7 +11,7 @@ const { $page, $frontmatter } = useSlideContext()
 const bare = ['cover', 'section', 'center', 'end', 'intro', 'credits']
 
 const showFooter = computed(() => {
-  if ($page.value === 1) return false // title slide
+  // no cover in this deck: page 1 is a content slide and keeps its footer
   const layout = $frontmatter?.layout ?? 'default'
   return !bare.includes(layout)
 })

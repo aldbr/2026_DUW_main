@@ -7,6 +7,7 @@ info: |
   13–16 October 2026, FZU Prague. Wed 14 Oct, 12:10 (30 min slot).
 colorSchema: light
 class: text-left
+layout: default
 transition: slide-left
 mdc: true
 fonts:
@@ -15,37 +16,6 @@ fonts:
   mono: 'IBM Plex Mono'
   weights: '400,500,600,700,800'
   italic: true
----
-
-# Workload Management
-
-<div class="duw-subtitle">DIRAC and DiracX as compute backends</div>
-
-<span class="dx-author">Alexandre F. Boyer</span> · CERN
-
-12th DIRAC(X) Users' Workshop · FZU Prague · 13–16 October 2026
-
-<div class="dx-logobar mt-10">
-  <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC, The Interware" />
-  <img :src="'/logos/diracx.png'" alt="DiracX, The Interware" />
-</div>
-
----
-
-# ARM and GPUs are spreading
-
-<div style="display:grid;grid-template-columns:2.3fr 1fr;gap:1rem;align-items:center;margin-top:.6rem">
-
-<img :src="'/figures/fig-worldmap.svg'" alt="World map of ARM and GPU systems: TOP500 systems in the US, Europe, Asia, Australia, Brazil and Saudi Arabia, and the WLCG ARM sites at Glasgow and GridKa" style="width:100%" />
-
-<div class="duw-stats1">
-<div><b>276 / 500</b>TOP500 systems with GPUs, June 2026 (110 in 2018)</div>
-<div><b>35</b>ARM systems in the TOP500 (5 in 2020)</div>
-<div class="grid"><b>Our communities</b>run mostly on grid sites, and use a few HPCs opportunistically.</div>
-</div>
-
-</div>
-
 ---
 
 # HPC and clouds see them first
@@ -124,7 +94,7 @@ DiracX does not inherit DIRAC's jobs, tables or states. Work is a **parcel**; th
 
 <div class="dx-card dx-card-legacy">
 
-### No rush for a DiracX WMS
+### No rush for DiracX compute backend(s)
 Most communities can rely on their existing WMS for now: DIRAC, or their own (see the <a href="https://indico.cern.ch/event/1588323/contributions/7264642/" target="_blank">CMS talk</a> just before).
 
 </div>

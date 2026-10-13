@@ -485,15 +485,15 @@ def landscape_map() -> str:
 # Components of the submission and matching path. kind: svc (cube) or db (cylinder).
 # Iso coordinates: the central services platform runs along x, the site platform along y.
 WMS_PARTS = {
-    # central installation, grouped by who talks to whom:
-    # near the user (back), near the site (front)
+    # central installation on a grid with lanes between the cells, so the path runs in the gaps:
+    # what the user talks to at the back, the databases in the middle, what the site talks to in front
     "JobManager":     ("svc", 40, 40),
     "Optimizers":     ("agent", 260, 40),
     "SandboxStore":   ("svc", 480, 40),
     "JobDB":          ("db", 40, 250),
     "TaskQueueDB":    ("db", 260, 250),
-    "PilotManager":   ("svc", 620, 250),
-    "PilotAgentsDB":  ("db", 840, 250),
+    "PilotManager":   ("svc", 480, 250),
+    "PilotAgentsDB":  ("db", 700, 250),
     "SiteDirector":   ("agent", 40, 470),
     "Matcher":        ("svc", 260, 470),
     "JobStateUpdate": ("svc", 480, 470),
@@ -504,8 +504,17 @@ WMS_PARTS = {
     "JobAgent":       ("svc", 240, 900),
     "JobWrapper":     ("svc", 240, 1040),
 }
-WMS_FLOW = [("user", "JobManager", "submit", 60), ("SiteDirector", "CE", "send pilots", 0),
-            ("Pilot", "Matcher", "ask for a job", 0), ("JobWrapper", "JobStateUpdate", "report", 0)]
+# The path, in order. Each step is one or more polylines on the floor grid (x, y), turning at
+# right angles; "user" is drawn as a person and starts from its screen position.
+WMS_FLOW = [
+    (1, "submit", [["user", (85, 85)]]),
+    (2, "queue", [[(135, 85), (255, 85)], [(305, 135), (305, 245)]], 1),
+    (3, "send pilots", [[(85, 565), (85, 755)]]),
+    (4, "start", [[(125, 805), (235, 805)]]),
+    (5, "ask for a job", [[(335, 945), (410, 945), (410, 615), (305, 615), (305, 565)]]),
+    (6, "run", [[(285, 995), (285, 1035)]]),
+    (7, "report", [[(335, 1085), (525, 1085), (525, 565)]]),
+]
 
 
 def iso_cylinder(it, x, y, d, h, base, gid):
@@ -541,12 +550,12 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     arrows show the path. Components in `highlight` are coloured; those with a callout
     (box centre, lines) get one."""
     W, H = 1600, 900
-    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="80 0 1520 760" width="1520" height="760"')]
+    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="240 0 1360 720" width="1360" height="720"')]
     it = Iso(900, 150, 0.6)
     P = it.p
     GREY, GREY_DB, GREY_AG = "#e3e6ea", "#d5dae1", "#d9dde3"
     o.append(slab(it, 0, 0, 1000, 620, 14, "#eef1f5", "wp-c"))
-    o.append(slab(it, 0, 720, 380, 460, 14, "#f6efe0", "wp-s"))
+    o.append(slab(it, 0, 720, 420, 460, 14, "#f6efe0", "wp-s"))
     wn = [P(200, 735, 0), P(370, 735, 0), P(370, 1170, 0), P(200, 1170, 0)]
     o.append(f'<polygon points="{" ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in wn)}" fill="#efe3c6" stroke="#d9c597" stroke-width="3" stroke-dasharray="10 8"/>')
     centre, labels = {}, []
@@ -567,17 +576,34 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     o.append(cl.person(ux, uy - 60, 16, "#c9d3df", "wp-user"))
     labels.append(_halo_text(ux, uy + 16, "user", SMALL - 6, "normal", TEXT_2))
     centre["user"] = (ux + 22, uy - 30)
-    for a_, b_, lab, off in WMS_FLOW:
-        (x1, y1), (x2, y2) = centre[a_], centre[b_]
-        dx, dy = x2 - x1, y2 - y1
-        L = (dx * dx + dy * dy) ** 0.5
-        ux, uy = dx / L, dy / L
-        tipx, tipy = x2 - ux * 26, y2 - uy * 26
-        o.append(f'<path d="M{x1 + ux * 14:.1f},{y1 + uy * 14:.1f} L{tipx - ux * 16:.1f},{tipy - uy * 16:.1f}" stroke="#7d8896" '
-                 f'stroke-width="3.4" stroke-linecap="round" fill="none"/>')
-        o.append(arrowhead(tipx, tipy, ux, uy, length=18, half_width=9, color="#7d8896"))
-        labels.append(_halo_text((x1 + x2) / 2 - 10 + off, (y1 + y2) / 2 - 8, lab, SMALL - 6, "normal", "#5b6573"))
+    Z = 18
+    for num, lab, lines, *pick in WMS_FLOW:
+        best = None
+        for li, pts in enumerate(lines):
+            scr = [centre["user"] if p_ == "user" else P(p_[0], p_[1], Z) for p_ in pts]
+            (xa, ya), (xb, yb) = scr[-2], scr[-1]
+            L = ((xb - xa) ** 2 + (yb - ya) ** 2) ** 0.5
+            ux, uy = (xb - xa) / L, (yb - ya) / L
+            d = "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in scr[:-1]) + f" L{xb - ux * 16:.1f},{yb - uy * 16:.1f}"
+            o.append(f'<path d="{d}" stroke="#5b6573" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round" fill="none"/>')
+            o.append(arrowhead(xb, yb, ux, uy, length=18, half_width=9, color="#5b6573"))
+            for q in zip(scr, scr[1:]):
+                n2 = (q[1][0] - q[0][0]) ** 2 + (q[1][1] - q[0][1]) ** 2
+                if pick and li != pick[0]:
+                    continue
+                if best is None or n2 > best[0]:
+                    best = (n2, q)
+        (x1, y1), (x2, y2) = best[1]
+        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+        labels.append(f'<circle cx="{mx + 14:.1f}" cy="{my - 8:.1f}" r="15" fill="#5b6573"/>'
+                      + text(mx + 14, my, str(num), 20, "bold", fill="#ffffff"))
     o += labels
+    for k, (num, lab, *_) in enumerate(WMS_FLOW):
+        ly_ = 590 + (k % 4) * 34
+        lx_ = 1080 + (k // 4) * 230
+        o.append(f'<circle cx="{lx_:.1f}" cy="{ly_ - 8:.1f}" r="14" fill="#5b6573"/>'
+                 + text(lx_, ly_, str(num), 19, "bold", fill="#ffffff")
+                 + text(lx_ + 24, ly_, lab, SMALL - 6, anchor="start", fill="#3d4652"))
     lx, ly = P(1000, 0, 0)
     o.append(text(lx + 10, ly + 66, "DIRAC installation", SMALL - 4, "bold", fill=TEXT_2))
     lx, ly = P(380, 1180, 0)
@@ -1006,9 +1032,7 @@ STOPS = {
 
 
 def stop_fig(name):
-    # no callouts on the stops, so the figure is cropped to the scene itself
-    return lambda: wms_path({c: None for c in STOPS[name]}, "#8fb3e0").replace(
-        'viewBox="80 0 1520 760" width="1520" height="760"', 'viewBox="200 20 1400 660" width="1400" height="660"')
+    return lambda: wms_path({c: None for c in STOPS[name]}, "#8fb3e0")
 
 
 FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers, "fig-pocmap": poc_map, **{k: stop_fig(k) for k in STOPS}}
