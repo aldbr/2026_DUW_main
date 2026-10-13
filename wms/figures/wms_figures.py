@@ -556,7 +556,7 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     arrows show the path. Components in `highlight` are coloured; those with a callout
     (box centre, lines) get one."""
     W, H = 1600, 900
-    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="250 20 1370 690" width="1370" height="690"')]
+    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="250 -60 1370 770" width="1370" height="770"')]
     it = Iso(900, 150, 0.6)
     P = it.p
     GREY, GREY_DB, GREY_AG = "#e3e6ea", "#d5dae1", "#d9dde3"
@@ -585,6 +585,13 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     ux, uy = P(120, -230, 0)
     o.append(cl.person(ux, uy - 60, 16, "#c9d3df", "wp-user"))
     labels.append(_halo_text(ux, uy + 16, "user", SMALL - 6, "normal", TEXT_2))
+    # the Transformation System submits too (TaskManagerAgentBase -> WorkflowTasks -> WMSClient -> JobManager)
+    tsx, tsy = ux + 120, uy - 88
+    o.append(label_pill(tsx, tsy, 300, 58, "#c7d3e6", "wp-ts", "Transformation System", INK_BLUE, size=SMALL - 6))
+    jx, jy = P(335, 85, 18)
+    o.append(f'<path d="M{tsx + 70:.1f},{tsy + 70:.1f} L{jx + 12:.1f},{jy - 18:.1f}" stroke="#5b6573" stroke-width="3.6" stroke-linecap="round" fill="none"/>')
+    L_ = ((jx + 22 - tsx - 70) ** 2 + (jy - 8 - tsy - 70) ** 2) ** 0.5
+    o.append(arrowhead(jx + 22, jy - 8, (jx + 22 - tsx - 70) / L_, (jy - 8 - tsy - 70) / L_, length=18, half_width=9, color="#5b6573"))
     centre["user"] = (ux + 22, uy - 30)
     Z = 18
     for num, lab, lines, *pick in WMS_FLOW:
@@ -609,7 +616,7 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
                       + text(mx + 14, my, str(num), 20, "bold", fill="#ffffff"))
     o += labels
     for k, (num, lab, *_) in enumerate(WMS_FLOW):
-        ly_ = 60 + (k % 4) * 34
+        ly_ = 0 + (k % 4) * 34
         lx_ = 300 + (k // 4) * 230
         o.append(f'<circle cx="{lx_:.1f}" cy="{ly_ - 8:.1f}" r="14" fill="#5b6573"/>'
                  + text(lx_, ly_, str(num), 19, "bold", fill="#ffffff")
