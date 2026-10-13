@@ -290,7 +290,7 @@ def backends3d() -> str:
     compute backends, each its own platform with its own data. Isometric clay."""
     W, H = 1600, 860
     o = [head(W, H)]
-    it = Iso(800, 150, 0.95)
+    it = Iso(800, 150, 0.9)
     P = it.p
     # transformation system, at the back
     o.append(slab(it, 20, 0, 240, 180, 14, TEAL, "t3-ts"))
@@ -306,35 +306,35 @@ def backends3d() -> str:
     # backends, in a row in front
     S = 760
     arrows = []
-    specs = [(-600, "#adc3e3", "DIRAC WMS", "stable: fixes only", INK_BLUE, "solid"),
-             (0, TEAL, "DiracX WMS", "later, when needed", INK_TEAL, "ghost"),
-             (600, "#c7cfd9", "HTCondor", "glideins", TEXT_1, "solid")]
-    for k, (D, col, name, sub, ink, kind) in enumerate(specs):
+    specs = [(-690, "#adc3e3", "DIRAC", "stable: fixes only", INK_BLUE, "solid", P(20, 180, 0)),
+             (-230, TEAL, "DiracX pull", "pilots fetch work · later", INK_TEAL, "ghost", P(170, 180, 0)),
+             (230, TEAL, "DiracX push", "no outbound network · later", INK_TEAL, "ghost", P(260, 150, 0)),
+             (690, "#c7cfd9", "HTCondor", "glideins", TEXT_1, "solid", P(260, 20, 0))]
+    BS = 180
+    for k, (D, col, name, sub, ink, kind, start) in enumerate(specs):
         cx, cy = (S + D) / 2, (S - D) / 2
-        x0, y0 = cx - 110, cy - 110
-        start = {-600: P(20, 180, 0), 0: P(260, 180, 0), 600: P(260, 0, 0)}[D]
-        end = P(x0 + 12, y0 + 12, 0)
+        x0, y0 = cx - BS / 2, cy - BS / 2
+        end = P(x0 + 10, y0 + 10, 0)
         arrows.append(arrow(start[0], start[1] + 8, end[0], end[1] - 4, 0, sw=4.4))
         if kind == "ghost":
-            top = [P(x0, y0, 0), P(x0 + 220, y0, 0), P(x0 + 220, y0 + 220, 0), P(x0, y0 + 220, 0)]
+            top = [P(x0, y0, 0), P(x0 + BS, y0, 0), P(x0 + BS, y0 + BS, 0), P(x0, y0 + BS, 0)]
             d = " ".join(f"{q[0]:.1f},{q[1]:.1f}" for q in top)
             o.append(f'<polygon points="{d}" fill="#eef7f5" stroke="#8fb9b2" stroke-width="4" stroke-dasharray="14 10" stroke-linejoin="round"/>')
-            for (x, y) in [(x0 + 50, y0 + 60), (x0 + 120, y0 + 60), (x0 + 85, y0 + 130)]:
-                o.append(f'<g opacity="0.35">{cube(it, x, y, 46, 46, 34, TEAL, r=6)}</g>')
+            for (x, y) in [(x0 + 35, y0 + 40), (x0 + 100, y0 + 40), (x0 + 68, y0 + 105)]:
+                o.append(f'<g opacity="0.35">{cube(it, x, y, 42, 42, 30, TEAL, r=6)}</g>')
         else:
-            o.append(slab(it, x0, y0, 220, 220, 14, col, f"t3-b{k}"))
+            o.append(slab(it, x0, y0, BS, BS, 14, col, f"t3-b{k}"))
             cs = []
-            for (x, y) in [(x0 + 40, y0 + 40), (x0 + 110, y0 + 40), (x0 + 40, y0 + 110), (x0 + 110, y0 + 110)]:
-                cs.append((x + y, cube(it, x, y, 46, 46, 34, shade(col, -0.05), slots=True, r=6)))
+            for (x, y) in [(x0 + 30, y0 + 30), (x0 + 95, y0 + 30), (x0 + 30, y0 + 95), (x0 + 95, y0 + 95)]:
+                cs.append((x + y, cube(it, x, y, 42, 42, 30, shade(col, -0.05), slots=True, r=6)))
             o += [c for _, c in sorted(cs)]
-        # its own data: two cylinders beside the platform
-        dx, dy = P(x0 + 220, y0 + 220, 0)
+        # its own data, in front of the platform
         base = "#9fd3cb" if kind == "ghost" else "#bfc7d3"
         for m in range(2):
-            o.append(cylinder(dx - 150 + m * 70, dy + 10, 28, 40, base, f"t3-db{k}{m}"))
-        lx, ly = P(x0 + 220, y0 + 220, 0)
-        o.append(text(lx - 70, ly + 112, name, SUB, "bold", fill=ink))
-        o.append(text(lx - 70, ly + 148, sub, SMALL - 2, fill=TEXT_2))
+            o.append(iso_cylinder(it, x0 + 40 + m * 70, y0 + BS + 40, 46, 34, base, f"t3-db{k}{m}"))
+        lx, ly = P(x0 + BS, y0 + BS, 0)
+        o.append(text(lx - 60, ly + 130, name, SUB - 2, "bold", fill=ink))
+        o.append(text(lx - 60, ly + 166, sub, SMALL - 5, fill=TEXT_2))
     o += arrows
     o.append(text(800, H - 24, "each backend keeps its own data and its own data model", SMALL - 2, italic=True, fill=TEXT_2))
     o.append("</svg>")
@@ -968,26 +968,50 @@ def poc_map() -> str:
         o.append(text(x + w / 2, y + h / 2 + 28, t2, SMALL - 8, fill="#7a5410"))
     # the path
     o.append(label_pill(30, 200, 230, 100, TEAL, "pm-p", "parcel", INK_TEAL, "dispatched", size=SUB - 4))
-    o.append(f'<rect x="320" y="60" width="440" height="380" rx="30" fill="#eef7f5" stroke="#8fb9b2" stroke-width="3"/>')
-    o.append(text(540, 104, "DiracX WMS backend", SMALL, "bold", fill=INK_TEAL))
-    poc_box(350, 140, 380, 110, "matcher", "which job for which node")
-    poc_box(350, 290, 380, 110, "pilot management", "paused")
+    o.append(f'<rect x="320" y="20" width="440" height="200" rx="30" fill="#eef7f5" stroke="#8fb9b2" stroke-width="3"/>')
+    o.append(text(540, 62, "DiracX pull", SMALL, "bold", fill=INK_TEAL))
+    o.append(f'<rect x="320" y="290" width="440" height="200" rx="30" fill="#eef7f5" stroke="#8fb9b2" stroke-width="3"/>')
+    o.append(text(540, 476, "DiracX push", SMALL, "bold", fill=INK_TEAL))
+    o.append(text(540, 372, "an agent submits the payload,", SMALL - 8, fill=INK_TEAL))
+    o.append(text(540, 402, "for nodes without outbound network", SMALL - 8, fill=INK_TEAL))
+    poc_box(350, 76, 380, 90, "pilot management", "paused")
+    poc_box(350, 205, 380, 100, "matcher", "shared by pull and push?")
+    o.append(arrow(262, 230, 318, 140, 0, sw=4))
+    o.append(arrow(262, 270, 318, 380, 0, sw=4))
+    o.append(arrow(762, 140, 828, 230, 0, sw=4))
+    o.append(arrow(762, 380, 828, 270, 0, sw=4))
     o.append(label_pill(830, 200, 230, 100, "#c7cfd9", "pm-ce", "CEs", TEXT_1, "grid, HPC, cloud", size=SUB - 4))
     o.append(label_pill(1130, 200, 440, 100, "#f6efe0", "pm-wn", "worker node", "#8a6d2c", "the pilot starts there", size=SUB - 4))
-    for x1, x2 in [(262, 318), (762, 828), (1062, 1128)]:
-        o.append(arrow(x1, 250, x2, 250, 0, sw=4))
+    o.append(arrow(1062, 250, 1128, 250, 0, sw=4))
     # POCs that sit on the path
     poc_box(30, 360, 230, 110, "CWL", "describes the payload")
     o.append(f'<line x1="145" y1="358" x2="145" y2="304" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
-    poc_box(800, 40, 290, 110, "interCEde", "talks to the CEs")
-    o.append(f'<line x1="945" y1="152" x2="945" y2="198" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
+    poc_box(800, 30, 290, 110, "interCEde", "talks to the CEs")
+    o.append(f'<line x1="945" y1="142" x2="945" y2="198" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
     poc_box(1200, 360, 300, 110, "job wrapper", "runs the payload")
     o.append(f'<line x1="1350" y1="358" x2="1350" y2="304" stroke="#e0a030" stroke-width="3" stroke-dasharray="6 6"/>')
     o.append("</svg>")
     return "".join(o)
 
 
-FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers, "fig-pocmap": poc_map}
+# the walk along the DIRAC WMS path, one stop per slide
+STOPS = {
+    "fig-stop-1": ["JobManager", "SandboxStore", "JobDB", "Optimizers", "TaskQueueDB"],
+    "fig-stop-2": ["SiteDirector", "PilotManager", "PilotAgentsDB", "CE"],
+    "fig-stop-3": ["Pilot"],
+    "fig-stop-4": ["Matcher", "TaskQueueDB"],
+    "fig-stop-5": ["JobAgent"],
+    "fig-stop-6": ["JobWrapper", "JobStateUpdate", "Pilot logging"],
+}
+
+
+def stop_fig(name):
+    # no callouts on the stops, so the figure is cropped to the scene itself
+    return lambda: wms_path({c: None for c in STOPS[name]}, "#8fb3e0").replace(
+        'viewBox="80 0 1520 760" width="1520" height="760"', 'viewBox="200 20 1400 660" width="1400" height="660"')
+
+
+FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers, "fig-pocmap": poc_map, **{k: stop_fig(k) for k in STOPS}}
 
 
 def main() -> int:

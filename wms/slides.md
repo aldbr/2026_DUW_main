@@ -96,9 +96,9 @@ What it changes for workload management
 
 # The transformation system sees compute backends
 
-<img :src="'/figures/fig-backends3d.svg'" alt="The DiracX transformation system dispatches parcels to three compute backends: the DIRAC WMS, a DiracX WMS to come, and HTCondor; each keeps its own data" style="width:72%;margin:-.8rem auto 0;display:block" />
+<img :src="'/figures/fig-backends3d.svg'" alt="The DiracX transformation system dispatches parcels to compute backends: DIRAC, DiracX pull and DiracX push to come, and HTCondor; each keeps its own data" style="width:72%;margin:-.8rem auto 0;display:block" />
 
-<div class="dx-key mt-1">The transformation system (Tuesday's talks) sends parcels to compute backends. <b>The DIRAC WMS is one of them</b>, with its own data, as it is.</div>
+<div class="dx-key mt-1">The transformation system (Tuesday's talks) sends parcels to compute backends. <b>DIRAC is one of them</b>, with its own data, as it is; DiracX may add a pull and a push backend later.</div>
 
 ---
 
@@ -139,75 +139,104 @@ layout: section
 
 # 2 · DIRAC: fixes and performance
 
-What keeps it running while we migrate
+Several fixes made it faster and more reliable, for v9 and above. A walk along the path.
 
 ---
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+<div class="duw-sec">2 · DIRAC · stop 1 of 6</div>
 
-# Faster
+# Submitting a job
 
-<img :src="'/figures/fig-path-faster.svg'" alt="The DIRAC WMS submission and matching path in clay: JobDB, TaskQueueDB, Matcher, PilotAgentsDB and PilotManager highlighted in green with their improvements; other components grey" style="width:64%;margin:-1rem auto 0;display:block" />
+<div class="duw-stop">
 
-<div class="duw-prs"><a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8711" target="_blank">#8711</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8569" target="_blank">#8569</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8624" target="_blank">#8624</a> <a href="https://github.com/DIRACGrid/DIRAC/pull/8524" target="_blank">#8524</a></div>
+<img :src="'/figures/fig-stop-1.svg'" alt="The DIRAC WMS path with JobManager, SandboxStore, JobDB, the optimizers and TaskQueueDB highlighted" />
 
-<div class="dx-key mt-1">Several fixes made the DIRAC WMS faster, for installations at v9 and above. Most of these numbers need v9.1.</div>
+<div>
 
----
+<div class="duw-stopsec fast"><h4>Faster</h4>
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+- Jobs reach their task queue at ~190 jobs/s, not ~115; one queue instead of 64 duplicates during a burst (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
+- Missing index on job names (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>, v9.1.0, manual `ALTER TABLE`); database objects reused by the optimizers and agents (<a href="https://github.com/DIRACGrid/DIRAC/pull/8457" target="_blank">#8457</a>).
 
-# More reliable
+</div>
+<div class="duw-stopsec rel"><h4>More reliable</h4>
 
-<div class="duw-figside">
+- A task queue could briefly lose its site restriction: a pilot at any site could then match jobs meant for other sites (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>).
 
-<img :src="'/figures/fig-path-reliable.svg'" alt="The DIRAC WMS path with TaskQueueDB, SiteDirector, Pilot, JobAgent and JobWrapper highlighted in blue" />
+</div>
+<div class="duw-stopsec safe"><h4>Safer</h4>
 
-<div class="duw-details">
+- Sandbox store: a file name ending in `../` could write anywhere the service user can (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a>).
+- SQL parameterised in JobDB, TaskQueueDB and the sandbox metadata (v9.1.13 to v9.1.15).
 
-**Task queues keep their restrictions** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20<br/>A race could leave a task queue briefly without its site rows: a pilot at any site could then match jobs meant for other sites.
-
-**Banned CEs skipped** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a>, v9.0.2<br/>The SiteDirector kept trying to submit pilots to banned CEs.
-
-**Rescheduled jobs left alone** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17<br/>A job rescheduled after an early failure could already run elsewhere when the JobAgent, minutes later, marked it Failed.
-
-**No NaN parameters** · <a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a>, v9.1.16<br/>Jobs shorter than the first Watchdog cycle reported NaN: invalid JSON, so DiracX rejected the whole update.
-
-**Python 3 only pilot** · <a href="https://github.com/DIRACGrid/Pilot/pull/268" target="_blank">Pilot #268</a> <span class="duw-was">DUW11</span>
+</div>
 
 </div>
 </div>
 
 ---
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+<div class="duw-sec">2 · DIRAC · stop 2 of 6</div>
 
-# Safer
+# Sending pilots
 
-<div class="duw-figside">
+<div class="duw-stop">
 
-<img :src="'/figures/fig-path-safer.svg'" alt="The DIRAC WMS path with SandboxStore, JobStateUpdate, pilot logging, PilotManager, the pilot and the databases highlighted" />
+<img :src="'/figures/fig-stop-2.svg'" alt="The DIRAC WMS path with SiteDirector, PilotManager, PilotAgentsDB and the CE highlighted" />
 
-<div class="duw-details">
+<div>
 
-**Job state updates** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a>, high<br/>Any authenticated user could change any job's owner, group or VO, or force its status.
+<div class="duw-stopsec fast"><h4>Faster</h4>
 
-**Sandbox store** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a>, critical<br/>A file name ending in `../` could write anywhere the service user can.
+- Indices for counting pilots per site and queue (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>); fewer calls in the pilot agents and the PilotManager (<a href="https://github.com/DIRACGrid/DIRAC/pull/8569" target="_blank">#8569</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8624" target="_blank">#8624</a>).
 
-**Pilot logging** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a>, critical<br/>A crafted file name could read any file on the server.
+</div>
+<div class="duw-stopsec rel"><h4>More reliable</h4>
 
-**Pilot manager** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a>, high<br/>Parameters reached SQL unescaped, without access control.
+- The SiteDirector no longer submits to banned CEs (<a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a>, v9.0.2).
+- HPC: the SSH computing element, rewritten on Fabric, submits through a login node to the batch system (<a href="https://github.com/DIRACGrid/DIRAC/pull/7703" target="_blank">#7703</a>, v9.0) <span class="duw-was">DUW11</span>.
 
-**Pilot download** · <a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9" target="_blank">GHSA-vg99</a>, high<br/>The pilot code was fetched over HTTPS without checking the certificate, then run.
+</div>
+<div class="duw-stopsec safe"><h4>Safer</h4>
 
-<span class="duw-small">First three fixed in v9.1.20, v9.0.26, v8.0.85; last two in v9.1.10, v9.0.22. All WMS SQL parameterised in v9.1.13 to v9.1.15.</span>
+- PilotManager: SQL injection and missing access checks (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a>, fixed in v9.1.10, v9.0.22).
+
+</div>
 
 </div>
 </div>
 
 ---
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+<div class="duw-sec">2 · DIRAC · stop 3 of 6</div>
+
+# The pilot on the node
+
+<div class="duw-stop">
+
+<img :src="'/figures/fig-stop-3.svg'" alt="The DIRAC WMS path with the pilot highlighted on the worker node" />
+
+<div>
+
+<div class="duw-stopsec rel"><h4>More reliable</h4>
+
+- Python 3 only (<a href="https://github.com/DIRACGrid/Pilot/pull/268" target="_blank">Pilot #268</a>) <span class="duw-was">DUW11</span>.
+- The pilot reads the time left once and writes it to its configuration; jobs read it there, even in containers (<a href="https://github.com/DIRACGrid/DIRAC/pull/8479" target="_blank">#8479</a>, v9.1.4).
+- One image for every architecture: next slide.
+
+</div>
+<div class="duw-stopsec safe"><h4>Safer</h4>
+
+- The pilot code was fetched over HTTPS without checking the certificate, then run (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9" target="_blank">GHSA-vg99</a>, fixed in v9.1.10, v9.0.22).
+
+</div>
+
+</div>
+</div>
+
+---
+
+<div class="duw-sec">2 · DIRAC · stop 3, zoom</div>
 
 # One image for every architecture
 
@@ -229,28 +258,82 @@ What keeps it running while we migrate
 
 ---
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+<div class="duw-sec">2 · DIRAC · stop 4 of 6</div>
 
-# Sharing a node, reaching an HPC
+# Matching
 
-<img :src="'/figures/fig-limits-hpc.svg'" alt="Left: one multi-core slot shared by three jobs, each inside its own cgroup2 limit; right: the SSH CE reaching an HPC login node whose batch system runs the pilots" style="width:66%;margin:-.6rem auto 0;display:block" />
+<div class="duw-stop">
 
-<div class="duw-two dx-tight" style="font-size:.86rem">
+<img :src="'/figures/fig-stop-4.svg'" alt="The DIRAC WMS path with the Matcher and TaskQueueDB highlighted" />
+
 <div>
 
-- **CPU and memory limits** (v9.0) <span class="duw-was">DUW11</span>. Memory requests count when matching and when sharing a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup2 keeps each job within its share (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>).
+<div class="duw-stopsec fast"><h4>Faster</h4>
+
+- Matching query: ~30 ms to ~3 ms (<a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a>, v9.1.0).
+- Finding the matching task queues among 323: 3.4 s to 0.2 s (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
+- The delay between two matches of one job type can be below a second (<a href="https://github.com/DIRACGrid/DIRAC/pull/8711" target="_blank">#8711</a>, v9.1.16).
 
 </div>
-<div>
-
-- **HPC through SSH** (v9.0) <span class="duw-was">DUW11</span>. The SSH computing element, rewritten on Fabric, submits through an HPC login node to its batch system (<a href="https://github.com/DIRACGrid/DIRAC/pull/7703" target="_blank">#7703</a>).
 
 </div>
 </div>
 
 ---
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+<div class="duw-sec">2 · DIRAC · stop 5 of 6</div>
+
+# The JobAgent
+
+<div class="duw-stop">
+
+<img :src="'/figures/fig-stop-5.svg'" alt="The DIRAC WMS path with the JobAgent highlighted on the worker node" />
+
+<div>
+
+<div class="duw-stopsec rel"><h4>More reliable</h4>
+
+- A job rescheduled after an early failure could already run elsewhere when the JobAgent, minutes later, marked it Failed (<a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17).
+- Memory counts when matching and when filling a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup2 keeps each job within its CPU and memory share (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>) <span class="duw-was">DUW11</span>.
+- The margin for uploads is reserved before matching (<a href="https://github.com/DIRACGrid/DIRAC/pull/8746" target="_blank">#8746</a>, v9.1.21).
+
+</div>
+
+</div>
+</div>
+
+---
+
+<div class="duw-sec">2 · DIRAC · stop 6 of 6</div>
+
+# The JobWrapper and its reports
+
+<div class="duw-stop">
+
+<img :src="'/figures/fig-stop-6.svg'" alt="The DIRAC WMS path with the JobWrapper, JobStateUpdate and pilot logging highlighted" />
+
+<div>
+
+<div class="duw-stopsec rel"><h4>More reliable</h4>
+
+- Jobs shorter than the first Watchdog cycle reported NaN: invalid JSON, so DiracX rejected the whole update (<a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a>, v9.1.16).
+- Graceful stop and the reason of a kill: next slides (<a href="https://github.com/DIRACGrid/DIRAC/pull/8814" target="_blank">#8814</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8528" target="_blank">#8528</a>).
+
+</div>
+<div class="duw-stopsec safe"><h4>Safer</h4>
+
+- Job state updates: any user could change any job's owner or status (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a>).
+- Pilot logging: a crafted file name could read any file on the server (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a>).
+- Both fixed in v9.1.20, v9.0.26, v8.0.85.
+
+</div>
+
+</div>
+</div>
+
+---
+
+<div class="duw-sec">2 · DIRAC · stop 6, zoom</div>
 
 # Time left in the slot: before and after
 
@@ -271,7 +354,7 @@ What keeps it running while we migrate
 
 ---
 
-<div class="duw-sec">2 · DIRAC: fixes and performance</div>
+<div class="duw-sec">2 · DIRAC · stop 6, zoom</div>
 
 # Time left in the slot: configuration
 
@@ -299,7 +382,7 @@ StopSigStartWork = 8370     # minimum work before stopping
 </div>
 </div>
 
-<div class="dx-key mt-2">In <b>v9.1.21</b> only. Details: "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.</div>
+<div class="dx-key mt-2">DIRAC is patched, not developed: upgrading is how you get these. Time-left fixes in <b>v9.1.21</b> only. Details: "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.</div>
 
 ---
 layout: section
@@ -339,15 +422,15 @@ class: duw-poc
 
 <div class="duw-sec">3 · DiracX · exploratory</div>
 
-# Proofs of concept around the DiracX WMS
+# Proofs of concept around the DiracX backends
 
-<img class="duw-pocfig" :src="'/figures/fig-pocmap.svg'" alt="From a parcel to a worker node: CWL describes the payload, the DiracX WMS backend holds the matcher and pilot management, interCEde talks to the CEs, and the job wrapper runs the payload on the worker node; all five are proofs of concept" style="max-height:14rem;width:86%" />
+<img class="duw-pocfig" :src="'/figures/fig-pocmap.svg'" alt="From a parcel to a worker node: CWL describes the payload; DiracX pull (with pilot management) and DiracX push may share a matcher; interCEde talks to the CEs, and the job wrapper runs the payload on the worker node; all five are proofs of concept" style="max-height:14rem;width:86%" />
 
 <div class="duw-poc5">
 <div><h4>CWL</h4>ADR in draft; implemented with the transformation system</div>
 <div><h4>interCEde</h4>ADRs in review; core proposed; integration tests</div>
-<div><h4>Matcher</h4>Python baseline and load tests; Redis next</div>
-<div><h4>Pilot management</h4>ported as is, then paused</div>
+<div><h4>Matcher</h4>Python baseline and load tests; Redis next; maybe shared by pull and push</div>
+<div><h4>Pilot management</h4>for DiracX pull; ported as is, then paused</div>
 <div><h4>Job wrapper</h4>gathering requirements</div>
 </div>
 
