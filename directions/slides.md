@@ -156,8 +156,6 @@ New communities and new use cases
 ### Minimal dependencies
 A database and a search index, on a few hosts.
 
-**In DiracX:** standard protocols for what is external, with a minimal option for each.
-
 </div>
 
 <div class="dx-card dx-card-blue">
@@ -165,16 +163,12 @@ A database and a search index, on a few hosts.
 ### Multi-VO installations
 One installation serves several communities.
 
-**In DiracX:** multi-VO from the start.
-
 </div>
 
 <div class="dx-card dx-card-blue">
 
-### Extendable
+### Extensible
 Communities add their own pieces.
-
-**In DiracX:** extensions, with a reference extension.
 
 </div>
 
@@ -431,8 +425,6 @@ Read with care: about half of the 2026 rise in PRs is **one GridPP developer** h
 
 - **Specification and review are the narrow parts**, and they will matter more with every new component.
 
-<div class="dx-card dx-card-blue mt-2" style="height:auto;padding:.5em .8em"><b>For everyone in the room:</b> representatives, developers and users, where would you improve how we work?</div>
-
 </div>
 
 ---
@@ -473,7 +465,7 @@ How we could improve, and the roadmap
 - **Vague specification** → verbose, AI-generated issues that go stale. A clear ADR with a scenario test is what an agent, or a newcomer, can implement.
 - **Review bottleneck** → more code means more to read, by the same two people.
 - **Unplanned work** → faster code does not shrink urgent maintenance.
-- **A new kind of user** → DiracX speaks HTTP and OAuth2, so an agent can use it through MCP.
+- **A new kind of user** → DiracX speaks HTTP and OAuth2, so an agent can use it through MCP. IHEP already operates DIRAC with an agent and MCP: <a href="https://indico.cern.ch/event/1588323/contributions/7264674/" target="_blank">Wednesday's talk</a>.
 
 <div class="dx-concludes"><carbon-arrow-right class="dx-concludes-arrow" /><span>invest in <strong>specifications, tests and review</strong>, not in typing</span></div>
 
@@ -487,7 +479,7 @@ How we could improve, and the roadmap
 
 # Next: building the transformation system
 
-<div class="dx-key" style="font-size:1.1em"><b>Implementation follows the ADRs; code starts on Wednesday.</b> The technical details are in the next talk.</div>
+<div class="dx-key" style="font-size:1.1em"><b>Implementation follows the ADRs.</b> The technical details are in the next talk.</div>
 
 <div class="duw-two dx-tight mt-3">
 
@@ -505,13 +497,11 @@ How we could improve, and the roadmap
 **How it will be delivered**
 
 - **Increments you can test**, at DOps.
-- **The more we are, and the better organised, the sooner.**
+- **The more time people can give to the product**, and the better organised we are, the sooner.
 
 </div>
 
 </div>
-
-<div class="dx-card dx-card-blue mt-3" style="height:auto;padding:.5em .9em"><b>This afternoon:</b> adapting your community's workflows to <b>CWL</b> from 14:00, then building the <b>transformation system</b> on them from 16:10.</div>
 
 ---
 
@@ -557,6 +547,10 @@ How we could improve, and the roadmap
 
 # If you run an installation today
 
+<div class="grid grid-cols-12 gap-5">
+
+<div class="col-span-7">
+
 <div class="dx-card dx-card-new" style="height:auto">
 
 ### What you can count on
@@ -565,7 +559,17 @@ How we could improve, and the roadmap
 - **You choose when to switch each component**, usually at a shutdown; DIRAC and DiracX run in parallel meanwhile.
 - **No data migration** for anything but the transformation system, which has its own tables.
 - **Your extension keeps working** on DIRAC while you move.
-- **Increments to test**, shown at DOps whenever a sprint delivers one. You test them with your own workflows in **CWL**; we give guidance on writing them, starting with this afternoon's hands-on.
+- **Increments to test**, shown at DOps whenever a sprint delivers one. You test them with your own workflows in **CWL**; we give guidance on writing them.
+
+</div>
+
+</div>
+
+<div class="col-span-5">
+
+<img :src="'/figures/fig-test-loop.svg'" alt="Developers deliver an increment of the transformation system; installations run their own CWL workflows against it and give feedback at DOps" style="width:100%;max-height:22rem;object-fit:contain" />
+
+</div>
 
 </div>
 
@@ -577,7 +581,7 @@ layout: default
 
 # Take-aways
 
-<div class="grid grid-cols-1 gap-4 mt-3 text-lg">
+<div class="grid grid-cols-1 gap-2 mt-1">
 
 <div>
 <div class="dx-eyebrow">For installations</div>
@@ -593,6 +597,15 @@ layout: default
 <div class="dx-tight">
 
 - **Specification and review are the bottlenecks.** Increments you can test, shown at DOps, keep us close to your needs.
+
+</div>
+</div>
+
+<div>
+<div class="dx-eyebrow">A question for representatives</div>
+<div class="dx-tight">
+
+- **At DOps:** is DOps enough for you to follow the work and agree on priorities? How should we collect your requirements?
 
 </div>
 </div>

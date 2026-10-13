@@ -227,7 +227,7 @@ def roadmap2() -> str:
     o.append(arrow(X0, 52, X1 + 40, 52, 0, sw=4))
     o.append(text(X0, 38, "now", SMALL, "bold", anchor="start", fill=TEXT_2))
     o.append(text(X1 + 40, 38, "later: not fixed in time", SMALL - 2, italic=True, anchor="end", fill=TEXT_2))
-    lanes = [("Transformation System", X0, "#84cdc3", "starts at the hackathon this afternoon"),
+    lanes = [("Transformation System", X0, "#84cdc3", "first in line"),
              ("Job Wrapper", 700, "#9fd3a8", ""),
              ("Data Management System", 930, "#c4e6e1", ""),
              ("Resource status", X0, "#adc3e3", "read side first")]
@@ -390,7 +390,40 @@ def collab() -> str:
     return "".join(o)
 
 
-FIGS = {"fig-collab": collab, "fig-journey": journey, "fig-mini-model": mini_model, "fig-mini-future": mini_future, "fig-mini-protocols": mini_protocols, "fig-pipeline": pipeline, "fig-roadmap2": roadmap2, "fig-mapping": mapping, "fig-pipe": pipe, "fig-step1": step1, "fig-step2": step2, "fig-galaxies": galaxies, "fig-flow": flow}
+def test_loop() -> str:
+    """Developers deliver an increment; each installation runs its own CWL workflows against it
+    and the results come back to the developers at DOps."""
+    W, H = 760, 830
+    o = [head(W, H)]
+    o.append(text(380, 44, "Developers", 32, "bold", fill=TEXT_1))
+    for k, dx in enumerate((-60, 0, 60)):
+        o.append(person(380 + dx, 108 + (8 if k != 1 else 0), 22, TEAL, f"tl-d{k}"))
+    o.append(arrow(380, 190, 380, 262, 0, sw=5))
+    o.append(text(398, 236, "deliver", 26, italic=True, anchor="start", fill=TEXT_2))
+    o.append(pill(170, 270, 420, 120, TEAL, "tl-inc", r=34))
+    o.append(text(380, 322, "An increment", 36, "bold", fill="#1f4a44"))
+    o.append(text(380, 360, "of the transformation system", 24, fill="#1f4a44"))
+    cols = [("#c3b4e4", "#b3d69a"), ("#eeb0a2", "#f3cf7e"), ("#8fb3e3", "#e59cc0")]
+    xs = [140, 380, 620]
+    for i, (x, (c1, c2)) in enumerate(zip(xs, cols)):
+        o.append(arrow(x, 560, 300 + 80 * i, 400, 0, sw=4))
+        o.append(card(x - 110, 570, 220, 150))
+        o.append(person(x - 50, 630, 15, c1, f"tl-p{i}a"))
+        o.append(person(x - 14, 636, 15, c2, f"tl-p{i}b"))
+        dx0, dy0 = x + 22, 600
+        o.append(f'<path d="M{dx0},{dy0} h46 l18,18 v64 h-64 z" fill="#ffffff" stroke="#8a96a3" stroke-width="3" stroke-linejoin="round"/>')
+        o.append(f'<path d="M{dx0 + 46},{dy0} v18 h18" fill="none" stroke="#8a96a3" stroke-width="3" stroke-linejoin="round"/>')
+        o.append(text(dx0 + 32, dy0 + 58, ".cwl", 20, "bold", fill="#5b6774"))
+    o.append(text(380, 770, "Installations run their own", 26, "bold", fill=TEXT_1))
+    o.append(text(380, 804, "CWL workflows against it", 26, "bold", fill=TEXT_1))
+    o.append('<path d="M735,640 C760,500 760,240 470,110" fill="none" stroke="#e0a030" stroke-width="4" stroke-dasharray="11 9"/>')
+    o.append(arrowhead(470, 110, -0.93, -0.36, length=20, half_width=10, color="#e0a030"))
+    o.append(text(692, 480, "feedback at DOps", 24, "bold", fill="#7a5410", rotate=-90))
+    o.append("</svg>")
+    return "".join(o)
+
+
+FIGS = {"fig-collab": collab, "fig-journey": journey, "fig-mini-model": mini_model, "fig-mini-future": mini_future, "fig-mini-protocols": mini_protocols, "fig-pipeline": pipeline, "fig-roadmap2": roadmap2, "fig-mapping": mapping, "fig-pipe": pipe, "fig-step1": step1, "fig-step2": step2, "fig-galaxies": galaxies, "fig-flow": flow, "fig-test-loop": test_loop}
 
 
 def main() -> int:
