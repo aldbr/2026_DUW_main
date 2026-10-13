@@ -154,7 +154,7 @@
 .slidev-layout pre code, .slidev-layout pre code span { background: transparent !important; }
 /* one shape for every exploratory slide: figure, Why / Where it stands / Next, From you */
 .duw-pocfig { display: block; width: 74%; max-height: 12rem; object-fit: contain; margin: -.6rem auto 0; }
-.duw-pocfig.duw-code { width: 74%; font-size: .62rem; }
+.duw-pocfig.duw-code { width: 74%; font-size: .58rem; }
 .duw-pocfig.duw-code pre { margin: 0; }
 .duw-poc3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-top: .45rem; font-size: .74rem; line-height: 1.32; }
 .duw-poc3 > div { background: #ffffff; border-radius: 10px; border-top: 4px solid #e0a030; padding: .4rem .7rem; color: var(--dx-gray); }

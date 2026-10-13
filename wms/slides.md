@@ -129,7 +129,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-headline">Jobs queue 1.6× faster, and stay where they belong.</div>
+<div class="duw-headline">Jobs reach their task queue 1.6× faster, and only match where they should.</div>
 
 <div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
@@ -164,7 +164,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-headline">No pilots to banned CEs, HPC over SSH, PilotManager locked down.</div>
+<div class="duw-headline">Pilots only go where they can run, HPC included.</div>
 
 <div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
@@ -222,12 +222,12 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 # One image for every architecture
 
-<img :src="'/figures/fig-multiarch.svg'" alt="CVMFS holds one directory per architecture under .multiarch; on an x86_64 node and on an aarch64 node the pilot reads uname -m and runs the matching copy of the same image" style="width:62%;margin:-1rem auto 0;display:block" />
+<img :src="'/figures/fig-multiarch.svg'" alt="CVMFS holds one directory per architecture under .multiarch; on an x86_64 node and on an aarch64 node the pilot reads uname -m and runs the matching copy of the same image" style="width:52%;margin:-1rem auto 0;display:block" />
 
 <div class="duw-two dx-tight" style="font-size:.86rem">
 <div>
 
-- Sites now offer x86_64 and aarch64 nodes. A job names one container image; the pilot reads the node's architecture and runs the matching copy. <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify <span class="duw-was">DUW11</span>.
+- **Run each payload in the right environment**: a job names one container image, and the pilot runs the copy built for the node's architecture (x86_64 or aarch64). One of the last features added to DIRAC. <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify <span class="duw-was">DUW11</span>.
 - Publishing needs CVMFS 2.14 (DUCC 2.14.1); any CVMFS client reads the result.
 
 </div>
@@ -255,7 +255,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 <div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
 - Matching query: ~30 ms to ~3 ms (<a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a>, v9.1.0).
-- Finding the matching task queues among 323: 3.4 s to 0.2 s (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
+- When 323 task queues could serve a pilot, finding them took 3.4 s; now 0.2 s (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
 - The delay between two matches of one job type can be below a second (<a href="https://github.com/DIRACGrid/DIRAC/pull/8711" target="_blank">#8711</a>, v9.1.16).
 
 </div>
@@ -275,12 +275,12 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-headline">No false failures; each job kept to its CPU and memory share.</div>
+<div class="duw-headline">Rescheduled jobs are no longer marked Failed; each job keeps to its CPU and memory share.</div>
 
 <div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - A job rescheduled after an early failure could already run elsewhere when the JobAgent, minutes later, marked it Failed (<a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17).
-- Memory counts when matching and when filling a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup2 keeps each job within its CPU and memory share (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>) <span class="duw-was">DUW11</span>.
+- Memory counts when matching and when filling a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup v2 keeps each job within its CPU and memory share, where the site allows it (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>) <span class="duw-was">DUW11</span>.
 - The margin for uploads is reserved before matching (<a href="https://github.com/DIRACGrid/DIRAC/pull/8746" target="_blank">#8746</a>, v9.1.21).
 
 </div>
@@ -386,7 +386,7 @@ And the proofs of concept around the future WMS
 
 # No jobs in DiracX
 
-<img :src="'/figures/fig-parcels-only.svg'" alt="User jobs and workgraphs, both CWL, become parcels, the record of work, which a dispatcher sends to a backend; the JobDB in DiracX is legacy, used only to test deployments and deleted once everyone is on DiracX" style="width:68%;margin:-.6rem auto 0;display:block" />
+<img :src="'/figures/fig-parcels-only.svg'" alt="User jobs and workgraphs, both CWL, become parcels, the record of work, which a dispatcher sends to a backend; the JobDB in DiracX is legacy, used only to test deployments and deleted once everyone is on DiracX" style="width:58%;margin:-.6rem auto 0;display:block" />
 
 <div class="duw-two dx-tight" style="margin-top:.2rem">
 <div>
@@ -398,7 +398,7 @@ And the proofs of concept around the future WMS
 <div>
 
 - The JobDB in DiracX is legacy. It receives job status updates from DIRAC, to **test that a DiracX deployment works**.
-- It also feeds the **dummy job executor** (<a href="https://github.com/diracgrid/diracx/pull/995" target="_blank">diracx#995</a>): jobs go `Waiting → Matched → Running → Done` without running anything. A stand-in backend, to test the transformation system end to end.
+- It also feeds the **dummy job executor** (<a href="https://github.com/diracgrid/diracx/pull/995" target="_blank">diracx#995</a>): jobs go `Waiting → Matched → Running → Done` without running anything. A stand-in backend to test the transformation system end to end; it reads the JobDB for now, parcels later.
 - **Once everyone is on DiracX, it is deleted.**
 
 </div>
@@ -459,7 +459,7 @@ One format for a user payload, a workgraph and each transformation. DiracX setti
 </div>
 <div><h4>Where it stands</h4>
 
-DX-ADR-007, draft. `dirac-cwl` 1.3.0; an experimental CWL wrapper in DIRAC (#8425). Upstream: <a href="https://github.com/common-workflow-language/cwltool/pull/2302" target="_blank">cwltool#2302</a>, <a href="https://github.com/common-workflow-language/cwltool/pull/2166" target="_blank">#2166</a>, <a href="https://github.com/common-workflow-language/schema_salad/pull/1064" target="_blank">schema_salad#1064</a> merged; <a href="https://github.com/common-workflow-language/cwl-utils/pull/446" target="_blank">cwl-utils#446</a> in review.
+DX-ADR-007, draft. `dirac-cwl` was a first proof of concept (with CTAO): only minor details may carry over. Upstream: <a href="https://github.com/common-workflow-language/cwltool/pull/2302" target="_blank">cwltool#2302</a>, <a href="https://github.com/common-workflow-language/cwltool/pull/2166" target="_blank">#2166</a>, <a href="https://github.com/common-workflow-language/schema_salad/pull/1064" target="_blank">schema_salad#1064</a> merged; <a href="https://github.com/common-workflow-language/cwl-utils/pull/446" target="_blank">cwl-utils#446</a> in review.
 
 </div>
 <div><h4>Next</h4>

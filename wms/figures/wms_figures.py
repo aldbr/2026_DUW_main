@@ -556,7 +556,7 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     arrows show the path. Components in `highlight` are coloured; those with a callout
     (box centre, lines) get one."""
     W, H = 1600, 900
-    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="250 -60 1370 770" width="1370" height="770"')]
+    o = [head(W, H).replace('viewBox="0 0 1600 900" width="1600" height="900"', 'viewBox="255 -45 1360 795" width="1360" height="795"')]
     it = Iso(900, 150, 0.6)
     P = it.p
     GREY, GREY_DB, GREY_AG = "#e3e6ea", "#d5dae1", "#d9dde3"
@@ -586,12 +586,14 @@ def wms_path(highlight: dict, colour: str, debug: bool = False) -> str:
     o.append(cl.person(ux, uy - 60, 16, "#c9d3df", "wp-user"))
     labels.append(_halo_text(ux, uy + 16, "user", SMALL - 6, "normal", TEXT_2))
     # the Transformation System submits too (TaskManagerAgentBase -> WorkflowTasks -> WMSClient -> JobManager)
-    tsx, tsy = ux + 120, uy - 88
+    tsx, tsy = ux + 50, uy - 34
     o.append(label_pill(tsx, tsy, 300, 58, "#c7d3e6", "wp-ts", "Transformation System", INK_BLUE, size=SMALL - 6))
-    jx, jy = P(335, 85, 18)
-    o.append(f'<path d="M{tsx + 70:.1f},{tsy + 70:.1f} L{jx + 12:.1f},{jy - 18:.1f}" stroke="#5b6573" stroke-width="3.6" stroke-linecap="round" fill="none"/>')
-    L_ = ((jx + 22 - tsx - 70) ** 2 + (jy - 8 - tsy - 70) ** 2) ** 0.5
-    o.append(arrowhead(jx + 22, jy - 8, (jx + 22 - tsx - 70) / L_, (jy - 8 - tsy - 70) / L_, length=18, half_width=9, color="#5b6573"))
+    jx, jy = P(380, 60, 56)
+    sx_, sy_ = tsx + 60, tsy + 62
+    L_ = ((jx - sx_) ** 2 + (jy - sy_) ** 2) ** 0.5
+    ux_, uy_ = (jx - sx_) / L_, (jy - sy_) / L_
+    o.append(f'<path d="M{sx_:.1f},{sy_:.1f} L{jx - ux_ * 16:.1f},{jy - uy_ * 16:.1f}" stroke="#5b6573" stroke-width="3.6" stroke-linecap="round" fill="none"/>')
+    o.append(arrowhead(jx, jy, ux_, uy_, length=18, half_width=9, color="#5b6573"))
     centre["user"] = (ux + 22, uy - 30)
     Z = 18
     for num, lab, lines, *pick in WMS_FLOW:
@@ -898,7 +900,9 @@ def slot_before_after() -> str:
              (420, 1540, "#9fd3a8", "payload, sized for the whole slot", "#2d5a33")])
     o.append(f'<line x1="1500" y1="66" x2="1500" y2="196" stroke="#c0392b" stroke-width="5"/>')
     o.append(text(1490, 222, "killed: outputs lost", SMALL - 4, "bold", anchor="end", fill="#c0392b"))
-    o.append(text(X0, 222, "only the Watchdog knew the margin; it could only kill", SMALL - 6, anchor="start", fill=TEXT_2))
+    o.append(text(X0, 214, "· CPU power of the node misestimated (DB12)", SMALL - 7, anchor="start", fill=TEXT_2))
+    o.append(text(X0, 244, "· no time-left computation inside SingularityCE", SMALL - 7, anchor="start", fill=TEXT_2))
+    o.append(text(X0, 274, "· only the Watchdog knew the margin, and it could only kill", SMALL - 7, anchor="start", fill=TEXT_2))
     o.append(text(40, 372, "after", SUB - 2, "bold", anchor="start", fill="#2d5a33"))
     bar(330, [(X0, 420, "#c7cfd9", "pilot", TEXT_1),
               (420, 1060, "#9fd3a8", "payload", "#2d5a33"),
