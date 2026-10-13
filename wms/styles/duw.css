@@ -175,3 +175,7 @@
 .duw-stopsec.fast { border-left-color: #6cbf7b; } .duw-stopsec.fast h4 { color: #2d7a3e; }
 .duw-stopsec.rel { border-left-color: #6f9fd6; } .duw-stopsec.rel h4 { color: #25578f; }
 .duw-stopsec.safe { border-left-color: #e08f78; } .duw-stopsec.safe h4 { color: #9b4d3a; }
+/* stop slides: one headline to say, the details as reference */
+.duw-headline { font-family: var(--dx-font-serif); font-size: 1.12rem; line-height: 1.25; color: var(--dx-ink); margin: 0 0 .55rem 0; }
+.duw-stopsec { font-size: .7rem; }
+.duw-stopsec li { color: #6b7280; }

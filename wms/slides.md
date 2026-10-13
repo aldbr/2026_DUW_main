@@ -129,18 +129,20 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-stopsec fast"><h4>Faster</h4>
+<div class="duw-headline">Jobs queue 1.6× faster, and stay where they belong.</div>
+
+<div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
 - Jobs reach their task queue at ~190 jobs/s, not ~115; one queue instead of 64 duplicates during a burst (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
 - Missing index on job names (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>, v9.1.0, manual `ALTER TABLE`); database objects reused by the optimizers and agents (<a href="https://github.com/DIRACGrid/DIRAC/pull/8457" target="_blank">#8457</a>).
 
 </div>
-<div class="duw-stopsec rel"><h4>More reliable</h4>
+<div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - A task queue could briefly lose its site restriction: a pilot at any site could then match jobs meant for other sites (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>).
 
 </div>
-<div class="duw-stopsec safe"><h4>Safer</h4>
+<div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
 - Sandbox store: a file name ending in `../` could write anywhere the service user can (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a>).
 - SQL parameterised in JobDB, TaskQueueDB and the sandbox metadata (v9.1.13 to v9.1.15).
@@ -162,18 +164,20 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-stopsec fast"><h4>Faster</h4>
+<div class="duw-headline">No pilots to banned CEs, HPC over SSH, PilotManager locked down.</div>
+
+<div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
 - Indices for counting pilots per site and queue (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>); fewer calls in the pilot agents and the PilotManager (<a href="https://github.com/DIRACGrid/DIRAC/pull/8569" target="_blank">#8569</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8624" target="_blank">#8624</a>).
 
 </div>
-<div class="duw-stopsec rel"><h4>More reliable</h4>
+<div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - The SiteDirector no longer submits to banned CEs (<a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a>, v9.0.2).
 - HPC: the SSH computing element, rewritten on Fabric, submits through a login node to the batch system (<a href="https://github.com/DIRACGrid/DIRAC/pull/7703" target="_blank">#7703</a>, v9.0) <span class="duw-was">DUW11</span>.
 
 </div>
-<div class="duw-stopsec safe"><h4>Safer</h4>
+<div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
 - PilotManager: SQL injection and missing access checks (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a>, fixed in v9.1.10, v9.0.22).
 
@@ -194,14 +198,16 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-stopsec rel"><h4>More reliable</h4>
+<div class="duw-headline">Python 3 only, one source of time left, a verified download.</div>
+
+<div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - Python 3 only (<a href="https://github.com/DIRACGrid/Pilot/pull/268" target="_blank">Pilot #268</a>) <span class="duw-was">DUW11</span>.
 - The pilot reads the time left once and writes it to its configuration; jobs read it there, even in containers (<a href="https://github.com/DIRACGrid/DIRAC/pull/8479" target="_blank">#8479</a>, v9.1.4).
 - One image for every architecture: next slide.
 
 </div>
-<div class="duw-stopsec safe"><h4>Safer</h4>
+<div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
 - The pilot code was fetched over HTTPS without checking the certificate, then run (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9" target="_blank">GHSA-vg99</a>, fixed in v9.1.10, v9.0.22).
 
@@ -244,7 +250,9 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-stopsec fast"><h4>Faster</h4>
+<div class="duw-headline">Matching up to ~17× faster.</div>
+
+<div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
 - Matching query: ~30 ms to ~3 ms (<a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a>, v9.1.0).
 - Finding the matching task queues among 323: 3.4 s to 0.2 s (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
@@ -267,7 +275,9 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-stopsec rel"><h4>More reliable</h4>
+<div class="duw-headline">No false failures; each job kept to its CPU and memory share.</div>
+
+<div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - A job rescheduled after an early failure could already run elsewhere when the JobAgent, minutes later, marked it Failed (<a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17).
 - Memory counts when matching and when filling a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup2 keeps each job within its CPU and memory share (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>) <span class="duw-was">DUW11</span>.
@@ -290,13 +300,15 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-stopsec rel"><h4>More reliable</h4>
+<div class="duw-headline">Reports DiracX accepts; nobody edits someone else's job.</div>
+
+<div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - Jobs shorter than the first Watchdog cycle reported NaN: invalid JSON, so DiracX rejected the whole update (<a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a>, v9.1.16).
 - Graceful stop and the reason of a kill: next slides (<a href="https://github.com/DIRACGrid/DIRAC/pull/8814" target="_blank">#8814</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8528" target="_blank">#8528</a>).
 
 </div>
-<div class="duw-stopsec safe"><h4>Safer</h4>
+<div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
 - Job state updates: any user could change any job's owner or status (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a>).
 - Pilot logging: a crafted file name could read any file on the server (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a>).
