@@ -7,7 +7,6 @@ info: |
   13–16 October 2026, FZU Prague. Wed 14 Oct, 12:10 (30 min slot).
 colorSchema: light
 class: text-left
-layout: default
 transition: slide-left
 mdc: true
 fonts:
@@ -18,11 +17,18 @@ fonts:
   italic: true
 ---
 
-# HPC and clouds see them first
+# Workload Management
 
-<img :src="'/figures/fig-history.svg'" alt="Timeline: HPC, clouds and industry above the line (2005 multicore CPUs, 2010 first GPU system at the top of the TOP500, 2018 ARM in AWS, 2020 first ARM system at the top of the TOP500); the grid below (2023 ARM in production at Glasgow, 2025 first ARM pledges in WLCG, GPUs cannot be pledged yet)" style="width:94%;margin:.6rem auto 0;display:block" />
+<div class="duw-subtitle">DIRAC and DiracX as compute backends</div>
 
-<div class="dx-key mt-3">The grid follows, years later: sites buy from the same market, once the experiments can use the hardware.</div>
+<span class="dx-author">Alexandre F. Boyer</span> · CERN
+
+12th DIRAC(X) Users' Workshop · FZU Prague · 13–16 October 2026
+
+<div class="dx-logobar mt-10">
+  <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC, The Interware" />
+  <img :src="'/logos/diracx.png'" alt="DiracX, The Interware" />
+</div>
 
 ---
 
