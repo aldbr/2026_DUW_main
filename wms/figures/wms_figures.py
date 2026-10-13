@@ -1006,7 +1006,7 @@ def pilots_paused() -> str:
     o.append(arrow(1030, 205, 1150, 205, 0, sw=4))
     o.append(f'<rect x="1160" y="90" width="400" height="230" rx="30" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="14 10"/>')
     o.append(text(1360, 230, "?", 140, "bold", fill="#e0a030"))
-    o.append(text(1360, 300, "re-thought with the DiracX WMS", SMALL - 6, fill="#7a5410"))
+    o.append(text(1360, 300, "re-thought with DiracX compute backends", SMALL - 8, fill="#7a5410"))
     o.append("</svg>")
     return "".join(o)
 

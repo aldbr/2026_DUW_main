@@ -107,7 +107,7 @@ Most communities can rely on their existing WMS for now: DIRAC, or their own (se
 
 </div>
 
-<div class="dx-key mt-3">The DiracX WMS is not a priority. It will move slowly, in parallel, and get a plan when the transformation system needs a native backend.</div>
+<div class="dx-key mt-3">DiracX compute backends are not a priority. They will move slowly, in parallel, and get a plan when the transformation system needs a native backend.</div>
 
 ---
 layout: section
@@ -378,7 +378,7 @@ layout: section
 
 # 3 · DiracX: parcels, not jobs
 
-And the proofs of concept around the future WMS
+And the proofs of concept around future DiracX compute backends
 
 ---
 
@@ -386,7 +386,7 @@ And the proofs of concept around the future WMS
 
 # No jobs in DiracX
 
-<img :src="'/figures/fig-parcels-only.svg'" alt="User jobs and workgraphs, both CWL, become parcels, the record of work, which a dispatcher sends to a backend; the JobDB in DiracX is legacy, used only to test deployments and deleted once everyone is on DiracX" style="width:58%;margin:-.6rem auto 0;display:block" />
+<img :src="'/figures/fig-parcels-only.svg'" alt="User jobs and workgraphs, both CWL, become parcels, the record of work, which a dispatcher sends to a backend; the JobDB in DiracX is legacy, used only to test deployments and deleted once everyone is on DiracX" style="width:48%;margin:-.6rem auto 0;display:block" />
 
 <div class="duw-two dx-tight" style="margin-top:.2rem">
 <div>
@@ -397,12 +397,14 @@ And the proofs of concept around the future WMS
 </div>
 <div>
 
-- The JobDB in DiracX is legacy. It receives job status updates from DIRAC, to **test that a DiracX deployment works**.
-- It also feeds the **dummy job executor** (<a href="https://github.com/diracgrid/diracx/pull/995" target="_blank">diracx#995</a>): jobs go `Waiting → Matched → Running → Done` without running anything. A stand-in backend to test the transformation system end to end; it reads the JobDB for now, parcels later.
+- The JobDB in DiracX is legacy: it receives job status updates from DIRAC, to **test a DiracX deployment**.
+- It also feeds the **dummy job executor** (<a href="https://github.com/diracgrid/diracx/pull/995" target="_blank">diracx#995</a>): jobs go `Waiting → Done` without running anything, to test the transformation system. JobDB now, parcels later.
 - **Once everyone is on DiracX, it is deleted.**
 
 </div>
 </div>
+
+<div class="dx-key mt-2"><b>For you</b>: in DIRAC, nothing changes until your community moves. In DiracX you submit CWL, and you can start now.</div>
 
 ---
 class: duw-poc
@@ -507,7 +509,7 @@ class: duw-poc
 
 <div class="duw-sec">3 · DiracX · exploratory</div>
 
-# A matcher for the DiracX WMS
+# A matcher for DiracX compute backends
 
 <img class="duw-pocfig" :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters them using the configuration and the running jobs, ranks them by fair share using the running jobs, and hands one job to the pilot" />
 
@@ -539,12 +541,12 @@ class: duw-poc
 
 # Pilot management: port paused
 
-<img class="duw-pocfig" :src="'/figures/fig-pilots.svg'" alt="DIRAC pilot management ported as is to a DiracX pilot database and router, then paused; what comes next is a question mark, to be re-thought with the DiracX WMS" />
+<img class="duw-pocfig" :src="'/figures/fig-pilots.svg'" alt="DIRAC pilot management ported as is to a DiracX pilot database and router, then paused; what comes next is a question mark, to be re-thought with the DiracX compute backends" />
 
 <div class="duw-poc3">
 <div><h4>Why</h4>
 
-Pilots belong to the DiracX WMS backend, which comes after the transformation system.
+Pilots belong to the DiracX pull backend, which comes after the transformation system.
 
 </div>
 <div><h4>Where it stands</h4>
@@ -554,7 +556,7 @@ Pilot database and router ported as is (<a href="https://github.com/DIRACGrid/di
 </div>
 <div><h4>Next</h4>
 
-Re-thought with the DiracX WMS backend. Meanwhile the DIRAC pilot keeps being patched.
+Re-thought with the DiracX compute backends. Meanwhile the DIRAC pilot keeps being patched.
 
 </div>
 </div>
@@ -616,7 +618,7 @@ A proof of concept, then an ADR.
 <div class="dx-eyebrow">For DiracX</div>
 
 - No jobs: parcels. The JobDB in DiracX only tests deployments, then goes.
-- The DiracX WMS is not a priority; it will get a plan when needed.
+- DiracX compute backends are not a priority; they will get a plan when needed.
 - CWL describes everything that runs.
 - interCEde and the matcher: exploratory, with tests; ADRs after a first implementation. Pilot management: paused.
 
