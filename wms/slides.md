@@ -45,15 +45,11 @@ fonts:
 
 <div class="d arm"><b>Energy and hardware cost</b>2022 energy shock, climate targets, AI-driven prices</div>
 <div>ARM next to x86: first WLCG ARM pledges in 2025</div>
-<div class="w">One image and one match per architecture</div>
-
-<div class="d core"><b>More cores per node</b>clock speed stopped rising around 2005</div>
-<div>Whole nodes (HPC), multicore slots (grid)</div>
-<div class="w">Fill nodes, not single slots</div>
+<div class="w">One image name for every architecture; send each job to a node it can run on</div>
 
 <div class="d tok"><b>Identity</b>X.509 gives way to the tokens industry uses</div>
-<div>CEs that accept tokens, or only tokens</div>
-<div class="w">Pilots submitted with tokens (DIRAC v8.0); DiracX built on tokens</div>
+<div>CEs that accept tokens; site accounting that still reads X.509 proxies</div>
+<div class="w">Pilots carry a token <i>and</i> a proxy (DIRAC, stop 2); DiracX built on tokens</div>
 </div>
 
 <div class="dx-key mt-3"><b>In DIRAC</b>: temporary solutions, to keep it stable. <b>In DiracX</b>: the long-term solutions, designed for this.</div>
@@ -74,40 +70,7 @@ What it changes for workload management
 
 <img :src="'/figures/fig-backends3d.svg'" alt="The DiracX transformation system dispatches parcels to compute backends: DIRAC, DiracX pull and DiracX push to come, and HTCondor; each keeps its own data" style="width:72%;margin:-.8rem auto 0;display:block" />
 
-<div class="dx-key mt-1">The transformation system (Tuesday's talks) sends parcels to compute backends. <b>DIRAC is one of them</b>, with its own data, as it is; DiracX may add a pull and a push backend later.</div>
-
----
-
-<div class="duw-sec">1 · Starting from the transformation system</div>
-
-# What separate backends give us
-
-<div class="duw-three3">
-
-<div class="dx-card dx-card-blue">
-
-### A stable DIRAC
-The DIRAC WMS keeps its data and its behaviour. No large change: fixes and performance only, until communities move away from it.
-
-</div>
-
-<div class="dx-card dx-card-new">
-
-### A DiracX free of the legacy model
-DiracX does not inherit DIRAC's jobs, tables or states. Work is a **parcel**; the WMS behind it is designed for it.
-
-</div>
-
-<div class="dx-card dx-card-legacy">
-
-### No rush for DiracX compute backend(s)
-Most communities can rely on their existing WMS for now: DIRAC, or their own (see the <a href="https://indico.cern.ch/event/1588323/contributions/7264642/" target="_blank">CMS talk</a> just before).
-
-</div>
-
-</div>
-
-<div class="dx-key mt-3">DiracX compute backends are not a priority. They will move slowly, in parallel, and get a plan when the transformation system needs a native backend.</div>
+<div class="dx-key mt-1">The transformation system (Tuesday's talks) sends parcels to compute backends. <b>DIRAC is one of them</b>: it keeps its data, and gets fixes and performance only. DiracX is free of DIRAC's job model and <b>will get its own backends</b> (pull, push): not a priority, most communities rely on DIRAC or their own WMS for now (<a href="https://indico.cern.ch/event/1588323/contributions/7264642/" target="_blank">CMS talk</a>).</div>
 
 ---
 layout: section
@@ -134,7 +97,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 <div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
 - Jobs reach their task queue at ~190 jobs/s, not ~115; one queue instead of 64 duplicates during a burst (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
-- Missing index on job names (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>, v9.1.0, manual `ALTER TABLE`); database objects reused by the optimizers and agents (<a href="https://github.com/DIRACGrid/DIRAC/pull/8457" target="_blank">#8457</a>).
+- Missing index on job names (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>, v9.1.0, manual `ALTER TABLE`).
 
 </div>
 <div v-click class="duw-stopsec rel"><h4>More reliable</h4>
@@ -144,8 +107,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 </div>
 <div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
-- Sandbox store: a file name ending in `../` could write anywhere the service user can (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a>).
-- SQL parameterised in JobDB, TaskQueueDB and the sandbox metadata (v9.1.13 to v9.1.15).
+- Sandbox store: a file name ending in `../` could write anywhere the service user can (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-pwvr-x92w-xmp8" target="_blank">GHSA-pwvr</a>, fixed in v9.1.20, v9.0.26, v8.0.85).
 
 </div>
 
@@ -164,27 +126,57 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-headline">Pilots only go where they can run, HPC included.</div>
+<div class="duw-headline">Pilots only go where they can run.</div>
 
 <div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
-- Indices for counting pilots per site and queue (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>); fewer calls in the pilot agents and the PilotManager (<a href="https://github.com/DIRACGrid/DIRAC/pull/8569" target="_blank">#8569</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8624" target="_blank">#8624</a>).
+- Indices for counting pilots per site and queue (<a href="https://github.com/DIRACGrid/DIRAC/pull/8463" target="_blank">#8463</a>, manual `ALTER TABLE`).
 
 </div>
 <div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
 - The SiteDirector no longer submits to banned CEs (<a href="https://github.com/DIRACGrid/DIRAC/pull/8340" target="_blank">#8340</a>, v9.0.2).
-- HPC: the SSH computing element, rewritten on Fabric, submits through a login node to the batch system (<a href="https://github.com/DIRACGrid/DIRAC/pull/7703" target="_blank">#7703</a>, v9.0) <span class="duw-was">DUW11</span>.
+- HPC: the SSH computing element, rewritten on Fabric, submits through a login node to the batch system (<a href="https://github.com/DIRACGrid/DIRAC/pull/7703" target="_blank">#7703</a>, v9.1.3) <span class="duw-was">DUW11</span>.
 
 </div>
 <div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
 - PilotManager: SQL injection and missing access checks (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc" target="_blank">GHSA-7xw9</a>, fixed in v9.1.10, v9.0.22).
+- Pilots with tokens, still with a proxy: next slide.
 
 </div>
 
 </div>
 </div>
+
+---
+
+<div class="duw-sec">2 · DIRAC · stop 2, zoom</div>
+
+# Tokens: why pilots still carry a proxy
+
+<div class="duw-two dx-tight">
+<div>
+
+- Since v8.0 (<a href="https://github.com/DIRACGrid/DIRAC/pull/6803" target="_blank">#6803</a>), the SiteDirector can submit pilots with a token, to CEs tagged `Token` or `Token:<VO>`.
+- Sites still need the proxy that comes with the job: the accounting needs its VOMS information, and many ARC CEs need a proxy to run the job at all.
+- So pilots must bring **both a token and a proxy**.
+
+</div>
+<div>
+
+| CE | with a token | |
+|---|---|---|
+| HTCondorCE | token **and** proxy | works |
+| ARC (AREX) | token only | fails at many sites |
+| ARC (AREX), `AlwaysIncludeProxy` | token and proxy | ARC6 uses the proxy only |
+
+<div style="font-size:.8rem;margin-top:.4rem">On ARC, pilots are in practice submitted with a proxy, as before tokens (<a href="https://github.com/DIRACGrid/DIRAC/issues/7908" target="_blank">#7908</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/7913" target="_blank">#7913</a>).</div>
+
+</div>
+</div>
+
+<div class="dx-key mt-3"><b>No progress yet</b> on token-only pilots: ARC7 can account from token claims, but some sites' accounting still relies on X.509 proxies. DiracX itself is built on tokens.</div>
 
 ---
 
@@ -202,9 +194,9 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
-- Python 3 only (<a href="https://github.com/DIRACGrid/Pilot/pull/268" target="_blank">Pilot #268</a>) <span class="duw-was">DUW11</span>.
+- The pilot is now Python 3 only: no more Python 2 code paths (<a href="https://github.com/DIRACGrid/Pilot/pull/268" target="_blank">Pilot #268</a>) <span class="duw-was">DUW11</span>.
 - The pilot reads the time left once and writes it to its configuration; jobs read it there, even in containers (<a href="https://github.com/DIRACGrid/DIRAC/pull/8479" target="_blank">#8479</a>, v9.1.4).
-- One image for every architecture: next slide.
+- One image for every architecture (open PR): next slide.
 
 </div>
 <div v-click class="duw-stopsec safe"><h4>Safer</h4>
@@ -227,13 +219,12 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 <div class="duw-two dx-tight" style="font-size:.86rem">
 <div>
 
-- **Run each payload in the right environment**: a job names one container image, and the pilot runs the copy built for the node's architecture (x86_64 or aarch64). One of the last features added to DIRAC. <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify <span class="duw-was">DUW11</span>.
-- Publishing needs CVMFS 2.14 (DUCC 2.14.1); any CVMFS client reads the result.
+- **CVMFS 2.14 supports multi-architecture images**: one image name, one copy per architecture, published by DUCC 2.14.1. Any CVMFS client reads them. We aim at relying on it.
 
 </div>
 <div>
 
-- **Still missing in DIRAC: alternatives.** A job states one platform and one set of requirements. It cannot say "x86_64, or aarch64, or a GPU of type A". The DiracX matcher is designed for this.
+- **In DIRAC**: a job names one container image, and the pilot runs the copy built for the node's architecture (x86_64 or aarch64). One of the last features added to DIRAC: <a href="https://github.com/DIRACGrid/DIRAC/pull/8456" target="_blank">#8456</a>, open, to certify <span class="duw-was">DUW11</span>.
 
 </div>
 </div>
@@ -254,9 +245,8 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div v-click class="duw-stopsec fast"><h4>Faster</h4>
 
-- Matching query: ~30 ms to ~3 ms (<a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a>, v9.1.0).
+- Matching query: ~30 ms to ~3 ms (<a href="https://github.com/DIRACGrid/DIRAC/pull/8462" target="_blank">#8462</a>, v9.1.0, manual `ALTER TABLE`).
 - When 323 task queues could serve a pilot, finding them took 3.4 s; now 0.2 s (<a href="https://github.com/DIRACGrid/DIRAC/pull/8801" target="_blank">#8801</a>, v9.1.20).
-- The delay between two matches of one job type can be below a second (<a href="https://github.com/DIRACGrid/DIRAC/pull/8711" target="_blank">#8711</a>, v9.1.16).
 
 </div>
 
@@ -275,13 +265,12 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div>
 
-<div class="duw-headline">Rescheduled jobs are no longer marked Failed; each job keeps to its CPU and memory share.</div>
+<div class="duw-headline">A job that restarts elsewhere is not failed by the node it left; each job keeps to its CPU and memory share.</div>
 
 <div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
-- A job rescheduled after an early failure could already run elsewhere when the JobAgent, minutes later, marked it Failed (<a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17).
+- A job that cannot start (e.g. its input sandbox fails to download) is rescheduled, and may soon run at another site. Minutes later, the JobAgent on the first node saw the error and set the job to Failed, while it was running elsewhere. It now leaves rescheduled jobs alone (<a href="https://github.com/DIRACGrid/DIRAC/pull/8441" target="_blank">#8441</a>, v9.0.17).
 - Memory counts when matching and when filling a multi-core slot (<a href="https://github.com/DIRACGrid/DIRAC/pull/8366" target="_blank">#8366</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8414" target="_blank">#8414</a>); cgroup v2 keeps each job within its CPU and memory share, where the site allows it (<a href="https://github.com/DIRACGrid/DIRAC/pull/8110" target="_blank">#8110</a>) <span class="duw-was">DUW11</span>.
-- The margin for uploads is reserved before matching (<a href="https://github.com/DIRACGrid/DIRAC/pull/8746" target="_blank">#8746</a>, v9.1.21).
 
 </div>
 
@@ -304,15 +293,14 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div v-click class="duw-stopsec rel"><h4>More reliable</h4>
 
-- Jobs shorter than the first Watchdog cycle reported NaN: invalid JSON, so DiracX rejected the whole update (<a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a>, v9.1.16).
-- Graceful stop and the reason of a kill: next slides (<a href="https://github.com/DIRACGrid/DIRAC/pull/8814" target="_blank">#8814</a>, <a href="https://github.com/DIRACGrid/DIRAC/pull/8528" target="_blank">#8528</a>).
+- Jobs shorter than the first Watchdog cycle reported NaN: invalid JSON, so DiracX, which receives DIRAC's job reports, rejected the whole batch (<a href="https://github.com/DIRACGrid/DIRAC/pull/8750" target="_blank">#8750</a>, v9.1.16).
+- Time left, graceful stop, the reason of a kill: next slide. The JobWrapper in pull and push: the one after.
 
 </div>
 <div v-click class="duw-stopsec safe"><h4>Safer</h4>
 
 - Job state updates: any user could change any job's owner or status (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-j3xg-cjx8-qjpw" target="_blank">GHSA-j3xg</a>).
-- Pilot logging: a crafted file name could read any file on the server (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a>).
-- Both fixed in v9.1.20, v9.0.26, v8.0.85.
+- Pilot logging: a crafted file name could read any file on the server (<a href="https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vm3r-6cmw-8p5v" target="_blank">GHSA-vm3r</a>). Both fixed in v9.1.20, v9.0.26, v8.0.85.
 
 </div>
 
@@ -321,7 +309,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 ---
 
-<div class="duw-sec">2 · DIRAC · stop 6, zoom</div>
+<div class="duw-sec">2 · DIRAC · stops 5–6, zoom</div>
 
 # Time left in the slot: before and after
 
@@ -335,7 +323,7 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 </div>
 <div>
 
-**One source of truth** since v9.1.4 (<a href="https://github.com/DIRACGrid/DIRAC/pull/8479" target="_blank">#8479</a>): the pilot reads the time left once, jobs read it from the pilot configuration, even inside containers.
+**To use it**: `StopMargin` and `StopSig*` in `/Systems/WorkloadManagement/JobWrapper`, or per job in the JDL; the graceful stop is off unless set. **v9.1.21 only.** Details: "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.
 
 </div>
 </div>
@@ -344,33 +332,32 @@ Several fixes made it faster and more reliable, for v9 and above. A walk along t
 
 <div class="duw-sec">2 · DIRAC · stop 6, zoom</div>
 
-# Time left in the slot: configuration
+# The JobWrapper in pull and push
 
-<div class="duw-two">
+<div class="duw-two" style="grid-template-columns:1.05fr 1fr">
 <div>
 
-`/Systems/WorkloadManagement/JobWrapper`, or per job in the JDL:
+<img :src="'/figures/fig-pullpush.svg'" alt="Pull: the SiteDirector submits pilots to a CE, the pilot starts on the worker node, its JobAgent matches a job and runs the JobWrapper and the payload there. Push: a PushJobAgent next to the Matcher matches a job and submits the JobWrapper with its inputs to a CE in front of an HPC without outbound network; pre- and post-processing stay with the agent" style="width:100%;margin-top:-.4rem" />
 
-```ini
-StopMargin = 300            # seconds kept for the uploads
-# graceful stop, off unless set; example for Gauss
-StopSigRegex = ^\S*python\S*\s+\S*/gaudirun\.py\s.*/options/Gauss/
-StopSigNumber = 10          # SIGUSR1
-StopSigFinishWork = 16740   # CPU work to wind down
-StopSigStartWork = 8370     # minimum work before stopping
-```
+<div class="dx-tight" style="font-size:.78rem">
 
-</div>
-<div class="dx-tight">
-
-- **StopMargin** is wall clock: uploading takes the same time on any node. It is subtracted once, before matching.
-- **StopSig\*** thresholds are in CPU work, divided by the node's power: one value fits slow and fast nodes.
-- The application must handle the signal (Gauss: `StopOnSignal`). The Watchdog still stops it when the budget is spent.
+- **Pull** (JobAgent, in the pilot): all three phases on the node, which needs outbound network.
+- **Push** (PushJobAgent, on a DIRAC host): before and after run on the DIRAC host with the owner's proxy; the node only runs the payload, with DIRAC from CVMFS. Outputs come back with checksums.
 
 </div>
 </div>
+<div class="dx-tight" style="font-size:.8rem">
 
-<div class="dx-key mt-2">DIRAC is patched, not developed: upgrading is how you get these. Time-left fixes in <b>v9.1.21</b> only. Details: "Allocated time management" in the Administrator Guide. CPU work is normalised with DB12: <a href="https://indico.cern.ch/event/1588323/contributions/7264656/" target="_blank">next talk</a>.</div>
+**Before**: download the input sandbox, resolve the input data, the community's own pre-processing hook, prepare the command and environment.
+
+**Payload**: runs under the Watchdog (CPU, memory, time left, stalled).
+
+**After**: the community's own post-processing hook, upload the output sandbox, upload and register the output data, failover requests when an upload fails, accounting, final status.
+
+</div>
+</div>
+
+<div class="dx-key mt-1" style="font-size:.8rem"><b>Pre- and post-processing only exist since v9.0</b> (<a href="https://github.com/DIRACGrid/DIRAC/pull/7587" target="_blank">#7587</a>), so communities still do these steps inside their workflows (e.g. uploading outputs). With CWL this should change: a CWL workflow must also run locally, so it holds no DIRAC-specific step; the job wrapper does them.</div>
 
 ---
 layout: section
@@ -404,7 +391,7 @@ And the proofs of concept around future DiracX compute backends
 </div>
 </div>
 
-<div class="dx-key mt-2"><b>For you</b>: in DIRAC, nothing changes until your community moves. In DiracX you submit CWL, and you can start now.</div>
+<div class="dx-key mt-2"><b>For you</b>: in DIRAC, nothing changes until your community moves. In DiracX you will submit CWL: you can start writing it now, and we can help during the hackathon session.</div>
 
 ---
 class: duw-poc
@@ -418,13 +405,13 @@ class: duw-poc
 
 <div class="duw-poc5">
 <div><h4>CWL</h4>ADR in draft; implemented with the transformation system</div>
-<div><h4>interCEde</h4>ADRs in review; core proposed; integration tests</div>
+<div><h4>Pilot management</h4>for DiracX pull; ported as is (<a href="https://github.com/DIRACGrid/diracx/pull/570" target="_blank">diracx#570</a>), paused: the data model needs redoing</div>
 <div><h4>Matcher</h4>Python baseline and load tests; Redis next; maybe shared by pull and push</div>
-<div><h4>Pilot management</h4>for DiracX pull; ported as is, then paused</div>
-<div><h4>Job wrapper</h4>gathering requirements</div>
+<div><h4>interCEde</h4>ADRs in review; core proposed; integration tests</div>
+<div><h4>Job wrapper</h4>requirements to gather: needs an owner</div>
 </div>
 
-<div class="duw-ask"><b>The same path for each</b>: explore, write an ADR, then implement in DiracX. Each is tested in small increments you can try.</div>
+<div class="duw-ask"><b>The same path for each</b>: explore, write an ADR, then implement in DiracX, in small increments you can try.</div>
 
 ---
 class: duw-poc
@@ -466,72 +453,10 @@ DX-ADR-007, draft. `dirac-cwl` was a first proof of concept (with CTAO): only mi
 </div>
 <div><h4>Next</h4>
 
-Implemented with the transformation system, from this week's hackathon.
+Implemented with the transformation system, from this week's hackathon, where we can help you write your first CWL.
 
 </div>
 </div>
-
-<div class="duw-ask"><b>From you</b>: convert one of your workflows (yesterday's hands-on) and tell us what CWL cannot express.</div>
-
----
-class: duw-poc
----
-
-<div class="duw-sec">3 · DiracX · exploratory</div>
-
-# interCEde: computing elements, explored from use cases
-
-<img class="duw-pocfig" :src="'/figures/fig-intercede.svg'" alt="Communities send requirements to interCEde and test its increments; interCEde is tested against real HTCondor, ARC and Slurm CEs, then released to DiracX, where a WMS backend uses it" />
-
-<div class="duw-poc3">
-<div><h4>Why</h4>
-
-Talking to CEs is needed by every WMS. Explored from the use cases DIRAC covers, and those it does not but should.
-
-</div>
-<div><h4>Where it stands</h4>
-
-ADRs under review; core contract proposed (#27). Its own repository: integration tests against real CEs, so a change cannot break production.
-
-</div>
-<div><h4>Next</h4>
-
-Increments you can test. The ADRs are merged once a first implementation works.
-
-</div>
-</div>
-
-<div class="duw-ask"><b>From you</b>: if you use DIRAC computing elements, test the increments of <a href="https://github.com/DIRACGrid/intercede" target="_blank">interCEde</a> and report what does not fit, in an issue or at a DOps.</div>
-
----
-class: duw-poc
----
-
-<div class="duw-sec">3 · DiracX · exploratory</div>
-
-# A matcher for DiracX compute backends
-
-<img class="duw-pocfig" :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters them using the configuration and the running jobs, ranks them by fair share using the running jobs, and hands one job to the pilot" />
-
-<div class="duw-poc3">
-<div><h4>Why</h4>
-
-DIRAC's matcher will not be fast enough for what is coming (e.g. LHCb), and cannot express alternatives: GPU A, or GPU B, or CPU C.
-
-</div>
-<div><h4>Where it stands</h4>
-
-A deliberately simple Python matcher (<a href="https://github.com/devlink42/poc-dirac-job-matchmaking" target="_blank">POC</a>), and load tests on LHCb-shaped data: 210 ms per match at 50k candidates.
-
-</div>
-<div><h4>Next</h4>
-
-Redis, measured against this baseline, easy to rebuild (chaos tests with Redis off). Then an ADR, then DiracX.
-
-</div>
-</div>
-
-<div class="duw-ask"><b>From you</b>: the requirements your jobs cannot express today.</div>
 
 ---
 class: duw-poc
@@ -561,7 +486,63 @@ Re-thought with the DiracX compute backends. Meanwhile the DIRAC pilot keeps bei
 </div>
 </div>
 
-<div class="duw-ask"><b>From you</b>: what you need from pilots: identity, logging, push or pull.</div>
+---
+class: duw-poc
+---
+
+<div class="duw-sec">3 · DiracX · exploratory</div>
+
+# A matcher for DiracX compute backends
+
+<img class="duw-pocfig" :src="'/figures/fig-matcher.svg'" alt="A pilot sends its node description; the POC matcher takes all waiting jobs, matches them against the node, filters them using the configuration and the running jobs, ranks them by fair share using the running jobs, and hands one job to the pilot" />
+
+<div class="duw-poc3">
+<div><h4>Why</h4>
+
+DIRAC's matcher will likely not be fast enough for what is coming: we aim for <b>1,000 requests per second</b>. It also cannot express alternatives: GPU A, or GPU B, or CPU C.
+
+</div>
+<div><h4>Where it stands</h4>
+
+A deliberately simple Python matcher (<a href="https://github.com/devlink42/poc-dirac-job-matchmaking" target="_blank">POC</a>), and load tests on LHCb-shaped data: 210 ms per match at 50k candidates.
+
+</div>
+<div><h4>Next</h4>
+
+Redis, measured against this baseline, easy to rebuild (chaos tests with Redis off). Then an ADR, then DiracX.
+
+</div>
+</div>
+
+---
+class: duw-poc
+---
+
+<div class="duw-sec">3 · DiracX · exploratory</div>
+
+# Computing elements, explored from use cases
+
+<img :src="'/logos/intercede-logo.svg'" alt="interCEde logo" style="position:absolute;top:2.4rem;right:2.6rem;height:2.6rem" />
+
+<img class="duw-pocfig" :src="'/figures/fig-intercede.svg'" alt="Communities send requirements to interCEde and test its increments; interCEde is tested against real HTCondor, ARC and Slurm CEs, then released to DiracX, where a WMS backend uses it" />
+
+<div class="duw-poc3">
+<div><h4>Why</h4>
+
+Talking to CEs is needed by every WMS. Explored from the use cases DIRAC covers, and those it does not but should.
+
+</div>
+<div><h4>Where it stands</h4>
+
+ADRs under review; core contract proposed (<a href="https://github.com/DIRACGrid/intercede/pull/27" target="_blank">interCEde#27</a>). Its own repository: integration tests against real CEs, so a change cannot break production.
+
+</div>
+<div><h4>Next</h4>
+
+Increments you can test. The ADRs are merged once a first implementation works.
+
+</div>
+</div>
 
 ---
 class: duw-poc
@@ -571,12 +552,12 @@ class: duw-poc
 
 # The job wrapper: one for all of us
 
-<img class="duw-pocfig" :src="'/figures/fig-wrappers.svg'" alt="Today: the DIRAC JobWrapper, the dirac-cwl wrapper and DiracX executor prototypes, each with community steps around them; to build: one job wrapper for all, still a question mark" />
+<img class="duw-pocfig" :src="'/figures/fig-wrappers.svg'" alt="The DIRAC JobWrapper in production, the dirac-cwl wrapper (an attempt at a new one), diracx#877 (a CWL port with new features, too big too soon) and CMS's solutions all feed a job wrapper to revisit for the different compute backends" />
 
 <div class="duw-poc3">
 <div><h4>Why</h4>
 
-Several wrappers today, and each community adds its own steps around the payload.
+One JobWrapper in production. dirac-cwl: an attempt at a new one; diracx#877: its port with new features, too big, too soon. CMS joined, with interesting solutions.
 
 </div>
 <div><h4>Where it stands</h4>
@@ -586,52 +567,19 @@ Requirements to gather: inputs, time left and graceful stop, containers, nodes w
 </div>
 <div><h4>Next</h4>
 
-A proof of concept, then an ADR.
+Revisit what we have and what CMS brings, for the different compute backends: a proof of concept, then an ADR.
 
 </div>
 </div>
 
-<div class="duw-ask"><b>From you</b>: someone to gather requirements and feedback, build the proof of concept, then design the ADR, with someone who has done it once.</div>
-
----
-
-<div class="duw-sec">Take-aways</div>
-
-# Take-aways
-
-<div class="duw-two dx-tight">
-<div>
-
-<div class="dx-eyebrow">The model</div>
-
-- The transformation system sends parcels to compute backends; the DIRAC WMS is one of them.
-- DIRAC stays stable; DiracX is free of DIRAC's job model.
-
-<div class="dx-eyebrow mt-3">For installations</div>
-
-- Upgrade to v9.1: faster matching and job insertion, time-left fixes (v9.1.21), security patches.
-- Multi-architecture images: #8456, soon.
-
-</div>
-<div>
-
-<div class="dx-eyebrow">For DiracX</div>
-
-- No jobs: parcels. The JobDB in DiracX only tests deployments, then goes.
-- DiracX compute backends are not a priority; they will get a plan when needed.
-- CWL describes everything that runs.
-- interCEde and the matcher: exploratory, with tests; ADRs after a first implementation. Pilot management: paused.
-
-<div class="dx-eyebrow mt-3">We need you</div>
-
-- Someone to lead the job wrapper requirements and proof of concept; your requirements for interCEde and the matcher.
-
-</div>
-</div>
+<div class="duw-ask"><b>From you</b>: someone, or a group of people (not necessarily the same for each step): requirements, proof of concept, ADR.</div>
 
 ---
 layout: cover
 ---
+
+<div class="duw-thanks">
+<div>
 
 # Thank you
 
@@ -644,4 +592,18 @@ layout: cover
 <div class="dx-logobar mt-8">
   <img :src="'/logos/DIRAC-logo.webp'" alt="DIRAC, The Interware" />
   <img :src="'/logos/diracx.png'" alt="DiracX, The Interware" />
+</div>
+
+</div>
+<div class="duw-takeaways">
+
+<div class="dx-eyebrow">Take-aways</div>
+
+- **DIRAC is one compute backend** of the transformation system. It stays stable: upgrade to **v9.1.21** (with its manual `ALTER TABLE` steps) for faster matching and insertion, the time-left fixes and the security patches.
+- **DiracX works on parcels, not jobs.** Its own backends come later; interCEde and the matcher are explored now, with tests, and get an ADR after a first implementation.
+- **Tokens**: pilots still carry a proxy, because some sites' accounting relies on it.
+
+<div class="duw-ask mt-3"><b>We need you</b>: someone, or a group of people, for the job wrapper: requirements, proof of concept, ADR.</div>
+
+</div>
 </div>

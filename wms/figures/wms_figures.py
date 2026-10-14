@@ -127,26 +127,31 @@ def pullpush() -> str:
     o.append(text(130, 462, "worker node", SMALL - 2, "bold", anchor="start", fill="#8a6d2c"))
     o.append(label_pill(150, 500, 230, 72, AMBER, "ppi", "pilot", INK_AMBER, size=SMALL + 2))
     o.append(label_pill(450, 500, 250, 72, AMBER, "pja", "JobAgent", INK_AMBER, size=SMALL + 2))
-    o.append(label_pill(450, 640, 250, 72, GREEN, "pjw", "JobWrapper", "#2d5a33", size=SMALL + 2))
-    o.append(label_pill(770, 640, 200, 72, "#e9eef4", "ppl", "payload", TEXT_1, size=SMALL))
+    o.append(label_pill(450, 606, 250, 64, GREEN, "pjw", "JobWrapper", "#2d5a33", size=SMALL + 2))
+    # the three phases, all on the node
+    for k, (lab, x, w, col) in enumerate([("pre", 290, 150, "#d7ead9"), ("payload", 495, 160, "#e9eef4"), ("post", 710, 150, "#d7ead9")]):
+        o.append(label_pill(x, 698, w, 52, col, f"pph{k}", lab, TEXT_1, size=SMALL - 4))
+    o.append(arrow(444, 724, 488, 724, 0, sw=3.4))
+    o.append(arrow(660, 724, 704, 724, 0, sw=3.4))
     o.append(arrow(740, 376, 300, 494, 30, sw=4))
     o.append(text(790, 430, "2  pilot starts", SMALL - 4, anchor="start", fill=TEXT_2))
     o.append(arrow(384, 536, 444, 536, 0, sw=4))
     o.append(arrow(575, 494, 380, 196, -60, sw=4))
     o.append(text(470, 330, "3  match a job", SMALL - 4, anchor="end", fill=TEXT_2))
-    o.append(arrow(575, 578, 575, 634, 0, sw=4))
-    o.append(arrow(704, 676, 764, 676, 0, sw=4))
+    o.append(arrow(575, 578, 575, 600, 0, sw=4))
+    o.append(arrow(575, 672, 575, 692, 0, sw=3.4))
     # push side
     o.append(label_pill(1110, 110, 230, 80, BLUE, "qm", "Matcher", INK_BLUE, size=SMALL + 2))
-    o.append(label_pill(1110, 250, 420, 80, AMBER, "qpa", "PushJobAgent", INK_AMBER, size=SMALL + 2))
+    o.append(label_pill(1110, 240, 420, 96, AMBER, "qpa", "PushJobAgent", INK_AMBER, "runs pre, then post", size=SMALL + 2))
     o.append(arrow(1225, 244, 1225, 196, 0, sw=4))
     o.append(label_pill(1210, 400, 200, 70, "#c7cfd9", "qce", "CE", TEXT_1))
     o.append(arrow(1310, 336, 1310, 394, 0, sw=4))
+    o.append(text(1326, 372, "wrapper + inputs", SMALL - 8, anchor="start", fill=TEXT_2))
     o.append(f'<rect x="1110" y="520" width="430" height="250" rx="24" fill="#fbf7ee" stroke="#e8dcc0" stroke-width="3"/>')
     o.append(text(1130, 562, "HPC, no outbound", SMALL - 4, "bold", anchor="start", fill="#8a6d2c"))
-    o.append(label_pill(1200, 590, 250, 72, GREEN, "qjw", "JobWrapper", "#2d5a33", size=SMALL + 2))
-    o.append(text(1325, 720, "pre/post-processing", SMALL - 6, italic=True, fill=TEXT_2))
-    o.append(text(1325, 750, "stay with the agent", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append(label_pill(1200, 586, 250, 90, GREEN, "qjw", "JobWrapper", "#2d5a33", "payload only", size=SMALL + 2))
+    o.append(text(1325, 728, "outputs + checksums", SMALL - 6, italic=True, fill=TEXT_2))
+    o.append(text(1325, 756, "go back to the agent", SMALL - 6, italic=True, fill=TEXT_2))
     o.append(arrow(1390, 476, 1400, 584, 0, sw=4))
     o.append("</svg>")
     return "".join(o)
@@ -306,7 +311,7 @@ def backends3d() -> str:
     # backends, in a row in front
     S = 760
     arrows = []
-    specs = [(-690, "#adc3e3", "DIRAC", "stable: fixes only", INK_BLUE, "solid", P(20, 180, 0)),
+    specs = [(-690, "#adc3e3", "DIRAC", "stable: fixes, performance", INK_BLUE, "solid", P(20, 180, 0)),
              (-230, TEAL, "DiracX pull", "pilots fetch work · later", INK_TEAL, "ghost", P(170, 180, 0)),
              (230, TEAL, "DiracX push", "no outbound network · later", INK_TEAL, "ghost", P(260, 150, 0)),
              (690, "#c7cfd9", "HTCondor", "glideins", TEXT_1, "solid", P(260, 20, 0))]
@@ -788,28 +793,27 @@ def matcher_poc() -> str:
 
 
 def wrappers() -> str:
-    """Today several job wrappers, each with community additions; tomorrow one, shared,
-    whose shape is still open."""
-    W, H = 1600, 520
+    """One JobWrapper in production, two attempts at a new one, and CMS's ideas: all inputs
+    to revisit the job wrapper for the different compute backends."""
+    W, H = 1600, 560
     o = [head(W, H)]
-    today = [("DIRAC JobWrapper", "pre, payload, post; offline variant", BLUE, INK_BLUE),
-             ("dirac-cwl wrapper", "experimental, in DIRAC", GREEN, "#2d5a33"),
-             ("DiracX executors", "prototypes", TEAL, INK_TEAL)]
-    for k, (t1, t2, col, ink) in enumerate(today):
-        y = 40 + k * 150
-        o.append(label_pill(40, y, 420, 100, col, f"wr{k}", t1, ink, t2, size=SMALL))
-        o.append(f'<rect x="480" y="{y + 22}" width="190" height="56" rx="16" fill="#fff6e4" stroke="#e0a030" stroke-width="3" stroke-dasharray="8 7"/>')
-        o.append(text(575, y + 58, "+ community steps", SMALL - 9, fill="#7a5410"))
-        o.append(arrow(690, y + 50, 900, 250, 0, sw=3.6))
-    o.append(f'<rect x="920" y="90" width="620" height="320" rx="34" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="14 10"/>')
-    o.append(text(1230, 170, "one job wrapper, for all of us", SUB - 2, "bold", fill="#7a5410"))
-    o.append(text(1230, 320, "?", 150, "bold", fill="#e0a030"))
-    o.append(text(1230, 380, "requirements first, then a proof of concept, then an ADR", SMALL - 8, fill="#7a5410"))
-    o.append(text(250, 500, "today", SUB - 4, "bold", fill=TEXT_2))
-    o.append(text(1230, 500, "to build", SUB - 4, "bold", fill=TEXT_2))
+    inputs = [("DIRAC JobWrapper", "in production: pre, payload, post", BLUE, INK_BLUE),
+              ("dirac-cwl wrapper", "an attempt at a new one", GREEN, "#2d5a33"),
+              ("diracx#877", "CWL port + new features: too big, too soon", "#d5dae1", TEXT_1),
+              ("CMS", "joined the project, with its own solutions", AMBER, INK_AMBER)]
+    for k, (t1, t2, col, ink) in enumerate(inputs):
+        y = 20 + k * 118
+        o.append(label_pill(40, y, 560, 92, col, f"wr{k}", t1, ink, t2, size=SMALL - 2))
+        o.append(arrow(620, y + 46, 900, 270, 0, sw=3.6))
+    o.append(f'<rect x="920" y="100" width="620" height="320" rx="34" fill="#fff6e4" stroke="#e0a030" stroke-width="4" stroke-dasharray="14 10"/>')
+    o.append(text(1230, 180, "a job wrapper for the", SUB - 2, "bold", fill="#7a5410"))
+    o.append(text(1230, 222, "different compute backends", SUB - 2, "bold", fill="#7a5410"))
+    o.append(text(1230, 340, "?", 130, "bold", fill="#e0a030"))
+    o.append(text(1230, 395, "requirements, then a proof of concept, then an ADR", SMALL - 8, fill="#7a5410"))
+    o.append(text(320, 545, "what we have, and what we tried", SUB - 6, "bold", fill=TEXT_2))
+    o.append(text(1230, 545, "to revisit", SUB - 6, "bold", fill=TEXT_2))
     o.append("</svg>")
     return "".join(o)
-
 
 def intercede_flow() -> str:
     """interCEde: requirements in, then the library is checked against real CEs in integration
@@ -1063,7 +1067,7 @@ def stop_fig(name):
     return lambda: wms_path({c: None for c in STOPS[name]}, "#8fb3e0")
 
 
-FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers, "fig-pocmap": poc_map, **{k: stop_fig(k) for k in STOPS}}
+FIGS = {"fig-slot": slot, "fig-parcels-only": parcels_only, "fig-backends3d": backends3d, "fig-worldmap": landscape_map, "fig-path-faster": path_faster, "fig-path-reliable": path_reliable, "fig-path-safer": path_safer, "fig-hetero": hetero, "fig-matcher": matcher_poc, "fig-intercede": intercede_flow, "fig-history": history, "fig-slot2": slot_before_after, "fig-multiarch": multiarch, "fig-limits-hpc": limits_hpc, "fig-pilots": pilots_paused, "fig-wrappers": wrappers, "fig-pocmap": poc_map, "fig-pullpush": pullpush, **{k: stop_fig(k) for k in STOPS}}
 
 
 def main() -> int:

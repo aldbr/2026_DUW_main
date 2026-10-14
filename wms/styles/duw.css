@@ -179,3 +179,13 @@
 .duw-headline { font-family: var(--dx-font-serif); font-size: 1.12rem; line-height: 1.25; color: var(--dx-ink); margin: 0 0 .55rem 0; }
 .duw-stopsec { font-size: .7rem; }
 .duw-stopsec li { color: #6b7280; }
+/* stop boxes: the bullet dash takes the colour of the box's left border */
+.duw-stopsec.fast ul > li::before { background: #6cbf7b; color: #6cbf7b; }
+.duw-stopsec.rel ul > li::before { background: #6f9fd6; color: #6f9fd6; }
+.duw-stopsec.safe ul > li::before { background: #e08f78; color: #e08f78; }
+/* closing slide: thank you on the left, take-aways on the right */
+.duw-thanks { display: grid; grid-template-columns: 1fr 1.15fr; gap: 2.2rem; align-items: center; }
+.duw-takeaways { background: rgba(255,255,255,.95); border-radius: 14px; padding: .9rem 1.2rem; color: var(--dx-gray); font-size: .82rem; line-height: 1.4; }
+.duw-takeaways strong, .duw-takeaways b { color: var(--dx-ink); }
+.duw-takeaways ul { margin: .3rem 0 0; }
+.duw-takeaways li { margin: .35rem 0; }
